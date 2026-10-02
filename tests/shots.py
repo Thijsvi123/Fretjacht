@@ -1,8 +1,8 @@
-import asyncio, subprocess, sys, time
+import os, asyncio, subprocess, sys, time
 from playwright.async_api import async_playwright
 from PIL import Image
 FAKE = open('tests/fake.js').read()
-SP = '/tmp/claude-0/-home-claude-fretjacht/d43e012e-f961-53b4-9e20-62d9af333a24/scratchpad/'
+SP = os.environ.get('SHOTS', '/tmp/fretjacht-shots/'); os.makedirs(SP, exist_ok=True)
 async def main():
     srv = subprocess.Popen([sys.executable, '-m', 'http.server', '8792'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(0.8)
     shots = []

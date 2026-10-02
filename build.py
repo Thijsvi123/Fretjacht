@@ -26,7 +26,7 @@ html = f'''<!doctype html>
 {css}
 </style>
 </head>
-<body data-view="home">
+<body data-view="path">
 {body}
 <script>
 (() => {{

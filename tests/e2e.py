@@ -28,7 +28,7 @@ async def main():
                 await ev(f"location.hash = '#m-{mode}'"); await page.wait_for_timeout(250)
             # start microfoon via de pil
             await page.click('#micPill'); await page.wait_for_timeout(400)
-            results['mic'] = await ev("document.getElementById('micText').textContent")
+            results['mic'] = await ev("document.getElementById('micPill').dataset.state")
 
             # --- Noten zoeken ---
             await goto('notes'); ok = 0
@@ -152,17 +152,8 @@ async def main():
             await goto('heatmap')
             results['heatmap'] = await ev("({heat: document.querySelectorAll('.mk.heat:not(.h0)').length, grey: document.querySelectorAll('.mk.h0').length})")
 
-            # --- Routine ---
-            await ev("location.hash = ''"); await page.wait_for_timeout(300)
-            await page.click('.routine-card button.primary'); await page.wait_for_timeout(400)
-            seq = [await ev('__fj.mode()')]
-            for i in range(6):
-                btn = await page.query_selector('#routineBar:not([hidden]) button')
-                if not btn: break
-                await btn.click(); await page.wait_for_timeout(350)
-                seq.append(await ev('__fj.mode()'))
-            results['routine_seq'] = seq
-            results['routine_done'] = await ev("document.querySelector('.okmsg') ? document.querySelector('.okmsg').textContent : 'geen'")
+            # --- Tabbladen ---
+            await ev("location.hash = '#oefenen'"); await page.wait_for_timeout(300)
             results['home_stats'] = await ev("Array.from(document.querySelectorAll('.mi-stat')).map(e => e.textContent)")
             # instellingen
             await ev("location.hash = '#instellingen'"); await page.wait_for_timeout(300)

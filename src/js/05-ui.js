@@ -60,16 +60,39 @@ function field(label, control, help, forId) {
   return h('div', { class: 'field' }, forId ? h('label', { class: 'lbl', for: forId, text: label }) : h('span', { class: 'lbl', text: label }), control, help ? h('span', { class: 'help', text: help }) : null);
 }
 
+// ---------- Iconen (24×24, currentColor) ----------
+const svgI = (body, fill) => `<svg viewBox="0 0 24 24" aria-hidden="true" class="ico" fill="${fill ? 'currentColor' : 'none'}" stroke="${fill ? 'none' : 'currentColor'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+const ICONS = {
+  flame: svgI('<path d="M12 2.5c.6 2.9 3.8 4.9 4.6 8.3.8 3.6-1.4 7.7-4.6 7.7s-5.6-2.5-5.2-5.9c.3-2.3 1.7-3.3 2.6-4.6.3 1.6.9 2.6 2 3 .5-2.9-.5-5.3.6-8.5z"/>', true),
+  mic: svgI('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>'),
+  close: svgI('<path d="M6 6l12 12M18 6L6 18"/>'),
+  check: svgI('<path d="M5 12.5l4.2 4.2L19 7"/>'),
+  star: svgI('<path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9-5.4 2.9 1.1-6-4.5-4.2 6.1-.8z"/>', true),
+  trophy: svgI('<path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9.5 18h5"/>'),
+  retry: svgI('<path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/>'),
+  book: svgI('<path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5zM12 6v13.5"/>'),
+  pick: svgI('<path d="M12 3c4.4 0 7.5 1.6 7.5 4.6 0 4.1-4.2 9.6-7.5 13.4C8.7 17.2 4.5 11.7 4.5 7.6 4.5 4.6 7.6 3 12 3z"/>', true),
+  note: svgI('<path d="M9 17.5V5l10-2v12"/><circle cx="6.5" cy="17.5" r="2.5" fill="currentColor"/><circle cx="16.5" cy="15" r="2.5" fill="currentColor"/>'),
+  lock: svgI('<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>'),
+  path: svgI('<circle cx="7" cy="5" r="2.2"/><circle cx="16" cy="11" r="2.2"/><circle cx="8" cy="19" r="2.2"/><path d="M9 6.2l5 3.6M14.2 12.6l-4.4 5"/>'),
+  grid: svgI('<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>'),
+  chart: svgI('<path d="M5 20V11M12 20V5M19 20v-6M3 20.5h18"/>'),
+  clock: svgI('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
+  bolt: svgI('<path d="M13.5 2.5L5 13.5h6l-1 8 8.5-11h-6z"/>', true),
+  ring: '<svg viewBox="0 0 24 24" aria-hidden="true" class="ico ring"><circle cx="12" cy="12" r="10" class="ring-bg"/><circle cx="12" cy="12" r="10" class="ring-fg" stroke-dasharray="0 62.83" transform="rotate(-90 12 12)"/></svg>',
+};
+
 // ---------- UI ----------
 const UI = {
   msgTimer: 0,
   showMsg(t) { const m = $('#msg'); m.textContent = t; m.hidden = false; },
   hideMsg() { $('#msg').hidden = true; },
   micState() {
-    const pill = $('#micPill'), txt = $('#micText');
+    const pill = $('#micPill');
     const st = Engine.mic ? 'on' : Engine.starting ? 'busy' : 'off';
     pill.dataset.state = st;
-    txt.textContent = st === 'on' ? 'Luistert' : st === 'busy' ? 'Toegang vragen…' : 'Microfoon uit';
+    const label = st === 'on' ? 'Microfoon aan: tik om te stoppen' : st === 'busy' ? 'Toegang vragen' : 'Microfoon uit: tik om te starten';
+    pill.setAttribute('aria-label', label); pill.title = label;
     $$('.mic-btn').forEach(b => {
       b.textContent = st === 'on' ? 'Stop' : 'Start';
       b.classList.toggle('stop', st === 'on');
@@ -101,6 +124,23 @@ const UI = {
     $$('.heard-line').forEach(el => { el.innerHTML = html; });
   },
   tuner: null,
+  // korte melding bovenin; meerdere meldingen komen na elkaar
+  flashQ: [], flashing: false,
+  flash(icon, title, text, kind) {
+    this.flashQ.push({ icon, title, text, kind });
+    if (!this.flashing) this.nextFlash();
+  },
+  nextFlash() {
+    const f = this.flashQ.shift();
+    if (!f) { this.flashing = false; return; }
+    this.flashing = true;
+    const el = h('div', { class: 'flash' + (f.kind ? ' flash-' + f.kind : ''), role: 'status' },
+      h('span', { class: 'fl-ico', html: f.icon || '' }),
+      h('span', { class: 'fl-txt' }, h('b', { text: f.title }), f.text ? h('small', { text: f.text }) : null));
+    document.body.append(el);
+    setTimeout(() => el.classList.add('out'), 2800);
+    setTimeout(() => { el.remove(); this.nextFlash(); }, 3200);
+  },
 };
 
 // Standaard oefenscherm: opdrachtkaart, hals, knoppen, opties, scores
@@ -145,44 +185,55 @@ const sec = s => (s == null ? '–' : `${fmt1(s)}<small>s</small>`);
 
 // ---------- Router ----------
 let current = null;
+const TABS = { '': 'path', 'leerpad': 'path', 'oefenen': 'practice', 'voortgang': 'progress' };
 const Router = {
   render() {
     const hash = location.hash.replace('#', '');
     if (current && current.unmount) current.unmount();
     Engine.sink = null; current = null; UI.tuner = null;
+    $$('.sheet-wrap').forEach(x => x.remove());
     const view = $('#view');
     view.innerHTML = '';
     UI.lastHeard = '';
     const back = $('#backBtn');
+    let tab = null, title = '';
     if (hash.startsWith('m-') && MODES[hash.slice(2)]) {
       const m = MODES[hash.slice(2)];
-      back.hidden = false;
-      $('#title').textContent = m.title;
-      document.body.dataset.view = 'mode';
-      current = m;
-      Engine.sink = m;
+      title = m.title; document.body.dataset.view = 'mode';
+      current = m; Engine.sink = m;
       m.mount(view);
-      Routine.decorate(m.id);
+    } else if (hash === 'les') {
+      document.body.dataset.view = 'lesson';
+      current = Lesson; Engine.sink = Lesson;
+      Lesson.mount(view);
     } else if (hash === 'instellingen') {
-      back.hidden = false;
-      $('#title').textContent = 'Instellingen';
-      document.body.dataset.view = 'settings';
+      title = 'Instellingen'; document.body.dataset.view = 'settings';
       renderSettings(view);
     } else {
-      back.hidden = true;
-      $('#title').textContent = 'Fretjacht';
-      document.body.dataset.view = 'home';
-      renderHome(view);
-      Routine.decorate(null);
+      tab = TABS[hash] || 'path';
+      document.body.dataset.view = tab;
+      title = { path: 'Leerpad', practice: 'Oefenen', progress: 'Voortgang' }[tab];
+      if (tab === 'path') renderPath(view);
+      else if (tab === 'practice') renderPractice(view);
+      else renderProgress(view);
     }
+    back.hidden = !!tab || document.body.dataset.view === 'lesson';
+    $('#title').textContent = title;
+    $$('.tabbar a').forEach(a => a.setAttribute('aria-current', a.dataset.tab === tab ? 'page' : 'false'));
     UI.micState();
     UI.updateHeard(null);
     UI.updateLevel(-120);
+    Progress.renderTop();
+    Daily.renderBar();
     window.scrollTo(0, 0);
-  }
+  },
+  back() {
+    const v = document.body.dataset.view;
+    location.hash = v === 'settings' ? '#voortgang' : v === 'mode' ? '#oefenen' : '';
+  },
 };
 
-// ---------- Startscherm ----------
+// ---------- Oefenen: losse oefeningen ----------
 const GROUPS = [
   { id: 'hals', title: 'De hals leren kennen' },
   { id: 'solo', title: "Solo's" },
@@ -190,28 +241,9 @@ const GROUPS = [
   { id: 'uitdaging', title: 'Uitdaging en inzicht' },
   { id: 'handig', title: 'Handig' },
 ];
-function renderHome(view) {
-  const st = Store.stats, R = Store.settings.routine;
-  const sk = Routine.streak();
-  if (Routine.justDone) {
-    view.append(h('div', { class: 'okmsg', text: `Routine klaar! Je hebt ${Routine.justDone.minutes} minuten geoefend${sk.n > 1 ? `, ${sk.n} dagen op rij` : ''}.` }));
-    Routine.justDone = null;
-  }
-  const blocksSum = () => `${R.blocks.length} × ${R.minutes} min: ${R.blocks.map(b => ROUTINE_BLOCKS[b].title).join(', ')}`;
-  const sumEl = h('p', { class: 'help', text: blocksSum() });
-  const titleEl = h('h2', { text: `${R.blocks.length * R.minutes} minuten oefenen` });
-  const upd = () => { Store.saveSettings(); sumEl.textContent = blocksSum(); titleEl.textContent = `${R.blocks.length * R.minutes} minuten oefenen`; };
-  const rc = h('div', { class: 'card routine-card' },
-    h('div', { class: 'rc-head' },
-      h('div', { class: 'rc-text' },
-        h('p', { class: 'eyebrow', text: 'Dagelijkse routine' }), titleEl, sumEl,
-        sk.n ? h('p', { class: 'streak', text: sk.today && sk.n === 1 ? 'Vandaag gedaan' : `${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'} op rij${sk.today ? '' : '. Doe vandaag mee om de reeks vast te houden.'}` }) : null),
-      h('button', { class: 'primary', type: 'button', text: 'Start routine', onclick: () => Routine.start() })),
-    h('details', { class: 'rc-opts' }, h('summary', { text: 'Routine aanpassen' }),
-      h('div', { class: 'set-grid' },
-        field('Onderdelen', chips(Object.keys(ROUTINE_BLOCKS).map(k => ({ value: k, label: ROUTINE_BLOCKS[k].title })), R.blocks, v => { R.blocks = Object.keys(ROUTINE_BLOCKS).filter(k => v.includes(k)); upd(); }, 1)),
-        field('Minuten per onderdeel', seg([1, 2, 3, 5].map(n => ({ value: n, label: String(n) })), R.minutes, v => { R.minutes = Number(v); upd(); }, 'tight')))));
-  view.append(rc);
+function renderPractice(view) {
+  const st = Store.stats;
+  view.append(h('p', { class: 'lead practice-lead', text: 'Vrij oefenen, los van je leerpad. Je oefentijd telt mee voor je dagdoel.' }));
   for (const g of GROUPS) {
     const ids = MODE_ORDER.filter(id => MODES[id].group === g.id);
     if (!ids.length) continue;
@@ -225,7 +257,6 @@ function renderHome(view) {
         stat ? h('span', { class: 'mi-stat', html: stat }) : null);
     })));
   }
-  view.append(h('a', { class: 'mode-item settings-link', href: '#instellingen' }, h('span', { class: 'mi-name', text: 'Instellingen' }), h('span', { class: 'mi-desc', text: 'Microfoon, oefenbereik, notenamen en scores' })));
   view.append(h('p', { class: 'foot', text: 'De app hoort welke toon klinkt, niet op welke snaar je hem speelt. Speel dus echt waar het gevraagd wordt. Leg je telefoon dicht bij je gitaar.' }));
 }
 
@@ -267,13 +298,18 @@ function renderSettings(view) {
     b.textContent = 'Scores gewist'; b.classList.remove('danger');
   } });
   const scoreCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Scores' }), h('div', { class: 'row' }, reset));
-  view.append(h('section', { class: 'settings-view' }, micCard, rangeCard, ctlCard, scoreCard));
+  const goalCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Dagdoel en lessen' }),
+    h('div', { class: 'set-grid' },
+      field('Dagdoel', seg([10, 15, 20, 30].map(n => ({ value: n, label: `${n} min` })), s.goal, v => { s.goal = Number(v); save(); Progress.renderTop(); }), 'Je reeks telt de dagen waarop je dit aantal minuten echt geoefend hebt.'),
+      h('div', { class: 'field' }, h('span', { class: 'lbl', text: 'Muziektheoriecursus' }), h('a', { class: 'link', href: COURSE_DOC, target: '_blank', rel: 'noopener', text: 'Open het cursusboek ›' }), h('span', { class: 'help', text: 'Na elke les van maandag en donderdag komt er een unit bij in je leerpad.' }))));
+  view.append(h('section', { class: 'settings-view' }, goalCard, micCard, rangeCard, ctlCard, scoreCard));
   UI.updateLevel(-120);
 }
 
 // gedeelde toetsen
 document.addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey || (e.target.closest && e.target.closest('input, select, textarea'))) return;
+  if (e.key === 'Enter' && e.target.closest && e.target.closest('button, a')) return;
   if (current && current.keys) {
     const fn = current.keys[e.key.toLowerCase()] || (e.key === 'ArrowRight' ? current.keys.s : null);
     if (fn) { e.preventDefault(); fn(); }

@@ -1,6 +1,6 @@
 // ---------- Opslag ----------
 const DEFAULT_SETTINGS = {
-  gateDb: -48, strict: false, sound: true, names: 'sharps',
+  gateDb: -48, strict: false, sound: true, names: 'sharps', goal: 15, cantPlayUntil: 0,
   strings: [0, 1, 2, 3, 4, 5], minFret: 0, maxFret: 12, naturalsOnly: false, autoHint: 0,
   positions: { order: 'up' },
   intervals: { set: [3, 4, 5, 7, 10, 12], dir: 'up', naturalRoots: true },
@@ -10,7 +10,6 @@ const DEFAULT_SETTINGS = {
   bends: { semis: 2, tol: 15 },
   ear: { level: 1, key: 'minpent-A', help: true, slow: false },
   metro: { bpm: 80, beats: 4, accent: true, onbeat: false, phones: false, corr: 0 },
-  routine: { blocks: ['scales', 'notes', 'intervals', 'chords', 'ear'], minutes: 2 },
 };
 const DEFAULT_STATS = () => ({
   notes: { items: {}, found: 0, totalTime: 0, best: null, streak: 0, bestStreak: 0 },
@@ -23,7 +22,7 @@ const DEFAULT_STATS = () => ({
   ear: { ok: {}, tries: {} },
   bends: { recent: [] },
   rhythm: { recent: [], sessions: 0 },
-  routine: { days: [] },
+  xp: 0, days: {}, path: { nodes: {} }, badges: {},
 });
 function deepMerge(base, over) {
   if (base === null) return over === undefined ? null : over;
@@ -58,8 +57,7 @@ const Store = {
     if (!s.intervals.set.length) s.intervals.set = [7];
     s.ear.level = clamp(s.ear.level | 0, 1, 5);
     s.metro.bpm = clamp(s.metro.bpm | 0, 30, 240);
-    s.routine.blocks = s.routine.blocks.filter(b => ROUTINE_BLOCKS[b]);
-    if (!s.routine.blocks.length) s.routine.blocks = ['notes'];
+    if (![10, 15, 20, 30].includes(Number(s.goal))) s.goal = 15;
     this.stats = deepMerge(DEFAULT_STATS(), this.get('stats', {}));
   },
   saveSettings() { this.put('settings', this.settings); },

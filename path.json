@@ -1,0 +1,59 @@
+{
+  "updated": "2026-10-03",
+  "units": [
+    {
+      "lesson": 1,
+      "date": "2026-10-02",
+      "topic": "twelve-tones",
+      "title": "Waarom 12 tonen",
+      "subtitle": "Octaaf, kwint en de kwintencirkel",
+      "doc": "https://claude.ai/code/artifact/a8cea592-791b-4211-9b66-8fdbddcd8c09",
+      "quiz": [
+        {
+          "q": "Waarom blijft een powerchord strak klinken, ook met veel distortion?",
+          "options": [
+            "Grondtoon, kwint en octaaf zijn de eerste boventonen van de grondtoon zelf",
+            "Er zit een grote terts in die alles bij elkaar houdt",
+            "Powerchords worden altijd op de lage snaren gespeeld",
+            "Distortion haalt de kwint weg"
+          ],
+          "answer": 0,
+          "explain": "De kwint (3:2) en het octaaf (2:1) zitten al in de boventoonreeks van de grondtoon. Een terts geeft met distortion juist snel een modderige klank."
+        },
+        {
+          "q": "De riff van Smells Like Teen Spirit bestaat uit powerchords. Waarom klinkt hij niet blij en niet verdrietig?",
+          "options": [
+            "De terts ontbreekt",
+            "De kwint ontbreekt",
+            "Hij staat in een rare maatsoort",
+            "Er zit te veel distortion op"
+          ],
+          "answer": 0,
+          "explain": "De terts bepaalt majeur of mineur. Zonder terts klinkt een akkoord neutraal en krachtig."
+        },
+        {
+          "q": "Welke sprong hoor je tussen “Altijd” en “is” in Altijd is Kortjakje ziek?",
+          "options": [
+            "Een kwint omhoog",
+            "Een octaaf omhoog",
+            "Een grote terts omhoog",
+            "Een kwart omlaag"
+          ],
+          "answer": 0,
+          "explain": "Na de eerste twee gelijke noten springt de melodie een reine kwint omhoog: een handig geheugensteuntje voor dat interval."
+        },
+        {
+          "q": "De A-snaar trilt op 110 Hz. Welke boventoon ligt bijna op een C♯?",
+          "options": [
+            "550 Hz (×5)",
+            "330 Hz (×3)",
+            "440 Hz (×4)",
+            "660 Hz (×6)"
+          ],
+          "answer": 0,
+          "explain": "110 × 5 = 550 Hz: twee octaven plus een grote terts boven de A, net iets lager dan een gestemde C♯."
+        }
+      ]
+    }
+  ]
+}

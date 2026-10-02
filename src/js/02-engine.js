@@ -214,6 +214,7 @@ const Engine = {
     if (!this.onsetNode && db >= Store.settings.gateDb && db - this.prevDb > 9) this.onOnset({ t: this.ctx.currentTime, fallback: true });
     this.prevDb = db;
     UI.updateLevel(db);
+    if (f.midi != null) Activity.ping();
     this.heardHist.push(f.midi);
     if (this.heardHist.length > 5) this.heardHist.shift();
     const vals = this.heardHist.filter(v => v !== null);
@@ -309,7 +310,7 @@ const Engine = {
     this.block(140);
   },
   chime() {
-    // signaal voor het einde van een routineblok
+    // signaal voor het einde van een sessiestap
     if (!this.ctx) return;
     const ctx = this.ctx, t0 = ctx.currentTime;
     [1047, 1319, 1568].forEach((f, i) => {

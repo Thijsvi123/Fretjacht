@@ -68,24 +68,11 @@ a { color: inherit; }
 body[data-view="mode"] .brand h1, body[data-view="settings"] .brand h1 { font-size: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; overflow-wrap: normal; max-width: 100%; }
 @media (max-width: 560px) {
   body[data-view="mode"] .brand h1, body[data-view="settings"] .brand h1 { font-size: 22px; }
-  body:not([data-view="home"]) .pill #micText { display: none; }
-  body:not([data-view="home"]) .pill { padding: 10px; }
 }
-.brand p { margin: 0; color: var(--muted); font-size: 14px; }
-body:not([data-view="home"]) .brand p { display: none; }
 .back { width: 40px; height: 40px; padding: 0; border-radius: 50%; font: 500 26px/1 var(--body); display: grid; place-items: center; flex: none; }
-.pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font: 500 13px/1 var(--mono); flex: none; cursor: pointer; }
-.pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
-.pill[data-state="on"] { color: var(--ink); }
-.pill[data-state="on"] i { background: var(--ok); box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 22%, transparent); }
-.pill[data-state="busy"] i { background: var(--accent); }
 
 .msg { border: 1px solid var(--bad); background: var(--bad-soft); border-radius: 10px; padding: 12px 14px; }
 .okmsg { border: 1px solid var(--ok); background: var(--ok-soft); border-radius: 10px; padding: 12px 14px; font-weight: 500; }
-#routineBar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 8px 8px 14px; border-radius: 12px; background: var(--accent-soft); border: 1px solid var(--accent); font-size: 14px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; }
-#routineBar .rb-txt { flex: 1; min-width: 0; }
-#routineBar .rb-time { font: 600 16px/1 var(--mono); font-variant-numeric: tabular-nums; }
-#routineBar button { padding: 8px 12px; font-size: 13px; border-radius: 8px; }
 
 /* kaarten */
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; min-width: 0; }
@@ -96,15 +83,6 @@ body:not([data-view="home"]) .brand p { display: none; }
 .muted { color: var(--muted); }
 .link { display: inline-block; margin-top: 12px; color: var(--accent-text); font-weight: 600; text-decoration: none; }
 
-/* startscherm */
-.routine-card { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
-.rc-head { display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-.rc-text { min-width: 0; flex: 1 1 260px; }
-.rc-text h2 { margin: 6px 0 2px; font: 800 28px/1.05 var(--display); text-transform: uppercase; letter-spacing: .01em; }
-.streak { margin: 6px 0 0; font: 500 13px/1.4 var(--mono); color: var(--accent-text); }
-.rc-opts { margin-top: 10px; }
-.rc-opts summary { cursor: pointer; font-size: 14px; color: var(--accent-text); font-weight: 600; }
-.rc-opts .set-grid { padding: 12px 0 0; }
 .group-title { margin: 10px 2px 0; }
 .mode-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
 @media (min-width: 640px) { .mode-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -329,19 +307,246 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
 
+/* ===================== Leer-app: bovenbalk, tabbalk, leerpad, lessen, voortgang ===================== */
+:root { --cal-0: #E2E5EA; --cal-1: #F8E3BE; --cal-2: #F0C373; --cal-3: #E39B22; --cal-4: #A86400; --shade-node: #B8740A; --shade-ok: #136B39; --shade-off: #C9CED6; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --cal-0: #252930; --cal-1: #4A3518; --cal-2: #7D561A; --cal-3: #C4841C; --cal-4: #F4B65A; --shade-node: #A8701E; --shade-ok: #1F7A48; --shade-off: #33383F; } }
+:root[data-theme="dark"] { --cal-0: #252930; --cal-1: #4A3518; --cal-2: #7D561A; --cal-3: #C4841C; --cal-4: #F4B65A; --shade-node: #A8701E; --shade-ok: #1F7A48; --shade-off: #33383F; }
+
+.ico { width: 22px; height: 22px; display: block; }
+.top { gap: 8px; min-height: 48px; }
+.brand h1 { font-size: 28px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px 6px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font: 600 14px/1 var(--mono); text-decoration: none; flex: none; }
+.chip .ico { width: 18px; height: 18px; }
+.chip.streak.lit { color: var(--accent-text); border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+.chip.streak.lit .ico { color: var(--accent); }
+.chip.goal .ring-bg { fill: none; stroke: var(--led-off); stroke-width: 3.5; }
+.chip.goal .ring-fg { fill: none; stroke: var(--accent); stroke-width: 3.5; stroke-linecap: round; transition: stroke-dasharray .4s; }
+.chip.goal.lit { color: var(--ok); }
+.chip.goal.lit .ring-fg { stroke: var(--ok); }
+.micbtn { width: 40px; height: 40px; border-radius: 50%; padding: 0; display: grid; place-items: center; flex: none; color: var(--muted); }
+.micbtn .ico { width: 20px; height: 20px; }
+.micbtn[data-state="on"] { background: var(--ok); border-color: var(--ok); color: var(--ok-ink); }
+.micbtn[data-state="busy"] { border-color: var(--accent); color: var(--accent-text); }
+body[data-view="mode"] .chip, body[data-view="settings"] .chip { display: none; }
+body[data-view="lesson"] .top, body[data-view="lesson"] #sessionBar { display: none !important; }
+@media (max-width: 380px) { .chip { padding: 6px 8px 6px 6px; font-size: 13px; } .brand h1 { font-size: 24px; } }
+
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; background: var(--surface); border-top: 1px solid var(--line); padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px)); }
+.tabbar a { display: grid; justify-items: center; gap: 3px; padding: 7px 0 6px; text-decoration: none; color: var(--muted); font: 600 12px/1.1 var(--body); border-radius: 12px; }
+.tabbar a .ico { width: 24px; height: 24px; }
+.tabbar a[aria-current="page"] { color: var(--accent-text); background: var(--accent-soft); }
+body[data-view="mode"] .tabbar, body[data-view="lesson"] .tabbar, body[data-view="settings"] .tabbar { display: none; }
+body[data-view="path"], body[data-view="practice"], body[data-view="progress"] { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+body[data-view="path"] { padding-bottom: calc(170px + env(safe-area-inset-bottom, 0px)); }
+@media (min-width: 900px) { .tabbar { left: 50%; right: auto; transform: translateX(-50%); width: 480px; bottom: 12px; border: 1px solid var(--line); border-radius: 18px; } }
+
+#sessionBar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 8px 8px 12px; border-radius: 12px; background: var(--accent-soft); border: 1px solid var(--accent); font-size: 14px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 6; }
+#sessionBar .sb-dots { display: inline-flex; gap: 4px; }
+#sessionBar .sb-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--led-off); }
+#sessionBar .sb-dots i.done { background: var(--ok); }
+#sessionBar .sb-dots i.now { background: var(--accent); }
+#sessionBar .sb-txt { flex: 1; min-width: 0; }
+#sessionBar .sb-time { font: 600 16px/1 var(--mono); font-variant-numeric: tabular-nums; }
+#sessionBar button { padding: 8px 12px; font-size: 13px; border-radius: 8px; }
+
+.flash { position: fixed; left: 50%; top: calc(12px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 60; display: flex; gap: 12px; align-items: center; padding: 12px 18px 12px 14px; border-radius: 14px; background: var(--ink); color: var(--bg); box-shadow: 0 8px 24px rgba(0, 0, 0, .25); width: max-content; max-width: calc(100% - 32px); text-align: left; animation: flash-in .3s ease-out; transition: opacity .4s, transform .4s; }
+body[data-view="lesson"] .flash { top: calc(68px + env(safe-area-inset-top, 0px)); }
+.flash .fl-ico { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent); flex: none; }
+.flash .ico { width: 20px; height: 20px; }
+.flash .fl-txt { display: grid; gap: 1px; min-width: 0; }
+.flash b { font-size: 15px; line-height: 1.25; }
+.flash small { font-size: 13px; line-height: 1.3; opacity: .75; }
+.flash.out { opacity: 0; transform: translate(-50%, -10px); }
+@keyframes flash-in { from { opacity: 0; transform: translate(-50%, -10px); } }
+@media (prefers-reduced-motion: reduce) { .flash { animation: none; transition: none; } }
+.end-badges { display: grid; gap: 8px; width: 100%; max-width: 420px; }
+.end-badge { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 14px; border: 2px solid color-mix(in srgb, var(--accent) 50%, var(--line)); background: var(--accent-soft); text-align: left; }
+.end-badge .b-ico { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); color: var(--accent); flex: none; }
+.end-badge .ico { width: 22px; height: 22px; }
+.end-badge div { display: grid; gap: 1px; min-width: 0; }
+.end-badge small { font: 500 11px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent-text); }
+.end-badge b { font-size: 15px; line-height: 1.25; }
+.end-badge span:last-child { font-size: 13px; color: var(--muted); line-height: 1.3; }
+
+/* leerpad */
+.path { display: grid; gap: 6px; }
+.unit { display: grid; }
+.unit-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 16px; background: var(--accent); color: var(--accent-ink); }
+.unit-head .eyebrow { color: inherit; opacity: .75; }
+.unit-head h2 { margin: 6px 0 3px; font: 800 26px/1.05 var(--display); text-transform: uppercase; letter-spacing: .01em; text-wrap: balance; }
+.uh-sub { margin: 0; font-size: 14px; opacity: .85; }
+.uh-text { min-width: 0; }
+.uh-side { display: grid; justify-items: end; gap: 8px; flex: none; }
+.uh-count { font: 600 13px/1 var(--mono); }
+.uh-link { font: 600 13px/1 var(--body); color: inherit; text-decoration: none; padding: 7px 10px; border-radius: 8px; background: color-mix(in srgb, var(--accent-ink) 12%, transparent); white-space: nowrap; }
+.uh-lock .ico { width: 22px; height: 22px; }
+.unit-head.complete { background: var(--ok); color: var(--ok-ink); }
+.unit.locked .unit-head { background: var(--surface); color: var(--muted); border: 1px dashed var(--line); }
+.track { display: grid; justify-items: center; gap: 16px; padding: 58px 0 26px; }
+.node-row { position: relative; transform: translateX(calc(var(--x) * 56px)); }
+.node { width: 72px; height: 72px; border-radius: 50%; padding: 0; display: grid; place-items: center; border: 0; background: var(--accent); color: var(--accent-ink); box-shadow: 0 6px 0 var(--shade-node); transition: transform .08s; }
+.node:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--shade-node); }
+.node .ico { width: 30px; height: 30px; }
+.node.done { background: var(--ok); color: var(--ok-ink); box-shadow: 0 6px 0 var(--shade-ok); }
+.node.locked { background: var(--led-off); color: var(--muted); box-shadow: 0 6px 0 var(--shade-off); }
+.node.open:not(.next) { background: var(--surface); color: var(--accent-text); box-shadow: 0 6px 0 var(--shade-off); border: 3px solid var(--accent); }
+.node.test { border-radius: 24px; }
+.node.next { outline: 5px solid color-mix(in srgb, var(--accent) 35%, transparent); outline-offset: 5px; }
+.bubble { position: absolute; bottom: calc(100% + 14px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 8px 12px; border-radius: 10px; background: var(--ink); color: var(--bg); font: 600 13px/1 var(--body); animation: bob 1.8s ease-in-out infinite; }
+.bubble::after { content: ""; position: absolute; left: 50%; top: 100%; margin-left: -6px; border: 6px solid transparent; border-top-color: var(--ink); }
+@keyframes bob { 50% { transform: translate(-50%, -4px); } }
+.path-end { text-align: center; color: var(--muted); font-size: 13px; padding: 4px 20px 0; }
+.note-bar { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); font-size: 14px; }
+.note-bar button { padding: 8px 12px; font-size: 13px; }
+.empty { text-align: center; }
+.empty h2 { margin: 0 0 6px; font: 800 24px/1.1 var(--display); text-transform: uppercase; }
+.cta-bar { position: fixed; left: 0; right: 0; bottom: calc(66px + env(safe-area-inset-bottom, 0px)); padding: 12px 16px 10px; background: linear-gradient(to top, var(--bg) 72%, transparent); z-index: 15; }
+.cta-bar button { max-width: 560px; margin: 0 auto; display: grid; gap: 4px; box-shadow: 0 5px 0 var(--shade-node); }
+.cta-bar small { font: 500 12px/1 var(--mono); opacity: .8; }
+@media (min-width: 900px) { .cta-bar { bottom: 84px; } }
+
+/* sheets */
+.sheet-wrap { position: fixed; inset: 0; z-index: 50; background: rgba(10, 12, 16, .5); display: flex; align-items: flex-end; justify-content: center; }
+.sheet { width: 100%; max-width: 560px; max-height: 90vh; overflow: auto; background: var(--surface); border-radius: 20px 20px 0 0; padding: 22px 18px calc(18px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 12px; box-shadow: 0 -8px 30px rgba(0, 0, 0, .2); }
+.sheet h3 { margin: 0; font: 800 28px/1.05 var(--display); text-transform: uppercase; letter-spacing: .01em; }
+.sheet.center { justify-items: center; text-align: center; }
+@media (min-width: 700px) { .sheet-wrap { align-items: center; } .sheet { border-radius: 20px; } }
+button.big { width: 100%; padding: 16px; font-size: 17px; border-radius: 14px; }
+button.primary.big { box-shadow: 0 4px 0 var(--shade-node); }
+button.ghost { background: transparent; }
+.plan { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.plan li { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.pl-n { width: 30px; height: 30px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-text); display: grid; place-items: center; font: 600 13px/1 var(--mono); }
+.plan small { display: block; color: var(--muted); font-size: 13px; }
+.pl-m { font: 500 13px/1 var(--mono); color: var(--muted); }
+
+/* les */
+.lesson { display: grid; grid-template-rows: auto 1fr auto; gap: 14px; min-height: calc(100vh - 40px); min-height: calc(100dvh - 40px); }
+.ls-top { display: flex; align-items: center; gap: 12px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 6px; }
+.ls-close { width: 40px; height: 40px; border-radius: 50%; padding: 0; display: grid; place-items: center; flex: none; color: var(--muted); }
+.ls-close .ico { width: 20px; height: 20px; }
+.ls-bar { flex: 1; height: 14px; border-radius: 7px; background: var(--led-off); overflow: hidden; }
+.ls-bar span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 7px; transition: width .3s ease; }
+.ls-count { font: 500 13px/1 var(--mono); color: var(--muted); min-width: 36px; text-align: right; }
+.ls-body { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.ls-kind { margin: 0; font: 500 12px/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent-text); }
+.ls-prompt { margin: 0; font: 700 24px/1.25 var(--body); text-wrap: balance; }
+.ls-sub { margin: 0; color: var(--muted); font-size: 15px; }
+.ls-opts { display: grid; gap: 10px; margin-top: 4px; }
+.ls-opts.grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.opt { text-align: left; padding: 16px; font: 500 17px/1.3 var(--body); border-width: 2px; border-radius: 14px; box-shadow: 0 3px 0 var(--line); }
+.ls-opts.grid .opt { text-align: center; font: 700 28px/1 var(--display); padding: 18px 8px; }
+.opt.sel { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 3px 0 var(--accent); }
+.opt.right { border-color: var(--ok); background: var(--ok-soft); box-shadow: 0 3px 0 var(--ok); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-soft); box-shadow: 0 3px 0 var(--bad); }
+.opt:disabled { opacity: 1; }
+.ls-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-btn { min-width: 58px; padding: 12px 12px; font: 700 22px/1 var(--display); border-width: 2px; border-radius: 12px; box-shadow: 0 3px 0 var(--line); }
+.chip-btn[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 3px 0 var(--accent); }
+.chip-btn.right { border-color: var(--ok); background: var(--ok-soft); }
+.chip-btn.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.chip-btn:disabled { opacity: 1; }
+.tapneck { margin: 0; }
+.neck .cell { fill: transparent; cursor: pointer; }
+.neck .mk.sel circle { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 4; }
+.neck .mk.wrong circle { fill: var(--bad); stroke: var(--surface); }
+.ls-big { margin: 4px 0 0; }
+.ls-hint { color: var(--accent-text); font: 500 14px/1.45 var(--mono); }
+.ls-hint:empty { display: none; }
+.ls-foot { position: sticky; bottom: 0; display: grid; gap: 10px; padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px)); margin-inline: -16px; background: var(--bg); border-top: 1px solid var(--line); z-index: 4; }
+.ls-foot.ok { background: var(--ok-soft); border-color: var(--ok); }
+.ls-foot.bad { background: var(--bad-soft); border-color: var(--bad); }
+.ls-foot.ok button.primary { background: var(--ok); border-color: var(--ok); color: var(--ok-ink); box-shadow: 0 4px 0 var(--shade-ok); }
+.ls-foot.bad button.primary { background: var(--bad); border-color: var(--bad); color: #FFFFFF; box-shadow: none; }
+.fb { display: flex; gap: 12px; align-items: flex-start; }
+.fb b { font: 700 20px/1.2 var(--body); }
+.fb p { margin: 4px 0 0; font-size: 15px; line-height: 1.45; }
+.fb-ico { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--ok); color: var(--ok-ink); }
+.fb-ico .ico { width: 20px; height: 20px; }
+.ls-foot.bad .fb-ico { background: var(--bad); color: #FFFFFF; }
+.ls-foot.ok .fb b { color: var(--ok); }
+.ls-foot.bad .fb b { color: var(--bad); }
+.ls-row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
+.ls-row button.big { padding: 15px 8px; }
+.linkish { background: none; border: 0; color: var(--muted); font: 500 14px/1.2 var(--body); text-decoration: underline; padding: 4px; justify-self: center; }
+.ls-end { display: grid; justify-items: center; text-align: center; gap: 12px; padding-top: 24px; }
+.end-ico { width: 92px; height: 92px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.end-ico .ico { width: 50px; height: 50px; }
+.end-ico.fail { background: var(--led-off); color: var(--muted); }
+.end-title { font: 800 36px/1 var(--display); text-transform: uppercase; margin: 0; }
+.end-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 420px; }
+.end-stats div { border: 2px solid var(--line); border-radius: 14px; padding: 10px 6px; display: grid; gap: 4px; }
+.end-stats small { font: 500 11px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.end-stats b { font: 700 26px/1 var(--display); }
+.goal-line { width: 100%; max-width: 420px; display: grid; gap: 6px; }
+.gl-text { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; }
+
+/* oefenen */
+.practice-lead { color: var(--muted); margin: 0 2px; }
+
+/* voortgang */
+.kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 700px) { .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.tile-l { display: flex; align-items: center; gap: 6px; font: 500 12px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.tile-ico .ico { width: 16px; height: 16px; color: var(--accent); }
+.tile-v { font: 700 36px/1 var(--display); }
+.tile small { color: var(--muted); font-size: 12px; line-height: 1.3; }
+.cal-wrap svg { width: 100%; height: auto; max-width: 520px; display: block; margin-top: 10px; }
+.cal-c { fill: var(--cal-0); cursor: pointer; outline: none; }
+.cal-c.l1 { fill: var(--cal-1); } .cal-c.l2 { fill: var(--cal-2); } .cal-c.l3 { fill: var(--cal-3); } .cal-c.l4 { fill: var(--cal-4); }
+.cal-c.today { stroke: var(--ink); stroke-width: 1.5; }
+.cal-c.sel, .cal-c:focus { stroke: var(--accent-text); stroke-width: 2.5; }
+.cal-m, .cal-wd { font: 400 9px var(--mono); fill: var(--muted); }
+.cal-legend { display: flex; gap: 4px; align-items: center; font: 400 11px/1 var(--mono); color: var(--muted); margin-top: 8px; }
+.cal-legend span { margin: 0 4px; }
+.cal-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.cal-legend i.l0 { background: var(--cal-0); } .cal-legend i.l1 { background: var(--cal-1); } .cal-legend i.l2 { background: var(--cal-2); } .cal-legend i.l3 { background: var(--cal-3); } .cal-legend i.l4 { background: var(--cal-4); }
+.chart-info { margin: 8px 0 0; font: 500 13px/1.4 var(--mono); color: var(--ink); min-height: 1.4em; }
+.week-wrap svg { width: 100%; height: auto; max-width: 560px; display: block; margin-top: 8px; }
+.week .grid { stroke: var(--line); stroke-width: 1; }
+.week .tick { font: 400 10px var(--mono); fill: var(--muted); }
+.week .tick.now { fill: var(--ink); font-weight: 600; }
+.week .bar { fill: var(--accent); }
+.week .hit { fill: transparent; cursor: pointer; outline: none; }
+.week .goal { stroke: var(--ink); stroke-width: 1; opacity: .5; }
+.week .goal-t { font: 500 10px var(--mono); fill: var(--muted); }
+.week .val { font: 600 11px var(--mono); fill: var(--ink); }
+.unit-list { display: grid; gap: 14px; margin-top: 12px; }
+.ul-row { display: grid; gap: 6px; }
+.ul-t { display: flex; justify-content: space-between; gap: 4px 10px; flex-wrap: wrap; }
+.ul-row .progress { margin-top: 0; }
+.badges { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+@media (min-width: 640px) { .badges { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.badge { display: grid; justify-items: center; align-content: start; text-align: center; gap: 4px; padding: 12px 6px; border-radius: 12px; border: 1px solid var(--line); color: var(--muted); }
+.badge .b-ico { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--led-off); opacity: .7; }
+.badge .ico { width: 24px; height: 24px; }
+.badge.got { color: var(--ink); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.badge.got .b-ico { background: var(--accent-soft); color: var(--accent); opacity: 1; }
+.badge b { font-size: 13px; line-height: 1.2; }
+.badge small { font-size: 11px; color: var(--muted); line-height: 1.3; }
+.row.links { margin-top: 6px; gap: 4px 18px; }
+
 </style>
 </head>
-<body data-view="home">
+<body data-view="path">
 <div class="app" id="app">
-  <header class="top">
-    <button class="back" id="backBtn" type="button" aria-label="Terug naar het menu" hidden>‹</button>
-    <div class="brand"><h1 id="title">Fretjacht</h1><p id="subtitle">De hals, toonladders, gehoor en ritme</p></div>
-    <button class="pill" id="micPill" type="button" data-state="off" aria-label="Microfoon aan of uit"><i></i><span id="micText">Microfoon uit</span></button>
+  <header class="top" id="topbar">
+    <button class="back" id="backBtn" type="button" aria-label="Terug" hidden>‹</button>
+    <div class="brand"><h1 id="title">Leerpad</h1></div>
+    <a class="chip streak" id="streakChip" href="#voortgang" aria-label="Reeks"><span class="chip-ico"></span><b>0</b></a>
+    <a class="chip goal" id="goalChip" href="#voortgang" aria-label="Dagdoel"><span class="chip-ico"></span><b>0/15</b></a>
+    <button class="micbtn" id="micPill" type="button" data-state="off" aria-label="Microfoon"><span class="chip-ico"></span></button>
   </header>
-  <div id="routineBar" hidden></div>
+  <div id="sessionBar" hidden></div>
   <div class="msg" id="msg" role="alert" hidden></div>
   <main id="view"></main>
 </div>
+<nav class="tabbar" aria-label="Hoofdmenu">
+  <a href="#" data-tab="path"><span class="tb-ico"></span><span>Leerpad</span></a>
+  <a href="#oefenen" data-tab="practice"><span class="tb-ico"></span><span>Oefenen</span></a>
+  <a href="#voortgang" data-tab="progress"><span class="tb-ico"></span><span>Voortgang</span></a>
+</nav>
 
 <script>
 (() => {
@@ -525,6 +730,36 @@ const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const fmt1 = s => s.toLocaleString('nl-NL', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const todayKey = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+
+// ---------- Theorie: toonsoorten en akkoorden per trap ----------
+const MAJOR_SIG = { 'C': 0, 'G': 1, 'D': 2, 'A': 3, 'E': 4, 'B': 5, 'F♯': 6, 'F': -1, 'B♭': -2, 'E♭': -3, 'A♭': -4, 'D♭': -5, 'G♭': -6 };
+const SHARP_ORDER = ['F♯', 'C♯', 'G♯', 'D♯', 'A♯', 'E♯', 'B♯'];
+const FLAT_ORDER = ['B♭', 'E♭', 'A♭', 'D♭', 'G♭', 'C♭', 'F♭'];
+const CIRCLE_UP = ['C', 'G', 'D', 'A', 'E', 'B', 'F♯'];
+const CIRCLE_DOWN = ['C', 'F', 'B♭', 'E♭', 'A♭', 'D♭', 'G♭'];
+const relMinorOf = maj => spName(spellFrom(parseName(maj), 5, 9));
+const relMajorOf = min => spName(spellFrom(parseName(min), 2, 3));
+const TRIADS_MAJOR = ['maj', 'min', 'min', 'maj', 'maj', 'min', 'dim'];
+const ROMAN_MAJOR = ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°'];
+const TRIADS_MINOR = ['min', 'dim', 'maj', 'min', 'min', 'maj', 'maj'];
+const ROMAN_MINOR = ['i', 'ii°', 'III', 'iv', 'v', 'VI', 'VII'];
+const FUNCTION_OF = { 1: 'tonica', 4: 'subdominant', 5: 'dominant' };
+const chordName = (root, type) => root + CHORDS[type].sym;
+function diatonic(key, minor, d) {
+  const tones = scaleTones(minor ? 'minor' : 'major', key);
+  const root = tones[d - 1].name;
+  const type = (minor ? TRIADS_MINOR : TRIADS_MAJOR)[d - 1];
+  return { root, type, name: chordName(root, type), roman: (minor ? ROMAN_MINOR : ROMAN_MAJOR)[d - 1] };
+}
+const sigText = n => (n === 0 ? 'geen kruisen of mollen' : n > 0 ? `${n} ${n === 1 ? 'kruis' : 'kruisen'}` : `${-n} ${n === -1 ? 'mol' : 'mollen'}`);
+const uniq = arr => Array.from(new Set(arr));
+const intervalByName = n => INTERVALS.find(i => i.name === n);
+// alle plekken van een toonhoogte binnen een fretbereik
+function positionsOf(midi, from, to) {
+  const out = [];
+  for (let s = 0; s < 6; s++) { const f = midi - OPEN[s]; if (f >= from && f <= to) out.push({ s, f }); }
+  return out;
+}
 
 // ---------- Toonhoogte (McLeod Pitch Method) ----------
 function createDetector(N, sr, minF, maxF) {
@@ -742,6 +977,7 @@ const Engine = {
     if (!this.onsetNode && db >= Store.settings.gateDb && db - this.prevDb > 9) this.onOnset({ t: this.ctx.currentTime, fallback: true });
     this.prevDb = db;
     UI.updateLevel(db);
+    if (f.midi != null) Activity.ping();
     this.heardHist.push(f.midi);
     if (this.heardHist.length > 5) this.heardHist.shift();
     const vals = this.heardHist.filter(v => v !== null);
@@ -837,7 +1073,7 @@ const Engine = {
     this.block(140);
   },
   chime() {
-    // signaal voor het einde van een routineblok
+    // signaal voor het einde van een sessiestap
     if (!this.ctx) return;
     const ctx = this.ctx, t0 = ctx.currentTime;
     [1047, 1319, 1568].forEach((f, i) => {
@@ -897,7 +1133,7 @@ const Metronome = {
 // o = { from, to, highlight: [snaren], marks: [{s, f, kind, label}], range: {min, max} | null }
 function drawNeck(svg, o) {
   const narrow = (svg.getBoundingClientRect().width || 1000) < 560;
-  const W = narrow ? 640 : 1000, TOP = 16, GAP = 30, BOARD_H = 28 + 5 * GAP, X0 = 86;
+  const W = narrow ? (o.tap ? 470 : 640) : 1000, TOP = 16, GAP = 30, BOARD_H = 28 + 5 * GAP, X0 = 86;
   const from = Math.max(0, o.from || 0), to = Math.max(from + 3, o.to == null ? 12 : o.to);
   const d = n => 1 - Math.pow(2, -n / 12);
   const leftN = from === 0 ? 0 : from - 1;
@@ -954,12 +1190,18 @@ function drawNeck(svg, o) {
     const lbl = m.label == null ? '' : String(m.label);
     h += `<g class="mk ${m.kind || ''}"><circle cx="${x}" cy="${y}" r="${r.toFixed(1)}"/>${lbl ? `<text x="${x}" y="${(y + fs * 0.34).toFixed(1)}" text-anchor="middle" font-size="${fs.toFixed(1)}">${lbl}</text>` : ''}</g>`;
   }
+  if (o.tap) {
+    for (let s = 0; s < 6; s++) for (let f = Math.max(0, from); f <= to; f++) {
+      const x0 = f === 0 ? X0 - 50 : xOf(f - 1), x1 = f === 0 ? X0 - 6 : xOf(f);
+      h += `<rect class="cell" data-s="${s}" data-f="${f}" x="${x0.toFixed(1)}" y="${(yOf(s) - GAP / 2).toFixed(1)}" width="${(x1 - x0).toFixed(1)}" height="${GAP}"/>`;
+    }
+  }
   svg.innerHTML = h;
 }
 
 // ---------- Opslag ----------
 const DEFAULT_SETTINGS = {
-  gateDb: -48, strict: false, sound: true, names: 'sharps',
+  gateDb: -48, strict: false, sound: true, names: 'sharps', goal: 15, cantPlayUntil: 0,
   strings: [0, 1, 2, 3, 4, 5], minFret: 0, maxFret: 12, naturalsOnly: false, autoHint: 0,
   positions: { order: 'up' },
   intervals: { set: [3, 4, 5, 7, 10, 12], dir: 'up', naturalRoots: true },
@@ -969,7 +1211,6 @@ const DEFAULT_SETTINGS = {
   bends: { semis: 2, tol: 15 },
   ear: { level: 1, key: 'minpent-A', help: true, slow: false },
   metro: { bpm: 80, beats: 4, accent: true, onbeat: false, phones: false, corr: 0 },
-  routine: { blocks: ['scales', 'notes', 'intervals', 'chords', 'ear'], minutes: 2 },
 };
 const DEFAULT_STATS = () => ({
   notes: { items: {}, found: 0, totalTime: 0, best: null, streak: 0, bestStreak: 0 },
@@ -982,7 +1223,7 @@ const DEFAULT_STATS = () => ({
   ear: { ok: {}, tries: {} },
   bends: { recent: [] },
   rhythm: { recent: [], sessions: 0 },
-  routine: { days: [] },
+  xp: 0, days: {}, path: { nodes: {} }, badges: {},
 });
 function deepMerge(base, over) {
   if (base === null) return over === undefined ? null : over;
@@ -1017,8 +1258,7 @@ const Store = {
     if (!s.intervals.set.length) s.intervals.set = [7];
     s.ear.level = clamp(s.ear.level | 0, 1, 5);
     s.metro.bpm = clamp(s.metro.bpm | 0, 30, 240);
-    s.routine.blocks = s.routine.blocks.filter(b => ROUTINE_BLOCKS[b]);
-    if (!s.routine.blocks.length) s.routine.blocks = ['notes'];
+    if (![10, 15, 20, 30].includes(Number(s.goal))) s.goal = 15;
     this.stats = deepMerge(DEFAULT_STATS(), this.get('stats', {}));
   },
   saveSettings() { this.put('settings', this.settings); },
@@ -1087,16 +1327,39 @@ function field(label, control, help, forId) {
   return h('div', { class: 'field' }, forId ? h('label', { class: 'lbl', for: forId, text: label }) : h('span', { class: 'lbl', text: label }), control, help ? h('span', { class: 'help', text: help }) : null);
 }
 
+// ---------- Iconen (24×24, currentColor) ----------
+const svgI = (body, fill) => `<svg viewBox="0 0 24 24" aria-hidden="true" class="ico" fill="${fill ? 'currentColor' : 'none'}" stroke="${fill ? 'none' : 'currentColor'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+const ICONS = {
+  flame: svgI('<path d="M12 2.5c.6 2.9 3.8 4.9 4.6 8.3.8 3.6-1.4 7.7-4.6 7.7s-5.6-2.5-5.2-5.9c.3-2.3 1.7-3.3 2.6-4.6.3 1.6.9 2.6 2 3 .5-2.9-.5-5.3.6-8.5z"/>', true),
+  mic: svgI('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>'),
+  close: svgI('<path d="M6 6l12 12M18 6L6 18"/>'),
+  check: svgI('<path d="M5 12.5l4.2 4.2L19 7"/>'),
+  star: svgI('<path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9-5.4 2.9 1.1-6-4.5-4.2 6.1-.8z"/>', true),
+  trophy: svgI('<path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9.5 18h5"/>'),
+  retry: svgI('<path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/>'),
+  book: svgI('<path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5zM12 6v13.5"/>'),
+  pick: svgI('<path d="M12 3c4.4 0 7.5 1.6 7.5 4.6 0 4.1-4.2 9.6-7.5 13.4C8.7 17.2 4.5 11.7 4.5 7.6 4.5 4.6 7.6 3 12 3z"/>', true),
+  note: svgI('<path d="M9 17.5V5l10-2v12"/><circle cx="6.5" cy="17.5" r="2.5" fill="currentColor"/><circle cx="16.5" cy="15" r="2.5" fill="currentColor"/>'),
+  lock: svgI('<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>'),
+  path: svgI('<circle cx="7" cy="5" r="2.2"/><circle cx="16" cy="11" r="2.2"/><circle cx="8" cy="19" r="2.2"/><path d="M9 6.2l5 3.6M14.2 12.6l-4.4 5"/>'),
+  grid: svgI('<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>'),
+  chart: svgI('<path d="M5 20V11M12 20V5M19 20v-6M3 20.5h18"/>'),
+  clock: svgI('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
+  bolt: svgI('<path d="M13.5 2.5L5 13.5h6l-1 8 8.5-11h-6z"/>', true),
+  ring: '<svg viewBox="0 0 24 24" aria-hidden="true" class="ico ring"><circle cx="12" cy="12" r="10" class="ring-bg"/><circle cx="12" cy="12" r="10" class="ring-fg" stroke-dasharray="0 62.83" transform="rotate(-90 12 12)"/></svg>',
+};
+
 // ---------- UI ----------
 const UI = {
   msgTimer: 0,
   showMsg(t) { const m = $('#msg'); m.textContent = t; m.hidden = false; },
   hideMsg() { $('#msg').hidden = true; },
   micState() {
-    const pill = $('#micPill'), txt = $('#micText');
+    const pill = $('#micPill');
     const st = Engine.mic ? 'on' : Engine.starting ? 'busy' : 'off';
     pill.dataset.state = st;
-    txt.textContent = st === 'on' ? 'Luistert' : st === 'busy' ? 'Toegang vragen…' : 'Microfoon uit';
+    const label = st === 'on' ? 'Microfoon aan: tik om te stoppen' : st === 'busy' ? 'Toegang vragen' : 'Microfoon uit: tik om te starten';
+    pill.setAttribute('aria-label', label); pill.title = label;
     $$('.mic-btn').forEach(b => {
       b.textContent = st === 'on' ? 'Stop' : 'Start';
       b.classList.toggle('stop', st === 'on');
@@ -1128,6 +1391,23 @@ const UI = {
     $$('.heard-line').forEach(el => { el.innerHTML = html; });
   },
   tuner: null,
+  // korte melding bovenin; meerdere meldingen komen na elkaar
+  flashQ: [], flashing: false,
+  flash(icon, title, text, kind) {
+    this.flashQ.push({ icon, title, text, kind });
+    if (!this.flashing) this.nextFlash();
+  },
+  nextFlash() {
+    const f = this.flashQ.shift();
+    if (!f) { this.flashing = false; return; }
+    this.flashing = true;
+    const el = h('div', { class: 'flash' + (f.kind ? ' flash-' + f.kind : ''), role: 'status' },
+      h('span', { class: 'fl-ico', html: f.icon || '' }),
+      h('span', { class: 'fl-txt' }, h('b', { text: f.title }), f.text ? h('small', { text: f.text }) : null));
+    document.body.append(el);
+    setTimeout(() => el.classList.add('out'), 2800);
+    setTimeout(() => { el.remove(); this.nextFlash(); }, 3200);
+  },
 };
 
 // Standaard oefenscherm: opdrachtkaart, hals, knoppen, opties, scores
@@ -1172,44 +1452,55 @@ const sec = s => (s == null ? '–' : `${fmt1(s)}<small>s</small>`);
 
 // ---------- Router ----------
 let current = null;
+const TABS = { '': 'path', 'leerpad': 'path', 'oefenen': 'practice', 'voortgang': 'progress' };
 const Router = {
   render() {
     const hash = location.hash.replace('#', '');
     if (current && current.unmount) current.unmount();
     Engine.sink = null; current = null; UI.tuner = null;
+    $$('.sheet-wrap').forEach(x => x.remove());
     const view = $('#view');
     view.innerHTML = '';
     UI.lastHeard = '';
     const back = $('#backBtn');
+    let tab = null, title = '';
     if (hash.startsWith('m-') && MODES[hash.slice(2)]) {
       const m = MODES[hash.slice(2)];
-      back.hidden = false;
-      $('#title').textContent = m.title;
-      document.body.dataset.view = 'mode';
-      current = m;
-      Engine.sink = m;
+      title = m.title; document.body.dataset.view = 'mode';
+      current = m; Engine.sink = m;
       m.mount(view);
-      Routine.decorate(m.id);
+    } else if (hash === 'les') {
+      document.body.dataset.view = 'lesson';
+      current = Lesson; Engine.sink = Lesson;
+      Lesson.mount(view);
     } else if (hash === 'instellingen') {
-      back.hidden = false;
-      $('#title').textContent = 'Instellingen';
-      document.body.dataset.view = 'settings';
+      title = 'Instellingen'; document.body.dataset.view = 'settings';
       renderSettings(view);
     } else {
-      back.hidden = true;
-      $('#title').textContent = 'Fretjacht';
-      document.body.dataset.view = 'home';
-      renderHome(view);
-      Routine.decorate(null);
+      tab = TABS[hash] || 'path';
+      document.body.dataset.view = tab;
+      title = { path: 'Leerpad', practice: 'Oefenen', progress: 'Voortgang' }[tab];
+      if (tab === 'path') renderPath(view);
+      else if (tab === 'practice') renderPractice(view);
+      else renderProgress(view);
     }
+    back.hidden = !!tab || document.body.dataset.view === 'lesson';
+    $('#title').textContent = title;
+    $$('.tabbar a').forEach(a => a.setAttribute('aria-current', a.dataset.tab === tab ? 'page' : 'false'));
     UI.micState();
     UI.updateHeard(null);
     UI.updateLevel(-120);
+    Progress.renderTop();
+    Daily.renderBar();
     window.scrollTo(0, 0);
-  }
+  },
+  back() {
+    const v = document.body.dataset.view;
+    location.hash = v === 'settings' ? '#voortgang' : v === 'mode' ? '#oefenen' : '';
+  },
 };
 
-// ---------- Startscherm ----------
+// ---------- Oefenen: losse oefeningen ----------
 const GROUPS = [
   { id: 'hals', title: 'De hals leren kennen' },
   { id: 'solo', title: "Solo's" },
@@ -1217,28 +1508,9 @@ const GROUPS = [
   { id: 'uitdaging', title: 'Uitdaging en inzicht' },
   { id: 'handig', title: 'Handig' },
 ];
-function renderHome(view) {
-  const st = Store.stats, R = Store.settings.routine;
-  const sk = Routine.streak();
-  if (Routine.justDone) {
-    view.append(h('div', { class: 'okmsg', text: `Routine klaar! Je hebt ${Routine.justDone.minutes} minuten geoefend${sk.n > 1 ? `, ${sk.n} dagen op rij` : ''}.` }));
-    Routine.justDone = null;
-  }
-  const blocksSum = () => `${R.blocks.length} × ${R.minutes} min: ${R.blocks.map(b => ROUTINE_BLOCKS[b].title).join(', ')}`;
-  const sumEl = h('p', { class: 'help', text: blocksSum() });
-  const titleEl = h('h2', { text: `${R.blocks.length * R.minutes} minuten oefenen` });
-  const upd = () => { Store.saveSettings(); sumEl.textContent = blocksSum(); titleEl.textContent = `${R.blocks.length * R.minutes} minuten oefenen`; };
-  const rc = h('div', { class: 'card routine-card' },
-    h('div', { class: 'rc-head' },
-      h('div', { class: 'rc-text' },
-        h('p', { class: 'eyebrow', text: 'Dagelijkse routine' }), titleEl, sumEl,
-        sk.n ? h('p', { class: 'streak', text: sk.today && sk.n === 1 ? 'Vandaag gedaan' : `${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'} op rij${sk.today ? '' : '. Doe vandaag mee om de reeks vast te houden.'}` }) : null),
-      h('button', { class: 'primary', type: 'button', text: 'Start routine', onclick: () => Routine.start() })),
-    h('details', { class: 'rc-opts' }, h('summary', { text: 'Routine aanpassen' }),
-      h('div', { class: 'set-grid' },
-        field('Onderdelen', chips(Object.keys(ROUTINE_BLOCKS).map(k => ({ value: k, label: ROUTINE_BLOCKS[k].title })), R.blocks, v => { R.blocks = Object.keys(ROUTINE_BLOCKS).filter(k => v.includes(k)); upd(); }, 1)),
-        field('Minuten per onderdeel', seg([1, 2, 3, 5].map(n => ({ value: n, label: String(n) })), R.minutes, v => { R.minutes = Number(v); upd(); }, 'tight')))));
-  view.append(rc);
+function renderPractice(view) {
+  const st = Store.stats;
+  view.append(h('p', { class: 'lead practice-lead', text: 'Vrij oefenen, los van je leerpad. Je oefentijd telt mee voor je dagdoel.' }));
   for (const g of GROUPS) {
     const ids = MODE_ORDER.filter(id => MODES[id].group === g.id);
     if (!ids.length) continue;
@@ -1252,7 +1524,6 @@ function renderHome(view) {
         stat ? h('span', { class: 'mi-stat', html: stat }) : null);
     })));
   }
-  view.append(h('a', { class: 'mode-item settings-link', href: '#instellingen' }, h('span', { class: 'mi-name', text: 'Instellingen' }), h('span', { class: 'mi-desc', text: 'Microfoon, oefenbereik, notenamen en scores' })));
   view.append(h('p', { class: 'foot', text: 'De app hoort welke toon klinkt, niet op welke snaar je hem speelt. Speel dus echt waar het gevraagd wordt. Leg je telefoon dicht bij je gitaar.' }));
 }
 
@@ -1294,13 +1565,18 @@ function renderSettings(view) {
     b.textContent = 'Scores gewist'; b.classList.remove('danger');
   } });
   const scoreCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Scores' }), h('div', { class: 'row' }, reset));
-  view.append(h('section', { class: 'settings-view' }, micCard, rangeCard, ctlCard, scoreCard));
+  const goalCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Dagdoel en lessen' }),
+    h('div', { class: 'set-grid' },
+      field('Dagdoel', seg([10, 15, 20, 30].map(n => ({ value: n, label: `${n} min` })), s.goal, v => { s.goal = Number(v); save(); Progress.renderTop(); }), 'Je reeks telt de dagen waarop je dit aantal minuten echt geoefend hebt.'),
+      h('div', { class: 'field' }, h('span', { class: 'lbl', text: 'Muziektheoriecursus' }), h('a', { class: 'link', href: COURSE_DOC, target: '_blank', rel: 'noopener', text: 'Open het cursusboek ›' }), h('span', { class: 'help', text: 'Na elke les van maandag en donderdag komt er een unit bij in je leerpad.' }))));
+  view.append(h('section', { class: 'settings-view' }, goalCard, micCard, rangeCard, ctlCard, scoreCard));
   UI.updateLevel(-120);
 }
 
 // gedeelde toetsen
 document.addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey || (e.target.closest && e.target.closest('input, select, textarea'))) return;
+  if (e.key === 'Enter' && e.target.closest && e.target.closest('button, a')) return;
   if (current && current.keys) {
     const fn = current.keys[e.key.toLowerCase()] || (e.key === 'ArrowRight' ? current.keys.s : null);
     if (fn) { e.preventDefault(); fn(); }
@@ -2576,79 +2852,1318 @@ registerMode({
   },
 });
 
-// ---------- Routine ----------
-const ROUTINE_BLOCKS = {
-  scales: { title: 'Toonladders' }, notes: { title: 'Noten zoeken' }, positions: { title: 'Alle posities' },
-  intervals: { title: 'Intervallen' }, degrees: { title: 'Trappen' }, chords: { title: 'Akkoordtonen' },
-  ear: { title: 'Op gehoor' }, bends: { title: 'Bends' },
-};
-const Routine = {
-  active: false, idx: 0, left: 0, timer: 0, blocks: [], justDone: null,
-  start() {
-    const s = Store.settings.routine;
-    this.blocks = s.blocks.slice(); this.idx = 0; this.left = s.minutes * 60; this.active = true; this.justDone = null;
-    clearInterval(this.timer);
-    this.timer = setInterval(() => this.tick(), 1000);
-    if (!Engine.mic) Engine.startMic();
-    this.go();
+
+// ---------- Leerpad: vraaggeneratoren ----------
+// Itemtypes:
+//  mc:    { prompt, sub, options[], answer, explain }
+//  multi: { prompt, sub, choices[], correct[], explain }
+//  tap:   { prompt, sub, from, to, marks[], valid[{s,f}], explain }
+//  play:  { prompt, sub, big, steps[{k:'pc'|'rel'|'set', ...}], neck?, hint?, explain? }
+function mc(skill, prompt, correct, distractors, explain, sub) {
+  const c = String(correct);
+  const ds = shuffle(uniq(distractors.map(String)).filter(d => d !== c)).slice(0, 3);
+  const options = shuffle([c, ...ds]);
+  return { type: 'mc', skill, prompt, sub, options, answer: options.indexOf(c), explain };
+}
+function multi(skill, prompt, choices, correct, explain, sub) { return { type: 'multi', skill, prompt, sub, choices, correct, explain }; }
+function tapItem(skill, prompt, o) { return Object.assign({ type: 'tap', skill, prompt, from: 0, to: 12 }, o); }
+function playItem(skill, prompt, o) { return Object.assign({ type: 'play', skill, prompt }, o); }
+const nm = (root, steps, semis) => spName(spellFrom(parseName(root), steps, semis));
+const pcOf = name => spPc(parseName(name));
+// noten-chips: de juiste namen + afleiders, chromatisch gesorteerd vanaf de grondtoon
+function noteChips(correct, rootName, flats, extra) {
+  const used = new Set(correct.map(pcOf));
+  const pool = [];
+  for (let pc = 0; pc < 12; pc++) if (!used.has(pc)) pool.push((flats ? FLAT_NAMES : SHARP_NAMES)[pc]);
+  const chips = correct.concat(shuffle(pool).slice(0, extra == null ? Math.max(3, 9 - correct.length) : extra));
+  const r = pcOf(rootName);
+  return chips.sort((a, b) => mod12(pcOf(a) - r) - mod12(pcOf(b) - r) || a.localeCompare(b));
+}
+function neighbours(name) {
+  // namen die op de gevraagde noot lijken: zelfde letter met ander teken, en buurtonen
+  const sp = parseName(name), out = [];
+  for (const acc of [-1, 0, 1]) if (acc !== sp.acc) out.push(LETTERS[sp.li] + ACC_SYM[acc]);
+  const pc = spPc(sp);
+  out.push(pcName(pc + 1, 'sharps'), pcName(pc - 1, 'flats'), pcName(pc + 2, 'sharps'), pcName(pc - 2, 'flats'));
+  return uniq(out).filter(n => n !== name && pcOf(n) !== pc);
+}
+// grondtoon op de hals voor tikvragen: lage snaren, frets 1..8, met minstens één doel binnen 0..12
+function rootSpot(semis, strings) {
+  for (let i = 0; i < 80; i++) {
+    const s = pick(strings || [5, 4, 3]), f = 1 + Math.floor(Math.random() * 8), m = OPEN[s] + f;
+    const valid = positionsOf(m + semis, 0, 12).filter(p => !(p.s === s && p.f === f));
+    if (valid.length) return { s, f, m, valid, name: pcName(m, 'sharps') };
+  }
+  return { s: 5, f: 5, m: 45, valid: positionsOf(45 + semis, 0, 12), name: 'A' };
+}
+const SIMPLE_ROOTS = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'B♭', 'E♭'];
+const ivPick = set => { const sm = Number(pick(set)); return INTERVALS.find(i => i.semis === sm); };
+const ivArt = iv => (iv.semis === 12 ? 'het' : 'de');
+const PLAY_ROOTS = ['E', 'A', 'D', 'G', 'C', 'F', 'B'];
+
+const G = {
+  // ---- unit 1: twaalf tonen, octaaf en kwint ----
+  octRatio: () => mc('oct-ratio', 'Een toon een octaaf hoger trilt…', 'twee keer zo snel', ['anderhalf keer zo snel', 'drie keer zo snel', 'even snel, maar harder'], 'Een octaaf is de verhouding 2:1. Daarom klinken 110 en 220 Hz als dezelfde noot, alleen hoger.'),
+  octSemis: () => mc('oct-semis', 'Hoeveel halve tonen zitten in een octaaf?', '12', ['7', '8', '10'], 'Het octaaf is verdeeld in 12 gelijke halve tonen. Op de hals is 12 frets verder dezelfde noot een octaaf hoger.'),
+  fifthRatio: () => mc('fifth-ratio', 'Welke trillingsverhouding hoort bij een reine kwint?', '3:2', ['2:1', '4:3', '5:4'], 'Een kwint is 3:2. Na het octaaf (2:1) is dat de stabielste samenklank die er is.'),
+  fifthSemis: () => mc('fifth-semis', 'Hoeveel halve tonen is een reine kwint?', '7', ['5', '6', '8'], 'Een reine kwint is 7 halve tonen, bijvoorbeeld van A naar E.'),
+  fifthAbove: () => {
+    const r = pick(SIMPLE_ROOTS), c = nm(r, 4, 7);
+    return mc('fifth-above', `Wat is de kwint boven ${r}?`, c, [nm(r, 3, 5), nm(r, 5, 9), nm(r, 2, 4), nm(r, 4, 6)], `Tel 7 halve tonen omhoog: ${r} → ${c}. Op de hals: één snaar hoger en 2 frets verder (vanaf de G-snaar 3).`);
   },
-  go() { location.hash = '#m-' + this.blocks[this.idx]; },
+  powerNotes: () => {
+    const r = pick(['E', 'A', 'D', 'G', 'C', 'F']), fifth = nm(r, 4, 7);
+    const choices = noteChips([r, fifth], r, r === 'F', 4);
+    return multi('power-notes', `Welke tonen zitten in een ${r}5-powerchord?`, choices, [r, fifth], `${r}5 is grondtoon ${r} plus kwint ${fifth}, vaak met het octaaf erbij. Er zit geen terts in, dus het is niet majeur en niet mineur.`);
+  },
+  powerWhy: () => mc('power-why', 'Waarom klinkt een powerchord niet blij en niet verdrietig?', 'Er zit geen terts in', ['Er zit geen kwint in', 'Hij heeft te weinig snaren', 'Door de distortion'], 'De terts bepaalt of iets majeur of mineur klinkt. Een powerchord heeft alleen grondtoon, kwint en octaaf.'),
+  circleNext: () => {
+    const i = Math.floor(Math.random() * 6), a = CIRCLE_UP[i], b = CIRCLE_UP[i + 1];
+    return mc('circle-next', `Je gaat een kwint omhoog vanaf ${a}. Welke noot krijg je?`, b, [CIRCLE_UP[(i + 2) % 7], nm(a, 3, 5), nm(a, 1, 2), nm(a, 5, 9)], `${a} plus 7 halve tonen is ${b}. Zo loop je de kwintencirkel rond.`);
+  },
+  circleMissing: () => {
+    const i = Math.floor(Math.random() * 3), seq = CIRCLE_UP.slice(i, i + 5), miss = 1 + Math.floor(Math.random() * 3), ans = seq[miss];
+    return mc('circle-missing', 'Welke noot ontbreekt in deze rij kwinten?', ans, neighbours(ans).concat([nm(seq[miss - 1], 3, 5)]), `Elke noot is een kwint hoger dan de vorige: ${seq.join(' – ')}.`, seq.map((n, k) => (k === miss ? '?' : n)).join(' – '));
+  },
+  stackFifths: () => {
+    for (let t = 0; t < 20; t++) {
+      const start = pick(['C', 'G', 'D', 'F']), n = 2 + Math.floor(Math.random() * 3);
+      let sp = parseName(start); const path = [start];
+      for (let k = 0; k < n; k++) { sp = spellFrom(sp, 4, 7); path.push(spName(sp)); }
+      if (!isSimple(sp)) continue;
+      const ans = spName(sp);
+      return mc('stack-fifths', `Begin op ${start} en ga ${n} kwinten omhoog. Waar kom je uit?`, ans, [path[path.length - 2], nm(ans, 4, 7), nm(start, 3, 5), ...neighbours(ans)], `${path.join(' → ')}`);
+    }
+    return G.circleNext();
+  },
+  enharmonic: () => {
+    const [a, b] = pick([['E♯', 'F'], ['B♯', 'C'], ['F♭', 'E'], ['C♭', 'B'], ['F♯', 'G♭'], ['C♯', 'D♭'], ['A♯', 'B♭'], ['G♯', 'A♭'], ['D♯', 'E♭']]);
+    const pc = pcOf(a);
+    return mc('enharmonic', `Welke noot klinkt hetzelfde als ${a}?`, b, [pcName(pc + 1, 'sharps'), pcName(pc - 1, 'flats'), pcName(pc + 2, 'sharps'), pcName(pc - 2, 'flats')], `${a} en ${b} zijn dezelfde toets: andere naam, zelfde klank. Dat heet enharmonisch.`);
+  },
+  harmonic3: () => {
+    const s = pick([{ n: 'A-snaar', f: 110, x3: 330, note: 'E' }, { n: 'lage E-snaar', f: 82, x3: 247, note: 'B' }, { n: 'D-snaar', f: 147, x3: 440, note: 'A' }]);
+    return mc('harmonic3', `De ${s.n} trilt op ongeveer ${s.f} Hz. Welke noot is de boventoon op ${s.f} × 3 Hz?`, s.note, ['C', 'D', 'F♯', 'G', 'E', 'B', 'A'].filter(x => x !== s.note), `${s.f} × 3 ≈ ${s.x3} Hz: een ${s.note}, een octaaf plus een kwint boven de grondtoon.`);
+  },
+  fretShorter: () => mc('fret-shorter', 'Hoeveel korter maakt elke fret de trillende snaar ongeveer?', '6%', ['1%', '12%', '25%'], 'Elke halve toon is een verhouding van ongeveer 1,06. Daarom maakt elke fret de snaar ongeveer 6% korter, en liggen de frets richting de body steeds dichter bij elkaar.'),
+  equalTemp: () => mc('equal-temp', 'Wat doet de gelijkzwevende stemming?', 'Het foutje van de kwintencirkel over alle 12 stappen verdelen', ['Alle kwinten precies zuiver maken', 'De kwint weglaten uit de toonladder', 'Alleen de open snaren stemmen'], 'Twaalf zuivere kwinten zijn iets meer dan 7 octaven. Door dat verschil over alle 12 stappen te verdelen kun je in elke toonsoort spelen.'),
+  comma: () => mc('comma', 'Twaalf zuivere kwinten op elkaar zijn…', 'iets meer dan 7 octaven', ['precies 7 octaven', 'precies 12 octaven', 'iets minder dan 6 octaven'], '1,5¹² ≈ 129,7 en 2⁷ = 128. Dat kleine verschil heet het Pythagoreïsch komma.'),
+  tapOctave: () => {
+    const r = rootSpot(12);
+    return tapItem('tap-octave', 'Tik dezelfde noot een octaaf hoger', { sub: `De ${r.name} is gemarkeerd.`, marks: [{ s: r.s, f: r.f, kind: 'todo root', label: r.name }], valid: r.valid, explain: 'Een octaaf hoger ligt twee snaren hoger en twee frets verder (over de B-snaar heen: drie), of 12 frets verder op dezelfde snaar.' });
+  },
+  tapFifth: () => {
+    const r = rootSpot(7, [5, 4, 3, 2]);
+    return tapItem('tap-fifth', 'Tik de kwint boven deze noot', { sub: `De ${r.name} is gemarkeerd.`, marks: [{ s: r.s, f: r.f, kind: 'todo root', label: r.name }], valid: r.valid, explain: `De kwint boven ${r.name} is ${pcName(r.m + 7, 'sharps')}: één snaar hoger en 2 frets verder (vanaf de G-snaar 3).` });
+  },
+  playOctave: () => {
+    const r = pick(['A', 'E', 'D', 'G', 'C']);
+    return playItem('play-octave', `Speel een ${r}, en daarna de ${r} een octaaf hoger`, { big: r, steps: [{ k: 'pc', pc: pcOf(r), name: r }, { k: 'rel', semis: 12, name: `${r}↑` }], hint: 'Twee snaren hoger en twee frets verder (over de B-snaar: drie), of 12 frets verder op dezelfde snaar.' });
+  },
+  playFifth: () => {
+    const r = pick(PLAY_ROOTS), f = nm(r, 4, 7);
+    return playItem('play-fifth', `Speel ${r}, en daarna de kwint erboven`, { big: r, steps: [{ k: 'pc', pc: pcOf(r), name: r }, { k: 'rel', semis: 7, name: f }], hint: `De kwint boven ${r} is ${f}: één snaar hoger, 2 frets verder.` });
+  },
+  playPower: () => {
+    const r = pick(['E', 'A', 'D', 'G']), f = nm(r, 4, 7);
+    return playItem('play-power', `Speel de grondtoon en de kwint van ${r}5`, { big: `${r}5`, steps: [{ k: 'pc', pc: pcOf(r), name: r }, { k: 'rel', semis: 7, name: f }], hint: `${r} en dan ${f}, één snaar hoger en 2 frets verder.` });
+  },
+
+  // ---- unit 2: intervallen ----
+  ivSemis: set => {
+    const iv = ivPick(set);
+    const ds = [iv.semis - 2, iv.semis - 1, iv.semis + 1, iv.semis + 2].filter(x => x >= 1 && x <= 12).map(String);
+    return mc('iv-semis-' + iv.semis, `Hoeveel halve tonen is een ${iv.name}?`, String(iv.semis), ds, `Een ${iv.name} is ${iv.semis} halve ${iv.semis === 1 ? 'toon' : 'tonen'}, bijvoorbeeld C → ${nm('C', iv.steps, iv.semis)}.`);
+  },
+  ivName: set => {
+    for (let t = 0; t < 30; t++) {
+      const iv = ivPick(set), r = pick(SIMPLE_ROOTS), sp = spellFrom(parseName(r), iv.steps, iv.semis);
+      if (!isSimple(sp)) continue;
+      const others = INTERVALS.filter(i => i !== iv && Math.abs(i.semis - iv.semis) <= 3).map(i => i.name);
+      return mc('iv-name-' + iv.semis, `Welk interval is ${r} → ${spName(sp)} (omhoog)?`, iv.name, others, `${r} → ${spName(sp)} is ${iv.semis} halve ${iv.semis === 1 ? 'toon' : 'tonen'}: een ${iv.name}.`);
+    }
+    return G.ivSemis(set);
+  },
+  ivAbove: set => {
+    for (let t = 0; t < 30; t++) {
+      const iv = ivPick(set), r = pick(SIMPLE_ROOTS), sp = spellFrom(parseName(r), iv.steps, iv.semis);
+      if (!isSimple(sp) || iv.semis === 12) continue;
+      const c = spName(sp);
+      return mc('iv-above-' + iv.semis, `Wat is de ${iv.name} boven ${r}?`, c, neighbours(c), `Tel ${iv.semis} halve ${iv.semis === 1 ? 'toon' : 'tonen'} omhoog vanaf ${r}: ${c}.`);
+    }
+    return G.ivSemis(set);
+  },
+  ivTap: set => {
+    const iv = ivPick(set), r = rootSpot(iv.semis, iv.semis >= 8 ? [5, 4] : [5, 4, 3]);
+    return tapItem('iv-tap-' + iv.semis, `Tik ${ivArt(iv)} ${iv.name} boven deze noot`, { sub: `De ${r.name} is gemarkeerd.`, marks: [{ s: r.s, f: r.f, kind: 'todo root', label: r.name }], valid: r.valid, explain: `${ivArt(iv) === 'het' ? 'Het' : 'De'} ${iv.name} boven ${r.name} is ${pcName(r.m + iv.semis, 'sharps')}. ${shapeText(iv.semis, true)}` });
+  },
+  ivPlay: set => {
+    for (let t = 0; t < 30; t++) {
+      const iv = ivPick(set), r = pick(PLAY_ROOTS), sp = spellFrom(parseName(r), iv.steps, iv.semis);
+      if (!isSimple(sp)) continue;
+      return playItem('iv-play-' + iv.semis, `Speel ${r}, en daarna ${ivArt(iv)} ${iv.name} erboven`, { big: r, steps: [{ k: 'pc', pc: pcOf(r), name: r }, { k: 'rel', semis: iv.semis, name: spName(sp) }], hint: `${spName(sp)}. ${shapeText(iv.semis, true)}` });
+    }
+    return G.playFifth();
+  },
+  ivThirds: () => mc('iv-thirds', 'Wat is het verschil tussen een kleine en een grote terts?', 'Eén halve toon', ['Een hele toon', 'Twee halve tonen', 'Er is geen verschil, alleen de naam'], 'Kleine terts = 3 halve tonen, grote terts = 4. Die ene halve toon bepaalt of iets mineur of majeur klinkt.'),
+  ivInvert: () => pick([
+    () => mc('iv-sum', 'Een kwart en een kwint op elkaar is samen…', 'een octaaf', ['een sext', 'een septiem', 'twee kwinten'], '5 + 7 = 12 halve tonen: een octaaf. Daarom is een kwart omhoog dezelfde noot als een kwint omlaag.'),
+    () => mc('iv-inv', 'Een grote terts omhoog en … omhoog vormen samen een octaaf.', 'een kleine sext', ['een kleine terts', 'een kwint', 'een grote sext'], '4 + 8 = 12. Intervallen die samen een octaaf vormen heten elkaars omkering.'),
+  ])(),
+
+  // ---- unit 3: majeurtoonladder ----
+  majPattern: () => mc('maj-pattern', 'Wat is het patroon van een majeurtoonladder?', 'H H h H H H h', ['H h H H h H H', 'H H H h H H h', 'h H H H h H H'], 'Hele, hele, halve, hele, hele, hele, halve toon. De halve tonen zitten tussen trap 3–4 en 7–8.', 'H = hele toon, h = halve toon'),
+  majHalf: () => mc('maj-half', 'Tussen welke trappen van majeur zitten de halve toonafstanden?', '3–4 en 7–8', ['2–3 en 6–7', '4–5 en 7–8', '1–2 en 5–6'], 'In C majeur: E–F (trap 3–4) en B–C (trap 7–8). Daar zitten op de piano geen zwarte toetsen tussen.'),
+  majNotes: () => {
+    const key = pick(['C', 'G', 'D', 'A', 'F', 'B♭', 'E']), tones = scaleTones('major', key).map(t => t.name);
+    return multi('maj-notes', `Tik alle noten van ${key} majeur`, noteChips(tones, key, MAJOR_SIG[key] < 0, 4), tones, `${key} majeur: ${tones.join(' ')}.`);
+  },
+  majDegree: () => {
+    const key = pick(['C', 'G', 'D', 'A', 'F', 'B♭']), tones = scaleTones('major', key), d = 2 + Math.floor(Math.random() * 6);
+    return mc('maj-degree', `Wat is trap ${d} in ${key} majeur?`, tones[d - 1].name, tones.map(t => t.name).filter((n, i) => i !== d - 1), `${key} majeur: ${tones.map((t, i) => `${i + 1}=${t.name}`).join(' ')}.`);
+  },
+  majWhich: () => {
+    const key = pick(['C', 'G', 'D', 'A', 'F', 'B♭']), tones = scaleTones('major', key), d = 2 + Math.floor(Math.random() * 6);
+    return mc('maj-which', `Welke trap is ${tones[d - 1].name} in ${key} majeur?`, String(d), ['2', '3', '4', '5', '6', '7'], `${key} majeur: ${tones.map((t, i) => `${i + 1}=${t.name}`).join(' ')}.`);
+  },
+  leading: () => mc('leading', 'Welke trap heet de leidtoon, omdat hij zo sterk naar de grondtoon trekt?', '7', ['2', '4', '5'], 'Trap 7 ligt een halve toon onder de grondtoon en wil daar graag heen. Daarom heet hij de leidtoon.'),
+  playDegree: () => {
+    const key = pick(['C', 'G', 'D', 'A', 'F']), tones = scaleTones('major', key), d = 2 + Math.floor(Math.random() * 6), t = tones[d - 1];
+    return playItem('play-degree', `Speel trap ${d} in ${key} majeur`, { big: `trap ${d}`, sub: `in ${key} majeur`, steps: [{ k: 'pc', pc: t.pc, name: t.name }], hint: `Het is ${t.name}. ${key} majeur: ${tones.map(x => x.name).join(' ')}.` });
+  },
+  playScale: (scale, key) => {
+    const tones = scaleTones(scale, key), box = scaleBox(scale, key, 1);
+    const steps = tones.map(t => ({ k: 'pc', pc: t.pc, name: t.name })).concat([{ k: 'pc', pc: tones[0].pc, name: tones[0].name }]);
+    const lo = Math.min(...box.map(p => p.f)), hi = Math.max(...box.map(p => p.f));
+    return playItem('play-scale-' + scale, `Speel ${key} ${SCALES[scale].short}, één octaaf omhoog`, { big: key, sub: SCALES[scale].short, steps, hint: tones.map(t => t.name).join(' '), hintNeck: { from: Math.max(0, lo - 1), to: hi + 1, marks: box.map(p => ({ s: p.s, f: p.f, kind: p.label === 'R' ? 'todo root' : 'todo', label: p.name })) } });
+  },
+
+  // ---- unit 4: toonsoorten en kwintencirkel ----
+  sigCount: side => {
+    const keys = Object.keys(MAJOR_SIG).filter(k => k !== 'G♭' && k !== 'C' && (side === 'sharp' ? MAJOR_SIG[k] > 0 : side === 'flat' ? MAJOR_SIG[k] < 0 : true));
+    const key = pick(keys), n = MAJOR_SIG[key];
+    const list = n > 0 ? SHARP_ORDER.slice(0, n) : FLAT_ORDER.slice(0, -n);
+    return mc('sig-count', `Hoeveel kruisen of mollen heeft ${key} majeur?`, sigText(n), [n + 1, n - 1, -n, n + (n > 0 ? 2 : -2), n - (n > 0 ? 2 : -2)].filter(x => Math.abs(x) <= 7 && x !== n).map(sigText), `${key} majeur heeft ${sigText(n)}: ${list.join(' ')}.`);
+  },
+  keyFromSig: side => {
+    const keys = Object.keys(MAJOR_SIG).filter(k => k !== 'G♭' && k !== 'C' && (side === 'sharp' ? MAJOR_SIG[k] > 0 : side === 'flat' ? MAJOR_SIG[k] < 0 : true));
+    const key = pick(keys), n = MAJOR_SIG[key];
+    return mc('key-from-sig', `Welke majeurtoonsoort heeft ${sigText(n)}?`, key, Object.keys(MAJOR_SIG).filter(k => k !== key && Math.abs(MAJOR_SIG[k] - n) <= 2 && k !== 'G♭'), `${sigText(n)[0].toUpperCase() + sigText(n).slice(1)}: ${key} majeur. ${n > 0 ? 'De laatste kruis ligt een halve toon onder de grondtoon.' : 'De voorlaatste mol is de grondtoon (behalve bij F).'}`);
+  },
+  sharpOrder: () => mc('sharp-order', 'In welke volgorde komen de kruisen erbij?', 'F C G D A E B', ['C G D A E B F', 'B E A D G C F', 'F G A B C D E'], 'Elke volgende kruis-toonsoort ligt een kwint hoger en krijgt er één kruis bij: F♯, C♯, G♯, D♯, A♯, E♯, B♯.'),
+  flatOrder: () => mc('flat-order', 'In welke volgorde komen de mollen erbij?', 'B E A D G C F', ['F C G D A E B', 'E A D G C F B', 'B A G F E D C'], 'De mollen komen er in omgekeerde volgorde bij: B♭, E♭, A♭, D♭, G♭, C♭, F♭.'),
+  relMinor: () => {
+    const key = pick(['C', 'G', 'D', 'A', 'F', 'B♭', 'E♭', 'E']), m = relMinorOf(key);
+    return mc('rel-minor', `Wat is de relatieve mineur van ${key} majeur?`, m + 'm', [nm(key, 2, 4) + 'm', nm(key, 1, 2) + 'm', key + 'm', nm(key, 4, 7) + 'm'], `Trap 6 van ${key} majeur is ${m}. ${m} mineur heeft dezelfde voortekens als ${key} majeur.`);
+  },
+  relShare: () => mc('rel-share', 'Wat hebben een majeurtoonsoort en zijn relatieve mineur gemeen?', 'Dezelfde voortekens en dezelfde noten', ['Dezelfde grondtoon', 'Dezelfde akkoorden in dezelfde volgorde', 'Niets, ze zijn elkaars tegenpool'], 'C majeur en A mineur gebruiken precies dezelfde zeven noten. Alleen het middelpunt is anders.'),
+  neighboursQ: () => {
+    const up = Math.random() < 0.5, arr = up ? CIRCLE_UP : CIRCLE_DOWN, i = 1 + Math.floor(Math.random() * 5), key = arr[i];
+    const ans = `${arr[i - 1]} en ${arr[i + 1]}`;
+    return mc('circle-nb', `Welke toonsoorten liggen naast ${key} in de kwintencirkel?`, ans, [`${arr[i + 1]} en ${arr[(i + 2) % 7] || 'C'}`, `${nm(key, 1, 2)} en ${nm(key, 6, 10)}`, `${nm(key, 2, 4)} en ${nm(key, 5, 9)}`], `Buren in de kwintencirkel liggen een kwint uit elkaar en verschillen maar één voorteken: ${arr[i - 1]} – ${key} – ${arr[i + 1]}.`);
+  },
+  playKeyRoot: () => {
+    const key = pick(['G', 'D', 'A', 'E', 'F', 'B♭', 'E♭']), n = MAJOR_SIG[key];
+    return playItem('play-key-root', `Speel de grondtoon van de majeurtoonsoort met ${sigText(n)}`, { big: '?', sub: sigText(n), steps: [{ k: 'pc', pc: pcOf(key), name: key }], hint: `Dat is ${key} majeur.` });
+  },
+
+  // ---- unit 5: mineur ----
+  minPattern: () => mc('min-pattern', 'Wat is het patroon van natuurlijk mineur?', 'H h H H h H H', ['H H h H H H h', 'H h H H H h H', 'h H H h H H H'], 'Hele, halve, hele, hele, halve, hele, hele toon. Dat is majeur, maar dan beginnend op trap 6.', 'H = hele toon, h = halve toon'),
+  minThird: () => mc('min-third', 'Welke toon maakt een toonladder mineur in plaats van majeur?', 'De kleine terts (♭3)', ['De kwint', 'De kleine secunde', 'Het octaaf'], 'Mineur heeft een kleine terts: 3 halve tonen boven de grondtoon. Die geeft de donkere klank.'),
+  minNotes: kind => {
+    const key = pick(['A', 'E', 'D', 'G', 'B', 'C']);
+    let tones = scaleTones('minor', key).map(t => t.name);
+    if (kind !== 'natural') tones[6] = nm(key, 6, 11);
+    if (kind === 'melodic') tones[5] = nm(key, 5, 9);
+    const label = kind === 'harmonic' ? 'harmonisch mineur' : kind === 'melodic' ? 'melodisch mineur (omhoog)' : 'natuurlijk mineur';
+    return multi('min-notes-' + kind, `Tik alle noten van ${key} ${label}`, noteChips(tones, key, ['D', 'G', 'C'].includes(key), 4), tones, `${key} ${label}: ${tones.join(' ')}.`);
+  },
+  harm7: () => {
+    const key = pick(['A', 'E', 'D', 'G', 'C', 'B']), raised = nm(key, 6, 11), nat = nm(key, 6, 10);
+    return mc('harm7', `Welke noot wordt verhoogd in ${key} harmonisch mineur?`, raised, [nat, nm(key, 5, 9), nm(key, 2, 4), nm(key, 5, 8)], `Trap 7 gaat een halve toon omhoog: ${nat} wordt ${raised}. Zo krijg je weer een leidtoon naar ${key}.`);
+  },
+  melodic: () => mc('melodic', 'Wat is er anders aan melodisch mineur (omhoog)?', 'Trap 6 en 7 zijn verhoogd', ['Alleen trap 7 is verhoogd', 'Trap 3 is verhoogd', 'Er zijn maar vijf tonen'], 'Melodisch mineur verhoogt omhoog trap 6 en 7, zodat de grote sprong tussen 6 en 7 verdwijnt. Omlaag speel je vaak gewoon natuurlijk mineur.'),
+  relMajor: () => {
+    const key = pick(['A', 'E', 'B', 'D', 'G', 'C', 'F♯']), maj = relMajorOf(key);
+    return mc('rel-major', `Wat is de relatieve majeur van ${key} mineur?`, maj, [nm(key, 4, 7), nm(key, 3, 5), nm(key, 1, 2), nm(key, 5, 8)], `Tel een kleine terts omhoog vanaf ${key}: ${maj}. ${key} mineur en ${maj} majeur delen dezelfde noten.`);
+  },
+  parallel: () => mc('parallel', 'Wat is het verschil tussen A mineur en C majeur?', 'Zelfde noten, ander middelpunt', ['Andere noten, zelfde middelpunt', 'A mineur heeft één kruis meer', 'Er is geen enkel verschil'], 'A mineur en C majeur gebruiken dezelfde zeven noten. Het verschil is de grondtoon waar de muziek naartoe trekt.'),
+  playHarm7: () => {
+    const key = pick(['A', 'E', 'D']), raised = nm(key, 6, 11);
+    return playItem('play-harm7', `Speel de verhoogde 7e trap van ${key} harmonisch mineur`, { big: '7', sub: `${key} harmonisch mineur`, steps: [{ k: 'pc', pc: pcOf(raised), name: raised }], hint: `Het is ${raised}, een halve toon onder ${key}.` });
+  },
+
+  // ---- unit 6: akkoorden bouwen ----
+  triadFormula: () => {
+    const t = pick([{ k: 'maj', n: 'majeurakkoord', f: '1 3 5' }, { k: 'min', n: 'mineurakkoord', f: '1 ♭3 5' }, { k: 'dim', n: 'verminderd akkoord', f: '1 ♭3 ♭5' }, { k: 'sus4', n: 'sus4-akkoord', f: '1 4 5' }]);
+    return mc('triad-formula', `Uit welke trappen bestaat een ${t.n}?`, t.f, ['1 3 5', '1 ♭3 5', '1 ♭3 ♭5', '1 4 5', '1 3 ♯5'], 'Majeur 1 3 5, mineur 1 ♭3 5, verminderd 1 ♭3 ♭5, sus4 1 4 5.');
+  },
+  chordNotes: types => {
+    for (let i = 0; i < 40; i++) {
+      const type = pick(types), root = pick(['C', 'D', 'E', 'F', 'G', 'A', 'B♭', 'E♭']);
+      if (!chordOk(type, root)) continue;
+      const tones = chordTones(type, root);
+      return multi('chord-notes-' + type, `Tik de noten van ${chordName(root, type)}`, noteChips(tones.map(t => t.name), root, root.includes('♭') || root === 'F', 4), tones.map(t => t.name), `${chordName(root, type)}: ${tones.map(t => `${t.name} (${t.label})`).join(', ')}.`);
+    }
+    return G.triadFormula();
+  },
+  whichChord: types => {
+    for (let i = 0; i < 40; i++) {
+      const type = pick(types), root = pick(['C', 'D', 'E', 'F', 'G', 'A']);
+      if (!chordOk(type, root)) continue;
+      const names = chordTones(type, root).map(t => t.name).join(' ');
+      const alts = Object.keys(CHORDS).filter(k => k !== type && chordOk(k, root)).map(k => chordName(root, k));
+      return mc('which-chord', `Welk akkoord bestaat uit ${names}?`, chordName(root, type), alts, `${names} = ${chordName(root, type)}: ${CHORDS[type].name}.`);
+    }
+    return G.triadFormula();
+  },
+  seventhDiff: () => mc('seventh-diff', 'Wat is het verschil tussen Cmaj7 en C7?', 'De septiem: B in Cmaj7, B♭ in C7', ['De terts: E in Cmaj7, E♭ in C7', 'De kwint: G in Cmaj7, G♭ in C7', 'Er is geen verschil'], 'maj7 heeft een grote septiem (B), een dominant 7 een kleine septiem (B♭). Die kleine septiem geeft de onrustige, bluesy klank.'),
+  thirdMakes: () => mc('third-makes', 'Welke toon maakt het verschil tussen C en Cm?', 'De terts: E of E♭', ['De grondtoon', 'De kwint: G of G♭', 'De septiem'], 'C = C E G, Cm = C E♭ G. Alleen de terts verschilt.'),
+  playChordTones: types => {
+    for (let i = 0; i < 40; i++) {
+      const type = pick(types), root = pick(['E', 'A', 'D', 'G', 'C']);
+      if (!chordOk(type, root)) continue;
+      const tones = chordTones(type, root);
+      return playItem('play-chord-' + type, `Speel de tonen van ${chordName(root, type)}`, { big: chordName(root, type), sub: 'in elke volgorde', steps: [{ k: 'set', pcs: tones.map(t => t.pc), names: tones.map(t => t.name), labels: tones.map(t => t.label) }], hint: tones.map(t => t.name).join(' ') });
+    }
+    return G.playFifth();
+  },
+
+  // ---- unit 7: akkoorden binnen een toonsoort ----
+  diaQuality: () => {
+    const d = 1 + Math.floor(Math.random() * 7), q = ['majeur', 'mineur', 'mineur', 'majeur', 'majeur', 'mineur', 'verminderd'][d - 1];
+    return mc('dia-quality', `Wat voor akkoord staat op trap ${d} in een majeurtoonsoort?`, q, ['majeur', 'mineur', 'verminderd'], 'In majeur: I ii iii IV V vi vii°. Hoofdletters zijn majeur, kleine letters mineur, ° is verminderd.');
+  },
+  diaChord: () => {
+    const key = pick(['C', 'G', 'D', 'A', 'F']), d = pick([2, 3, 4, 5, 6]), c = diatonic(key, false, d);
+    const alts = [1, 2, 3, 4, 5, 6].filter(x => x !== d).map(x => diatonic(key, false, x).name).concat([c.root + (c.type === 'min' ? '' : 'm')]);
+    return mc('dia-chord', `Wat is het ${c.roman}-akkoord in ${key} majeur?`, c.name, alts, `In ${key} majeur: ${[1, 2, 3, 4, 5, 6, 7].map(x => diatonic(key, false, x)).map(x => `${x.roman}=${x.name}`).join(' ')}.`);
+  },
+  romanOf: () => {
+    const key = pick(['C', 'G', 'D', 'A', 'F']), d = pick([2, 3, 4, 5, 6]), c = diatonic(key, false, d);
+    return mc('roman-of', `Welke trap is ${c.name} in ${key} majeur?`, c.roman, ROMAN_MAJOR.filter(r => r !== c.roman), `In ${key} majeur: ${[1, 2, 3, 4, 5, 6, 7].map(x => diatonic(key, false, x)).map(x => `${x.roman}=${x.name}`).join(' ')}.`);
+  },
+  functionOf: () => {
+    const d = pick([1, 4, 5]);
+    return mc('function-of', `Welke functie heeft het ${ROMAN_MAJOR[d - 1]}-akkoord?`, FUNCTION_OF[d], ['tonica', 'subdominant', 'dominant', 'mediant'], 'I is de tonica (thuis), IV de subdominant (weg van huis) en V de dominant (wil terug naar I).');
+  },
+  v7: () => {
+    const key = pick(['C', 'G', 'D', 'A', 'E', 'F']), v = scaleTones('major', key)[4].name;
+    return mc('v7', `Wat is het V7-akkoord in ${key} majeur?`, v + '7', [v + 'maj7', key + '7', v + 'm7', nm(key, 3, 5) + '7'], `Trap 5 in ${key} is ${v}. Met een kleine septiem erbij wordt dat ${v}7, het dominantseptiemakkoord.`);
+  },
+  whyV: () => mc('why-v', 'Waarom wil het V7-akkoord zo graag naar I?', 'De leidtoon in V7 wil een halve toon omhoog naar de grondtoon', ['Omdat het het hardste akkoord is', 'Omdat het altijd mineur is', 'Omdat er geen terts in zit'], 'In G7 zit B, de leidtoon van C. B wil naar C en F wil naar E: zo valt alles op zijn plek in C.'),
+  playDiaRoot: () => {
+    const key = pick(['C', 'G', 'D', 'A']), d = pick([2, 4, 5, 6]), c = diatonic(key, false, d);
+    return playItem('play-dia-root', `Speel de grondtoon van het ${c.roman}-akkoord in ${key} majeur`, { big: c.roman, sub: `in ${key} majeur`, steps: [{ k: 'pc', pc: pcOf(c.root), name: c.root }], hint: `Het ${c.roman}-akkoord is ${c.name}.` });
+  },
+  playDiaChord: () => {
+    const key = pick(['C', 'G', 'D', 'A']), d = pick([1, 4, 5, 6]), c = diatonic(key, false, d), tones = chordTones(c.type, c.root);
+    return playItem('play-dia-chord', `Speel de tonen van het ${c.roman}-akkoord in ${key} majeur`, { big: c.roman, sub: `in ${key} majeur, elke volgorde`, steps: [{ k: 'set', pcs: tones.map(t => t.pc), names: tones.map(t => t.name), labels: tones.map(t => t.label) }], hint: `${c.name}: ${tones.map(t => t.name).join(' ')}` });
+  },
+
+  // ---- unit 8: progressies ----
+  prog145: () => {
+    const key = pick(['E', 'A', 'D', 'G', 'C']), ch = [1, 4, 5].map(d => diatonic(key, false, d).name);
+    return mc('prog-145', `Wat zijn I, IV en V in ${key} majeur?`, ch.join(' – '), [[1, 2, 5], [1, 4, 6], [1, 3, 5], [2, 4, 5]].map(ds => ds.map(d => diatonic(key, false, d).name).join(' – ')), `Tel de trappen: ${key} (1), ${ch[1]} (4), ${ch[2]} (5).`);
+  },
+  prog251: () => {
+    const key = pick(['C', 'G', 'D', 'F', 'B♭']), ch = [2, 5, 1].map(d => diatonic(key, false, d).name);
+    return mc('prog-251', `Wat is ii–V–I in ${key} majeur?`, ch.join(' – '), [[2, 4, 1], [6, 5, 1], [2, 5, 6]].map(ds => ds.map(d => diatonic(key, false, d).name).join(' – ')).concat([`${ch[0].replace('m', '')} – ${ch[1]} – ${ch[2]}`]), `ii–V–I in ${key}: ${ch.join(' – ')}. Het meest gebruikte slot in jazz.`);
+  },
+  blues12: () => {
+    const q = pick([{ q: 'Welk akkoord speel je in maat 5 van een 12-maten blues?', a: 'IV' }, { q: 'Welk akkoord speel je in maat 9 van een 12-maten blues?', a: 'V' }, { q: 'Welk akkoord speel je in maat 10 van een 12-maten blues?', a: 'IV' }, { q: 'Hoeveel maten begint een standaard 12-maten blues op I?', a: '4' }]);
+    return mc('blues12', q.q, q.a, q.a === '4' ? ['2', '3', '6'] : ['I', 'IV', 'V', 'vi'], 'De basisvorm: I I I I | IV IV I I | V IV I I.');
+  },
+  bluesKey: () => {
+    const key = pick(['A', 'E', 'G', 'D', 'C']), ch = [1, 4, 5].map(d => scaleTones('major', key)[d - 1].name + '7');
+    return mc('blues-key', `Welke drie akkoorden gebruik je voor een blues in ${key}?`, ch.join(' – '), [[1, 4, 5].map(d => scaleTones('major', key)[d - 1].name).join(' – ') + 'm', [1, 2, 5].map(d => scaleTones('major', key)[d - 1].name + '7').join(' – '), [1, 4, 6].map(d => scaleTones('major', key)[d - 1].name + '7').join(' – ')], `I, IV en V, alle drie als dominant 7: ${ch.join(', ')}.`);
+  },
+  prog1564: () => {
+    const key = pick(['C', 'G', 'D', 'A']), ch = [1, 5, 6, 4].map(d => diatonic(key, false, d).name);
+    return mc('prog-1564', `Wat is I–V–vi–IV in ${key} majeur?`, ch.join(' – '), [[1, 4, 6, 5], [1, 5, 3, 4], [6, 4, 1, 5]].map(ds => ds.map(d => diatonic(key, false, d).name).join(' – ')), `I–V–vi–IV in ${key}: ${ch.join(' – ')}. Een van de meest gebruikte akkoordenschema's in pop.`);
+  },
+  playProg: () => {
+    const key = pick(['C', 'G', 'D', 'A', 'E']), prog = pick([[1, 4, 5], [2, 5, 1], [1, 5, 6, 4], [1, 6, 4, 5]]);
+    const ch = prog.map(d => diatonic(key, false, d));
+    return playItem('play-prog', `Speel de grondtonen van ${ch.map(c => c.roman).join('–')} in ${key} majeur`, { big: ch.map(c => c.roman).join('–'), sub: `in ${key} majeur`, steps: ch.map(c => ({ k: 'pc', pc: pcOf(c.root), name: c.root })), hint: ch.map(c => c.name).join(' – ') });
+  },
+
+  // ---- latere onderwerpen ----
+  playBox: (scale, root, box) => {
+    const pos = scaleBox(scale, root, box);
+    const lo = Math.min(...pos.map(p => p.f)), hi = Math.max(...pos.map(p => p.f));
+    return playItem(`play-box-${scale}-${box}`, `Speel ${root} ${SCALES[scale].short}, box ${box}, omhoog`, { big: root, sub: `${SCALES[scale].short} · box ${box}`, steps: pos.map(p => ({ k: 'pc', pc: p.pc, name: p.name, pos: { s: p.s, f: p.f } })), neck: { from: Math.max(0, lo - 1), to: hi + 1, marks: pos.map(p => ({ s: p.s, f: p.f, kind: p.label === 'R' ? 'todo root' : 'todo', label: p.name })) } });
+  },
+  scaleNotesQ: (scale, root) => {
+    const tones = scaleTones(scale, root).map(t => t.name);
+    return multi('scale-notes-' + scale, `Tik alle noten van ${root} ${SCALES[scale].short}`, noteChips(tones, root, root.includes('♭') || ['F', 'D', 'G', 'C'].includes(root) && scale !== 'major', 3), tones, `${root} ${SCALES[scale].short}: ${tones.join(' ')}.`);
+  },
+  scaleFormulaQ: scale => {
+    const f = SCALES[scale].degs.map(d => d.label.replace('R', '1')).join(' ');
+    const others = Object.keys(SCALES).filter(k => k !== scale).map(k => SCALES[k].degs.map(d => d.label.replace('R', '1')).join(' '));
+    return mc('scale-formula-' + scale, `Welke trappen heeft ${SCALES[scale].short}?`, f, others, `${SCALES[scale].name}: ${f}.`);
+  },
+  notePlay: () => {
+    const t = NoteGame.pick(null);
+    return playItem('note-play', `Speel ${t.name} op de ${STR_NAME[t.s]}`, { big: t.name, sub: `op de ${STR_NAME[t.s]}`, steps: [{ k: 'pc', pc: t.pc, name: t.name, string: t.s, frets: t.frets }], highlight: [t.s], hint: `Fret ${t.frets.join(' of ')}` });
+  },
+};
+
+// ---------- Units ----------
+const ALL_SEMIS = INTERVALS.map(i => i.semis);
+const TOPICS = {
+  'twelve-tones': {
+    title: 'Waarom 12 tonen', subtitle: 'Octaaf, kwint en de kwintencirkel', drill: { mode: 'intervals' },
+    nodes: [
+      { title: 'Het octaaf', gen: () => [G.octRatio(), G.octSemis(), G.tapOctave(), G.tapOctave(), G.playOctave(), G.playOctave()] },
+      { title: 'De kwint', gen: () => [G.fifthRatio(), G.fifthSemis(), G.fifthAbove(), G.fifthAbove(), G.tapFifth(), G.playFifth(), G.playFifth()] },
+      { title: 'Powerchords', gen: () => [G.powerNotes(), G.powerWhy(), G.powerNotes(), G.tapFifth(), G.playPower(), G.playPower()] },
+      { title: 'Kwinten stapelen', gen: () => [G.circleNext(), G.circleNext(), G.circleMissing(), G.stackFifths(), G.stackFifths(), G.enharmonic()] },
+      { title: 'Twaalf tonen', gen: () => [G.comma(), G.equalTemp(), G.fretShorter(), G.harmonic3(), G.enharmonic(), G.playFifth()] },
+    ],
+  },
+  'intervals': {
+    title: 'Intervallen', subtitle: 'Halve tonen tellen, namen en vormen op de hals', drill: { mode: 'intervals' },
+    nodes: [
+      { title: 'Halve tonen tellen', gen: p => [G.ivSemis(p.set), G.ivSemis(p.set), G.ivSemis(p.set), G.ivName(p.set), G.ivName(p.set), G.ivThirds()] },
+      { title: 'Tertsen', gen: () => [G.ivAbove([3, 4]), G.ivAbove([3, 4]), G.ivName([3, 4]), G.ivTap([3, 4]), G.ivPlay([3, 4]), G.ivPlay([3, 4])] },
+      { title: 'Kwart, kwint, octaaf', gen: () => [G.ivAbove([5, 7]), G.ivInvert(), G.ivTap([5, 7, 12]), G.ivTap([5, 7]), G.ivPlay([5, 7]), G.ivPlay([5, 7, 12])] },
+      { title: 'Sexten en septiemen', gen: () => [G.ivSemis([8, 9, 10, 11]), G.ivSemis([8, 9, 10, 11]), G.ivAbove([8, 9, 10, 11]), G.ivAbove([9, 10]), G.ivTap([9, 10]), G.ivPlay([9, 10])] },
+      { title: 'Op de hals', gen: p => [G.ivTap(p.set), G.ivTap(p.set), G.ivTap(p.set), G.ivPlay(p.set), G.ivPlay(p.set), G.ivPlay(p.set)] },
+    ],
+  },
+  'major-scale': {
+    title: 'De majeurtoonladder', subtitle: 'Het patroon, de trappen en de leidtoon', drill: { mode: 'scales', set: { scale: 'major', root: 'G', box: 1 } },
+    nodes: [
+      { title: 'Het patroon', gen: () => [G.majPattern(), G.majHalf(), G.majDegree(), G.majWhich(), G.leading()] },
+      { title: 'Noten van een toonladder', gen: () => [G.majNotes(), G.majNotes(), G.majNotes(), G.majDegree()] },
+      { title: 'Trappen', gen: () => [G.majDegree(), G.majDegree(), G.majWhich(), G.majWhich(), G.playDegree(), G.playDegree()] },
+      { title: 'Speel de toonladder', gen: () => [G.playScale('major', pick(['C', 'G', 'D'])), G.playScale('major', pick(['A', 'F', 'G'])), G.majNotes()] },
+      { title: 'Trappen op de hals', gen: () => [G.playDegree(), G.playDegree(), G.playDegree(), G.playDegree(), G.leading()] },
+    ],
+  },
+  'keys-circle': {
+    title: 'Toonsoorten', subtitle: 'Voortekens en de kwintencirkel', drill: { mode: 'degrees' },
+    nodes: [
+      { title: 'Kruisen', gen: () => [G.sigCount('sharp'), G.sigCount('sharp'), G.sharpOrder(), G.keyFromSig('sharp'), G.keyFromSig('sharp')] },
+      { title: 'Mollen', gen: () => [G.sigCount('flat'), G.sigCount('flat'), G.flatOrder(), G.keyFromSig('flat'), G.keyFromSig('flat')] },
+      { title: 'De kwintencirkel', gen: () => [G.neighboursQ(), G.neighboursQ(), G.circleNext(), G.circleNext(), G.keyFromSig()] },
+      { title: 'Relatieve mineur', gen: () => [G.relMinor(), G.relMinor(), G.relMinor(), G.relShare()] },
+      { title: 'Op de hals', gen: () => [G.playKeyRoot(), G.playKeyRoot(), G.playKeyRoot(), G.playDegree(), G.playDegree()] },
+    ],
+  },
+  'minor': {
+    title: 'Mineur', subtitle: 'Natuurlijk, harmonisch en melodisch', drill: { mode: 'scales', set: { scale: 'minor', root: 'A', box: 1 } },
+    nodes: [
+      { title: 'Natuurlijk mineur', gen: () => [G.minPattern(), G.minThird(), G.minNotes('natural'), G.minNotes('natural'), G.relMajor()] },
+      { title: 'Relatief', gen: () => [G.relMajor(), G.relMajor(), G.relMinor(), G.relMinor(), G.parallel()] },
+      { title: 'Harmonisch mineur', gen: () => [G.harm7(), G.harm7(), G.minNotes('harmonic'), G.minNotes('harmonic'), G.playHarm7()] },
+      { title: 'Melodisch mineur', gen: () => [G.melodic(), G.minNotes('melodic'), G.minNotes('melodic'), G.harm7()] },
+      { title: 'Speel mineur', gen: () => [G.playScale('minor', pick(['A', 'E'])), G.playScale('minor', pick(['D', 'A'])), G.playHarm7(), G.playHarm7()] },
+    ],
+  },
+  'chord-building': {
+    title: 'Akkoorden bouwen', subtitle: 'Drieklanken en septiemakkoorden', drill: { mode: 'chords' },
+    nodes: [
+      { title: 'Drieklanken', gen: () => [G.triadFormula(), G.triadFormula(), G.triadFormula(), G.thirdMakes(), G.chordNotes(['maj', 'min']), G.chordNotes(['maj', 'min'])] },
+      { title: 'Majeur en mineur', gen: () => [G.chordNotes(['maj', 'min']), G.whichChord(['maj', 'min']), G.whichChord(['maj', 'min']), G.playChordTones(['maj', 'min']), G.playChordTones(['maj', 'min'])] },
+      { title: 'Septiemakkoorden', gen: () => [G.seventhDiff(), G.chordNotes(['dom7', 'maj7', 'm7']), G.chordNotes(['dom7', 'maj7', 'm7']), G.chordNotes(['dom7', 'maj7', 'm7']), G.whichChord(['dom7', 'maj7', 'm7'])] },
+      { title: 'Akkoorden herkennen', gen: () => [G.whichChord(['maj', 'min', 'dim']), G.whichChord(['dom7', 'maj7', 'm7']), G.whichChord(['maj', 'min', 'dom7']), G.whichChord(['m7', 'm7b5', 'maj7']), G.triadFormula()] },
+      { title: 'Speel de akkoordtonen', gen: () => [G.playChordTones(['maj', 'min']), G.playChordTones(['dom7', 'm7']), G.playChordTones(['maj', 'min', 'dom7']), G.playChordTones(['maj7', 'm7'])] },
+    ],
+  },
+  'diatonic-chords': {
+    title: 'Akkoorden in een toonsoort', subtitle: 'Trappen, Romeinse cijfers en functies', drill: { mode: 'chords' },
+    nodes: [
+      { title: 'Akkoorden per trap', gen: () => [G.diaQuality(), G.diaQuality(), G.diaQuality(), G.diaQuality(), G.diaChord()] },
+      { title: 'Romeinse cijfers', gen: () => [G.romanOf(), G.romanOf(), G.romanOf(), G.diaChord(), G.diaChord()] },
+      { title: 'Tonica, subdominant, dominant', gen: () => [G.functionOf(), G.functionOf(), G.functionOf(), G.whyV()] },
+      { title: 'Het V7-akkoord', gen: () => [G.v7(), G.v7(), G.v7(), G.whyV(), G.playDiaChord()] },
+      { title: 'Op de hals', gen: () => [G.playDiaRoot(), G.playDiaRoot(), G.playDiaRoot(), G.playDiaChord(), G.playDiaChord()] },
+    ],
+  },
+  'progressions': {
+    title: 'Progressies', subtitle: 'I–IV–V, ii–V–I en de 12-maten blues', drill: { mode: 'chords' },
+    nodes: [
+      { title: 'I – IV – V', gen: () => [G.prog145(), G.prog145(), G.prog145(), G.functionOf(), G.playProg()] },
+      { title: 'De 12-maten blues', gen: () => [G.blues12(), G.blues12(), G.blues12(), G.bluesKey(), G.bluesKey()] },
+      { title: 'ii – V – I', gen: () => [G.prog251(), G.prog251(), G.prog251(), G.v7(), G.playProg()] },
+      { title: 'Popschema\'s', gen: () => [G.prog1564(), G.prog1564(), G.prog1564(), G.playProg()] },
+      { title: 'Op de hals', gen: () => [G.playProg(), G.playProg(), G.playProg(), G.playProg()] },
+    ],
+  },
+  'scale-boxes': {
+    title: 'Toonladder op de hals', subtitle: 'Boxen spelen en onthouden', drill: { mode: 'scales' },
+    nodes: [
+      { title: 'De noten', gen: p => [G.scaleFormulaQ(p.scale), G.scaleNotesQ(p.scale, p.root), G.scaleNotesQ(p.scale, p.root)] },
+      { title: 'Box ' + 1, gen: p => [G.playBox(p.scale, p.root, p.boxes[0]), G.playBox(p.scale, p.root, p.boxes[0])] },
+      { title: 'Volgende box', gen: p => [G.playBox(p.scale, p.root, p.boxes[1] || p.boxes[0]), G.playBox(p.scale, p.root, p.boxes[1] || p.boxes[0])] },
+      { title: 'Afwisselen', gen: p => [G.playBox(p.scale, p.root, pick(p.boxes)), G.scaleNotesQ(p.scale, p.root), G.playBox(p.scale, p.root, pick(p.boxes))] },
+    ],
+  },
+  'generic': {
+    title: 'Les', subtitle: '', drill: { mode: 'notes' },
+    nodes: [
+      { title: 'Theorie', gen: () => [] },
+      { title: 'Op de hals', gen: () => [G.notePlay(), G.notePlay(), G.notePlay(), G.notePlay()] },
+    ],
+  },
+};
+// Fase 1 zoals in het cursusboek (terugval als path.json niet bereikbaar is)
+const FASE1 = [
+  { lesson: 1, date: '2026-10-02', topic: 'twelve-tones' },
+  { lesson: 2, date: '2026-10-05', topic: 'intervals' },
+  { lesson: 3, date: '2026-10-08', topic: 'major-scale' },
+  { lesson: 4, date: '2026-10-12', topic: 'keys-circle' },
+  { lesson: 5, date: '2026-10-15', topic: 'minor' },
+  { lesson: 6, date: '2026-10-19', topic: 'chord-building' },
+  { lesson: 7, date: '2026-10-22', topic: 'diatonic-chords' },
+  { lesson: 8, date: '2026-10-26', topic: 'progressions' },
+];
+function authoredItems(unit) {
+  return (unit.quiz || []).filter(q => q && q.q && Array.isArray(q.options) && q.options.length >= 2 && q.options[q.answer] != null).map(q => {
+    const options = shuffle(q.options.map(String));
+    return { type: 'mc', skill: 'authored', prompt: q.q, sub: q.sub, options, answer: options.indexOf(String(q.options[q.answer])), explain: q.explain || '' };
+  });
+}
+// alle knooppunten van een unit, inclusief eigen vragen uit de les en een unittoets
+function unitNodes(unit) {
+  const tp = TOPICS[unit.topic] || TOPICS.generic;
+  const p = Object.assign({ set: ALL_SEMIS, scale: 'minpent', root: 'A', boxes: [1, 2] }, unit.params || {});
+  const nodes = tp.nodes.map(n => ({ title: n.title, gen: () => n.gen(p) }));
+  const authored = authoredItems(unit);
+  if (authored.length) {
+    const i = unit.topic === 'generic' ? 0 : nodes.length - 1;
+    const base = nodes[i].gen;
+    nodes[i] = { title: unit.topic === 'generic' ? 'Uit de les' : nodes[i].title, gen: () => shuffle(base().concat(authoredItems(unit))) };
+  }
+  nodes.push({ title: 'Unittoets', test: true, gen: () => {
+    let all = [];
+    for (const n of nodes.slice(0, -1)) all = all.concat(n.gen());
+    all = shuffle(all);
+    const plays = all.filter(x => x.type === 'play').slice(0, 3), rest = all.filter(x => x.type !== 'play').slice(0, 10 - plays.length);
+    return shuffle(rest.concat(plays));
+  } });
+  return nodes;
+}
+function unitMeta(unit) {
+  const tp = TOPICS[unit.topic] || TOPICS.generic;
+  return { title: unit.title || tp.title, subtitle: unit.subtitle != null ? unit.subtitle : tp.subtitle, drill: unit.drill || tp.drill };
+}
+
+// ---------- Lesspeler (één oefening tegelijk, zoals Duolingo) ----------
+const PRAISE = ['Goed!', 'Precies!', 'Klopt!', 'Netjes!', 'Top!'];
+const sameSet = (a, b) => a.length === b.length && a.every(x => b.includes(x));
+const Lesson = {
+  spec: null,
+  open(spec) { this.spec = spec; if (location.hash === '#les') Router.render(); else location.hash = '#les'; },
+  mount(view) {
+    const sp = this.spec;
+    if (!sp) { setTimeout(() => { location.hash = ''; }, 0); return; }
+    this.cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
+    let items = sp.items.map((it, i) => Object.assign({ _id: i }, it));
+    if (this.cantPlay && items.some(i => i.type !== 'play')) items = items.filter(i => i.type !== 'play');
+    this.queue = items;
+    this.total = items.length; this.doneIds = new Set(); this.mistakes = 0; this.skipped = 0; this.hints = 0;
+    this.t0 = performance.now(); this.finished = false; this.cur = null;
+    this.barFill = h('span');
+    this.el = h('section', { class: 'lesson' },
+      h('div', { class: 'ls-top' },
+        h('button', { class: 'ls-close', type: 'button', 'aria-label': 'Les stoppen', html: ICONS.close, onclick: () => this.askQuit() }),
+        h('div', { class: 'ls-bar', role: 'progressbar', 'aria-label': 'Voortgang in deze les' }, this.barFill),
+        this.counter = h('span', { class: 'ls-count' })),
+      this.body = h('div', { class: 'ls-body' }),
+      this.foot = h('div', { class: 'ls-foot' }));
+    view.append(this.el);
+    this.keys = { enter: () => this.enter() };
+    this.updateBar();
+    this.next();
+  },
+  unmount() { clearTimeout(this.autoT); this.cur = null; },
+  updateBar() {
+    const pct = this.total ? (100 * this.doneIds.size / this.total) : 0;
+    this.barFill.style.width = pct + '%';
+    this.counter.textContent = `${this.doneIds.size}/${this.total}`;
+  },
+  askQuit() {
+    if (this.finished) return this.leave();
+    const sheet = h('div', { class: 'sheet-wrap', onclick: e => { if (e.target === sheet) sheet.remove(); } },
+      h('div', { class: 'sheet' },
+        h('h3', { text: 'Wil je stoppen?' }),
+        h('p', { class: 'help', text: 'Je voortgang in deze les gaat verloren. Wat je tot nu toe hebt geoefend, telt wel mee voor je dagdoel.' }),
+        h('button', { class: 'primary big', type: 'button', text: 'Doorgaan met oefenen', onclick: () => sheet.remove() }),
+        h('button', { class: 'big ghost', type: 'button', text: 'Stoppen', onclick: () => { sheet.remove(); this.leave(); } })));
+    document.body.append(sheet);
+  },
+  leave() {
+    const sp = this.spec; this.spec = null;
+    if (sp && sp.onExit) sp.onExit(); else location.hash = '';
+  },
+  enter() {
+    const b = $('.ls-foot button.primary', this.el);
+    if (b && !b.disabled) b.click();
+  },
+  next() {
+    clearTimeout(this.autoT);
+    this.answered = false;
+    if (!this.queue.length) return this.finish();
+    const it = this.queue.shift();
+    if (it.type === 'play' && this.cantPlay) { this.doneIds.add(it._id); this.updateBar(); return this.next(); }
+    this.cur = it;
+    this.body.innerHTML = '';
+    this.foot.className = 'ls-foot';
+    this.foot.innerHTML = '';
+    this.body.append(h('p', { class: 'ls-kind', text: it.type === 'play' ? 'Speel op je gitaar' : it.type === 'tap' ? 'Tik op de hals' : it._again ? 'Nog een keer' : 'Theorie' }));
+    this.body.append(h('h2', { class: 'ls-prompt', text: it.prompt }));
+    if (it.sub && it.type !== 'play') this.body.append(h('p', { class: 'ls-sub', text: it.sub }));
+    if (it.type === 'mc') this.renderMC(it);
+    else if (it.type === 'multi') this.renderMulti(it);
+    else if (it.type === 'tap') this.renderTap(it);
+    else this.renderPlay(it);
+    Activity.ping();
+  },
+  checkFoot() {
+    this.checkBtn = h('button', { class: 'primary big', type: 'button', text: 'Controleer', disabled: true, onclick: () => this.check() });
+    this.foot.append(this.checkBtn);
+  },
+  renderMC(it) {
+    this.sel = null;
+    const opts = h('div', { class: 'ls-opts' + (it.options.every(o => o.length <= 6) ? ' grid' : '') });
+    it.options.forEach((o, i) => opts.append(h('button', { type: 'button', class: 'opt', text: o, onclick: e => {
+      if (this.answered) return;
+      this.sel = i;
+      $$('.opt', opts).forEach(b => b.classList.toggle('sel', b === e.currentTarget));
+      this.checkBtn.disabled = false;
+    } })));
+    this.optsEl = opts;
+    this.body.append(opts);
+    this.checkFoot();
+  },
+  renderMulti(it) {
+    this.selSet = new Set();
+    const chipsEl = h('div', { class: 'ls-chips' });
+    it.choices.forEach(c => chipsEl.append(h('button', { type: 'button', class: 'chip-btn', text: c, 'aria-pressed': 'false', onclick: e => {
+      if (this.answered) return;
+      const b = e.currentTarget;
+      if (this.selSet.has(c)) this.selSet.delete(c); else this.selSet.add(c);
+      b.setAttribute('aria-pressed', String(this.selSet.has(c)));
+      this.checkBtn.disabled = this.selSet.size === 0;
+    } })));
+    this.chipsEl = chipsEl;
+    this.body.append(h('p', { class: 'ls-sub', text: 'Kies alle goede antwoorden.' }), chipsEl);
+    this.checkFoot();
+  },
+  renderTap(it) {
+    this.tapSel = null;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Gitaarhals: tik op een plek');
+    const fig = h('figure', { class: 'card neck tapneck' }, svg);
+    this.body.append(fig);
+    this.tapSvg = svg;
+    const draw = extra => drawNeck(svg, { from: it.from, to: it.to, marks: it.marks.concat(extra || []), tap: !this.answered });
+    this.drawTap = draw;
+    draw();
+    svg.addEventListener('click', e => {
+      if (this.answered) return;
+      const c = e.target.closest && e.target.closest('.cell');
+      if (!c) return;
+      this.tapSel = { s: Number(c.dataset.s), f: Number(c.dataset.f) };
+      draw([{ s: this.tapSel.s, f: this.tapSel.f, kind: 'sel', label: '' }]);
+      this.checkBtn.disabled = false;
+    });
+    this.checkFoot();
+  },
+  check() {
+    const it = this.cur;
+    if (!it || this.answered) return;
+    let ok = false, answer = '';
+    if (it.type === 'mc') {
+      ok = this.sel === it.answer; answer = it.options[it.answer];
+      $$('.opt', this.optsEl).forEach((b, i) => { b.classList.toggle('right', i === it.answer); b.classList.toggle('wrong', i === this.sel && !ok); b.disabled = true; });
+    } else if (it.type === 'multi') {
+      const sel = Array.from(this.selSet);
+      ok = sameSet(sel, it.correct); answer = it.correct.join(' ');
+      $$('.chip-btn', this.chipsEl).forEach(b => { const c = b.textContent; b.classList.toggle('right', it.correct.includes(c)); b.classList.toggle('wrong', this.selSet.has(c) && !it.correct.includes(c)); b.disabled = true; });
+    } else if (it.type === 'tap') {
+      ok = it.valid.some(p => p.s === this.tapSel.s && p.f === this.tapSel.f);
+      answer = it.valid.map(p => `${STR_LETTER[p.s]}-snaar fret ${p.f}`).join(' of ');
+      this.answered = true;
+      this.drawTap(it.valid.map(p => ({ s: p.s, f: p.f, kind: 'found', label: '' })).concat(ok ? [] : [{ s: this.tapSel.s, f: this.tapSel.f, kind: 'wrong', label: '' }]));
+    }
+    if (ok) {
+      this.doneIds.add(it._id);
+      this.feedback(true, pick(PRAISE), it.explain);
+    } else {
+      this.mistakes++;
+      if (!it._again) this.queue.push(Object.assign({}, it, { _again: true }));
+      else this.doneIds.add(it._id);
+      this.feedback(false, 'Niet helemaal', `Het goede antwoord: ${answer}. ${it.explain || ''}`);
+    }
+    this.updateBar();
+  },
+  feedback(ok, title, text, auto) {
+    this.answered = true;
+    clearTimeout(this.autoT);
+    this.foot.innerHTML = '';
+    this.foot.className = 'ls-foot ' + (ok ? 'ok' : 'bad');
+    this.foot.append(
+      h('div', { class: 'fb' }, h('span', { class: 'fb-ico', html: ok ? ICONS.check : ICONS.close }), h('div', {}, h('b', { text: title }), text ? h('p', { text: text.trim() }) : null)),
+      h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => this.next() }));
+    if (ok && Engine.ctx) Engine.ding();
+    if (auto) this.autoT = setTimeout(() => { if (this.answered) this.next(); }, auto);
+    Activity.ping();
+  },
+
+  // --- speelopdrachten ---
+  renderPlay(it) {
+    this.ps = { idx: 0, last: null, found: new Set() };
+    const big = h('div', { class: 'note ls-big', html: /^[A-G][♯♭]?$/.test(it.big || '') ? bigNoteHTML(it.big) : `<span class="deg">${it.big || ''}</span>` });
+    this.body.append(big);
+    if (it.sub) this.body.append(h('p', { class: 'ls-sub', text: it.sub }));
+    this.stepsEl = h('div', { class: 'slots' });
+    this.body.append(this.stepsEl);
+    if (it.neck || it.highlight) {
+      this.playSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      this.playSvg.setAttribute('role', 'img'); this.playSvg.setAttribute('aria-label', 'Gitaarhals');
+      this.body.append(h('figure', { class: 'card neck' }, this.playSvg));
+    } else this.playSvg = null;
+    this.hintEl = h('div', { class: 'ls-hint' });
+    this.body.append(this.hintEl, h('div', { class: 'toast pr-toast ls-toast' }), h('div', { class: 'heard-line' }));
+    this.renderSteps();
+    this.playFoot();
+    UI.lastHeard = ''; UI.updateHeard(null);
+  },
+  playFoot() {
+    this.foot.innerHTML = '';
+    this.foot.className = 'ls-foot';
+    const row = h('div', { class: 'ls-row' });
+    if (!Engine.mic) row.append(h('button', { class: 'primary big', type: 'button', text: Engine.starting ? 'Toegang vragen…' : 'Start microfoon', onclick: async () => { await Engine.startMic(); if (this.cur && this.cur.type === 'play' && !this.answered) this.playFoot(); } }));
+    row.append(h('button', { class: 'big', type: 'button', text: 'Hint', onclick: () => this.hint() }), h('button', { class: 'big', type: 'button', text: 'Overslaan', onclick: () => this.skip() }));
+    this.foot.append(row, h('button', { class: 'linkish', type: 'button', text: 'Ik kan nu niet spelen', onclick: () => this.cantPlayNow() }));
+  },
+  onMic() { if (this.cur && this.cur.type === 'play' && !this.answered) this.playFoot(); },
+  renderSteps() {
+    const it = this.cur, ps = this.ps;
+    if (it.steps.length === 1 && it.steps[0].k === 'set') {
+      const st = it.steps[0];
+      this.stepsEl.innerHTML = st.pcs.map((pc, i) => `<span class="slot${ps.found.has(pc) ? ' on' : ''}"><small>${st.labels ? st.labels[i] : ''}</small><b>${ps.found.has(pc) ? st.names[i] : '?'}</b></span>`).join('');
+    } else if (it.steps.length > 1) {
+      this.stepsEl.innerHTML = it.steps.map((st, i) => `<span class="slot${i < ps.idx ? ' on' : ''}${i === ps.idx && !this.answered ? ' now' : ''}"><small>${i + 1}</small><b>${i < ps.idx ? st.name : '?'}</b></span>`).join('');
+    } else this.stepsEl.innerHTML = '';
+    if (this.playSvg) {
+      if (it.neck) {
+        const cur = it.steps[ps.idx];
+        const marks = it.neck.marks.map((m, i) => {
+          const st = it.steps[i];
+          if (i < ps.idx) return Object.assign({}, m, { kind: 'found' + (m.kind.includes('root') ? ' root' : '') });
+          if (cur && st && st.pos && i === ps.idx) return Object.assign({}, m, { kind: 'next' });
+          return m;
+        });
+        drawNeck(this.playSvg, { from: it.neck.from, to: it.neck.to, marks, highlight: cur && cur.pos ? [cur.pos.s] : [] });
+      } else drawNeck(this.playSvg, { from: 0, to: Math.max(12, Store.settings.maxFret), highlight: it.highlight, marks: this.playMarks || [] });
+    }
+  },
+  hint() {
+    const it = this.cur;
+    if (!it || this.answered) return;
+    this.hints++;
+    this.hintEl.textContent = it.hint || '';
+    if (it.hintNeck) {
+      if (!this.hintSvg || !this.hintSvg.isConnected) {
+        this.hintSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        this.hintSvg.setAttribute('role', 'img'); this.hintSvg.setAttribute('aria-label', 'Hint op de hals');
+        this.hintEl.after(h('figure', { class: 'card neck' }, this.hintSvg));
+      }
+      drawNeck(this.hintSvg, it.hintNeck);
+    }
+    if (it.highlight && it.steps[0].frets) { this.playMarks = it.steps[0].frets.map(f => ({ s: it.steps[0].string, f, kind: 'hint', label: it.steps[0].name })); this.renderSteps(); }
+  },
+  skip() {
+    const it = this.cur;
+    if (!it || this.answered) return;
+    this.mistakes++; this.skipped++;
+    this.doneIds.add(it._id); this.updateBar();
+    const ans = it.steps.map(st => st.k === 'set' ? st.names.join(' ') : st.name).join(' → ');
+    this.feedback(false, 'Overgeslagen', `${ans ? `Het antwoord: ${ans}. ` : ''}${it.hint || ''}`);
+  },
+  cantPlayNow() {
+    Store.settings.cantPlayUntil = Date.now() + 15 * 60 * 1000; Store.saveSettings();
+    this.cantPlay = true;
+    for (const q of this.queue) if (q.type === 'play') this.doneIds.add(q._id);
+    this.queue = this.queue.filter(q => q.type !== 'play');
+    if (this.cur && this.cur.type === 'play') this.doneIds.add(this.cur._id);
+    this.updateBar();
+    this.next();
+  },
+  onNote(n) {
+    const it = this.cur;
+    if (!it || it.type !== 'play' || this.answered) return;
+    const ps = this.ps, st = it.steps[ps.idx], toast = $('.ls-toast', this.body);
+    const heard = pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps');
+    Activity.ping();
+    if (st.k === 'set') {
+      const pc = mod12(n.midi);
+      if (st.pcs.includes(pc)) {
+        if (!ps.found.has(pc)) { ps.found.add(pc); toast.textContent = ''; this.renderSteps(); if (ps.found.size === st.pcs.length) this.playDone(); }
+      } else toast.textContent = `${heard} hoort er niet bij`;
+      return;
+    }
+    let ok;
+    if (st.k === 'rel') {
+      if (ps.last == null) return;
+      const want = ps.last + st.semis;
+      ok = Store.settings.strict || Math.abs(st.semis) === 12 ? n.midi === want : mod12(n.midi) === mod12(want);
+    } else ok = mod12(n.midi) === st.pc;
+    if (ok) {
+      ps.last = n.midi; ps.idx++;
+      toast.textContent = ps.idx < it.steps.length ? 'Goed, verder' : '';
+      this.renderSteps();
+      if (ps.idx >= it.steps.length) this.playDone();
+      return;
+    }
+    if (ps.last != null && mod12(n.midi) === mod12(ps.last)) return;   // vorige noot klinkt nog
+    toast.textContent = `Je speelde ${heard}`;
+  },
+  playDone() {
+    const it = this.cur;
+    this.doneIds.add(it._id); this.updateBar();
+    this.feedback(true, 'Goed gespeeld!', it.explain || '', 1400);
+  },
+
+  finish() {
+    if (this.finished) return;
+    this.finished = true; this.cur = null;
+    const sp = this.spec, secs = (performance.now() - this.t0) / 1000;
+    const accuracy = this.total ? Math.max(0, (this.total - this.mistakes) / this.total) : 1;
+    const perfect = this.mistakes === 0 && this.skipped === 0;
+    const passed = !sp.test || accuracy >= 0.8;
+    const xp = passed ? (sp.xp || 10) + (perfect ? 5 : 0) : 5;
+    Progress.addXP(xp);
+    if (sp.onFinish) sp.onFinish({ passed, accuracy, perfect, secs, xp });
+    const fresh = Badges.check({ quiet: true });
+    this.body.innerHTML = '';
+    this.foot.className = 'ls-foot';
+    this.foot.innerHTML = '';
+    const title = sp.test ? (passed ? 'Unittoets gehaald!' : 'Nog niet gehaald') : perfect ? 'Foutloos!' : 'Les voltooid!';
+    const mm = `${Math.floor(secs / 60)}:${String(Math.round(secs % 60)).padStart(2, '0')}`;
+    this.body.append(h('div', { class: 'ls-end' },
+      h('div', { class: 'end-ico' + (passed ? '' : ' fail'), html: passed ? (sp.test ? ICONS.trophy : ICONS.star) : ICONS.retry }),
+      h('h2', { class: 'end-title', text: title }),
+      h('p', { class: 'help', text: sp.test && !passed ? 'Je hebt 80% goed nodig. Herhaal de lessen van deze unit en probeer het nog eens.' : sp.title || '' }),
+      h('div', { class: 'end-stats' },
+        h('div', {}, h('small', { text: 'XP' }), h('b', { text: `+${xp}` })),
+        h('div', {}, h('small', { text: 'Goed' }), h('b', { text: `${Math.round(accuracy * 100)}%` })),
+        h('div', {}, h('small', { text: 'Tijd' }), h('b', { text: mm }))),
+      fresh.length ? h('div', { class: 'end-badges' }, fresh.map(b => h('div', { class: 'end-badge' },
+        h('span', { class: 'b-ico', html: ICONS[b.icon] }),
+        h('div', {}, h('small', { text: 'Nieuwe mijlpaal' }), h('b', { text: b.title }), h('span', { text: b.desc }))))) : null,
+      Progress.goalLine()));
+    this.counter.textContent = '';
+    this.barFill.style.width = '100%';
+    this.foot.append(h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => { const s = this.spec; this.spec = null; if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; } }));
+    if (Engine.ctx) Engine.chime();
+  },
+};
+
+// ---------- Leerpad: units uit path.json (of het cursusschema) ----------
+const COURSE_DOC = 'https://claude.ai/code/artifact/a8cea592-791b-4211-9b66-8fdbddcd8c09';
+const PathData = {
+  remote: null,
+  async load() {
+    try {
+      const r = await fetch('path.json?t=' + Date.now(), { cache: 'no-store' });
+      if (r.ok) {
+        const j = await r.json();
+        if (j && Array.isArray(j.units)) { this.remote = j; Store.put('path', j); }
+      }
+    } catch (e) {}
+    if (document.body.dataset.view === 'path' || document.body.dataset.view === 'progress') Router.render();
+  },
+  units() {
+    const src = this.remote || Store.get('path', null), today = todayKey();
+    let list;
+    if (src) {
+      list = src.units.slice();
+      // vangnet: staat een gegeven les een dag later nog niet in path.json, dan opent de unit uit het cursusschema
+      const max = list.reduce((m, u) => Math.max(m, (u && u.lesson) || 0), 0);
+      for (const u of FASE1) if (u.lesson > max && u.date < today) list.push(u);
+    } else {
+      // zonder path.json: een les telt als gegeven vanaf 20:15 op de lesdag
+      const late = new Date().getHours() * 60 + new Date().getMinutes() >= 20 * 60 + 15;
+      list = FASE1.filter(u => u.date < today || (u.date === today && late));
+    }
+    list = list.filter(u => u && u.lesson && (TOPICS[u.topic] || (u.quiz && u.quiz.length))).slice().sort((a, b) => a.lesson - b.lesson);
+    return list;
+  },
+  upcoming() {
+    const have = this.units(), last = have.length ? have[have.length - 1].lesson : 0;
+    return FASE1.filter(u => u.lesson > last).slice(0, 2);
+  },
+};
+const nodeKey = (unit, i) => `L${unit.lesson}-${i}`;
+const nodeStat = (unit, i) => Store.stats.path.nodes[nodeKey(unit, i)];
+const nodeDone = (unit, i) => !!(nodeStat(unit, i) && nodeStat(unit, i).done);
+function nodeState(unit, nodes, i) {
+  if (nodeDone(unit, i)) return 'done';
+  if (i === 0 || nodeDone(unit, i - 1)) return 'open';
+  return 'locked';
+}
+function nextNode() {
+  const units = PathData.units();
+  for (let u = units.length - 1; u >= 0; u--) {
+    const nodes = unitNodes(units[u]);
+    for (let i = 0; i < nodes.length; i++) if (nodeState(units[u], nodes, i) === 'open') return { unit: units[u], index: i, node: nodes[i], unitNo: u + 1 };
+  }
+  return null;
+}
+function recordNode(unit, i, node, res) {
+  const k = nodeKey(unit, i), st = Store.stats.path.nodes[k] || (Store.stats.path.nodes[k] = { runs: 0, mistakes: 0 });
+  st.runs++; st.last = Date.now(); st.mistakes += Math.round((1 - res.accuracy) * 10);
+  st.best = Math.max(st.best || 0, res.accuracy);
+  if (res.perfect) st.perfect = true;
+  if (node.test) st.test = true;
+  if (res.passed) st.done = true;
+  Store.saveStats();
+}
+function nodeKindIcon(node) {
+  if (node.test) return ICONS.trophy;
+  const items = node.gen(), play = items.some(x => x.type === 'play'), theory = items.some(x => x.type !== 'play');
+  return play && theory ? ICONS.note : play ? ICONS.pick : ICONS.book;
+}
+function nodeInfo(node) {
+  const items = node.gen(), play = items.filter(x => x.type === 'play').length;
+  const parts = [`${items.length} oefeningen`];
+  parts.push(play === items.length ? 'met gitaar' : play ? `${play} met gitaar` : 'zonder gitaar');
+  parts.push(`ongeveer ${Math.max(2, Math.round(items.length * 0.5))} min`);
+  return parts.join(' · ');
+}
+function startNode(unit, i, nodes, after) {
+  const node = nodes[i], items = node.gen();
+  const cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
+  if (!cantPlay && items.some(x => x.type === 'play') && !Engine.mic) Engine.startMic();
+  Lesson.open({
+    title: `Les ${unit.lesson} · ${node.title}`, items, test: !!node.test, xp: node.test ? 20 : 10,
+    onFinish: res => recordNode(unit, i, node, res),
+    onDone: after || (() => { location.hash = ''; }),
+    onExit: () => { location.hash = ''; },
+  });
+}
+const OFFSETS = [0, 1, 1.6, 1, 0, -1, -1.6, -1];
+function niceDate(iso) {
+  const d = new Date(iso + 'T12:00:00');
+  return d.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+function renderPath(view) {
+  const units = PathData.units();
+  const wrap = h('section', { class: 'path' });
+  if ((Store.settings.cantPlayUntil || 0) > Date.now()) {
+    const until = new Date(Store.settings.cantPlayUntil).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+    wrap.append(h('div', { class: 'note-bar' }, h('span', { text: `Speelopdrachten staan uit tot ${until}.` }), h('button', { type: 'button', text: 'Weer aanzetten', onclick: () => { Store.settings.cantPlayUntil = 0; Store.saveSettings(); Router.render(); } })));
+  }
+  if (!units.length) wrap.append(h('div', { class: 'card empty' }, h('h2', { text: 'Je leerpad begint na les 1' }), h('p', { class: 'help', text: 'Zodra je eerste muziektheorieles binnen is, verschijnt hier de eerste unit met oefeningen.' })));
+  const nx = nextNode();
+  units.forEach((u, ui) => {
+    const meta = unitMeta(u), nodes = unitNodes(u);
+    const doneCount = nodes.filter((n, i) => nodeDone(u, i)).length;
+    const head = h('div', { class: 'unit-head' + (doneCount === nodes.length ? ' complete' : '') },
+      h('div', { class: 'uh-text' },
+        h('p', { class: 'eyebrow', text: `Unit ${ui + 1} · bij les ${u.lesson}` }),
+        h('h2', { text: meta.title }),
+        meta.subtitle ? h('p', { class: 'uh-sub', text: meta.subtitle }) : null),
+      h('div', { class: 'uh-side' },
+        h('span', { class: 'uh-count', text: `${doneCount}/${nodes.length}` }),
+        h('a', { class: 'uh-link', href: u.doc || COURSE_DOC, target: '_blank', rel: 'noopener', text: 'Lees de les' })));
+    const track = h('div', { class: 'track' });
+    nodes.forEach((n, i) => {
+      const state = nodeState(u, nodes, i);
+      const isNext = nx && nx.unit.lesson === u.lesson && nx.index === i;
+      const btn = h('button', { type: 'button', class: `node ${state}${isNext ? ' next' : ''}${n.test ? ' test' : ''}`, 'aria-label': `${n.title}: ${state === 'done' ? 'gedaan' : state === 'open' ? 'beschikbaar' : 'op slot'}`, html: state === 'locked' ? ICONS.lock : state === 'done' && !n.test ? ICONS.check : nodeKindIcon(n), onclick: () => nodeSheet(u, i, nodes, ui + 1) });
+      const row = h('div', { class: 'node-row', style: `--x:${OFFSETS[i % OFFSETS.length]}` }, btn, isNext ? h('span', { class: 'bubble', text: n.title }) : null);
+      track.append(row);
+    });
+    wrap.append(h('div', { class: 'unit', id: `unit-${u.lesson}` }, head, track));
+  });
+  for (const up of PathData.upcoming()) {
+    const tp = TOPICS[up.topic];
+    wrap.append(h('div', { class: 'unit locked' }, h('div', { class: 'unit-head' },
+      h('div', { class: 'uh-text' }, h('p', { class: 'eyebrow', text: `Les ${up.lesson} · opent ${niceDate(up.date)}` }), h('h2', { text: tp ? tp.title : 'Volgende les' }), tp ? h('p', { class: 'uh-sub', text: tp.subtitle }) : null),
+      h('div', { class: 'uh-side' }, h('span', { class: 'uh-lock', html: ICONS.lock })))));
+  }
+  wrap.append(h('div', { class: 'path-end', text: 'Na elke les van maandag en donderdag komt hier een nieuwe unit bij.' }));
+  view.append(wrap);
+  const remaining = Math.max(0, Progress.goalSecs() - Progress.day().secs);
+  const cta = h('div', { class: 'cta-bar' }, h('button', { class: 'primary big', type: 'button', id: 'todayBtn', onclick: () => Daily.showPlan() },
+    h('span', { text: Daily.active ? 'Ga verder met vandaag' : remaining ? 'Oefen vandaag' : 'Extra oefenen' }),
+    h('small', { text: remaining ? `nog ${Math.ceil(remaining / 60)} min voor je dagdoel` : 'dagdoel gehaald' })));
+  view.append(cta);
+  const target = nx ? document.getElementById(`unit-${nx.unit.lesson}`) : null;
+  if (target && nx.index > 0) setTimeout(() => { const b = $('.node.next', target); if (b) b.scrollIntoView({ block: 'center' }); }, 30);
+}
+function nodeSheet(u, i, nodes, unitNo) {
+  const n = nodes[i], state = nodeState(u, nodes, i);
+  const sheet = h('div', { class: 'sheet-wrap', onclick: e => { if (e.target === sheet) sheet.remove(); } },
+    h('div', { class: 'sheet' },
+      h('p', { class: 'eyebrow', text: `Unit ${unitNo} · stap ${i + 1} van ${nodes.length}` }),
+      h('h3', { text: n.title }),
+      h('p', { class: 'help', text: state === 'locked' ? `Rond eerst “${nodes[i - 1].title}” af.` : n.test ? 'Tien vragen uit de hele unit. Met 80% goed heb je de unit gehaald.' : nodeInfo(n) }),
+      state === 'locked' ? h('button', { class: 'big', type: 'button', text: 'Sluiten', onclick: () => sheet.remove() })
+        : h('button', { class: 'primary big', type: 'button', text: state === 'done' ? 'Nog een keer (+10 XP)' : `Start (+${n.test ? 20 : 10} XP)`, onclick: () => { sheet.remove(); startNode(u, i, nodes); } })));
+  document.body.append(sheet);
+}
+
+// ---------- Herhalen: vragen uit afgeronde lessen, zwakke eerst ----------
+const Review = {
+  candidates() {
+    const out = [];
+    for (const u of PathData.units()) unitNodes(u).forEach((node, i) => {
+      if (node.test) return;
+      const st = nodeStat(u, i);
+      if (!st || !st.done) return;
+      const days = (Date.now() - (st.last || 0)) / 86400000;
+      out.push({ node, w: 1 + Math.min(3, st.mistakes / Math.max(1, st.runs)) + Math.min(3, days / 2) });
+    });
+    return out;
+  },
+  available() { return this.candidates().length > 0; },
+  build(n) {
+    const cands = this.candidates(), items = [];
+    if (!cands.length) return items;
+    for (let k = 0; k < 40 && items.length < (n || 8); k++) {
+      let r = Math.random() * cands.reduce((a, c) => a + c.w, 0), c = cands[0];
+      for (const x of cands) { r -= x.w; if (r <= 0) { c = x; break; } }
+      items.push(...shuffle(c.node.gen()).slice(0, 2));
+    }
+    return items.slice(0, n || 8);
+  },
+};
+
+// ---------- Oefentijd, XP, reeks ----------
+const Activity = {
+  last: -1e9,
+  ping() { this.last = performance.now(); },
+  active() { return performance.now() - this.last < 60000; },
+};
+document.addEventListener('pointerdown', () => Activity.ping(), { passive: true });
+document.addEventListener('keydown', () => Activity.ping());
+
+const dayKeyOf = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const Progress = {
+  drillSecs: 0,
+  goalSecs() { return (Store.settings.goal || 15) * 60; },
+  day(k) { const d = Store.stats.days; k = k || todayKey(); if (!d[k]) d[k] = { secs: 0, xp: 0 }; return d[k]; },
+  peek(k) { return Store.stats.days[k] || { secs: 0, xp: 0 }; },
+  addXP(n) { Store.stats.xp = (Store.stats.xp || 0) + n; this.day().xp += n; Store.saveStats(); this.renderTop(); },
+  met(k) { return this.peek(k).secs >= this.goalSecs(); },
   tick() {
-    if (!this.active) return;
-    const onBlock = current && current.id === this.blocks[this.idx];
-    if (Engine.mic && onBlock && document.visibilityState === 'visible') {
-      this.left--;
-      if (this.left <= 0) return this.nextBlock(true);
+    const v = document.body.dataset.view;
+    const practicing = document.visibilityState === 'visible' && Activity.active() && (v === 'lesson' || (v === 'mode' && Engine.mic));
+    if (!practicing) return;
+    const d = this.day(), before = d.secs;
+    d.secs++;
+    if (v === 'mode' && ++this.drillSecs >= 30) { this.drillSecs = 0; this.addXP(1); }
+    if (before < this.goalSecs() && d.secs >= this.goalSecs()) this.goalReached();
+    if (d.secs % 5 === 0) Store.saveStats();
+    this.renderTop();
+  },
+  streak() {
+    const d = new Date(), today = this.met(dayKeyOf(d));
+    if (!today) d.setDate(d.getDate() - 1);
+    let n = 0;
+    while (this.met(dayKeyOf(d))) { n++; d.setDate(d.getDate() - 1); }
+    return { n, today };
+  },
+  bestStreak() {
+    const keys = Object.keys(Store.stats.days).filter(k => this.met(k)).sort();
+    let best = 0, run = 0, prev = null;
+    for (const k of keys) {
+      const d = new Date(k + 'T12:00:00');
+      run = prev && Math.round((d - prev) / 86400000) === 1 ? run + 1 : 1;
+      best = Math.max(best, run); prev = d;
+    }
+    return best;
+  },
+  daysMet() { return Object.keys(Store.stats.days).filter(k => this.met(k)).length; },
+  totalSecs() { return Object.values(Store.stats.days).reduce((a, d) => a + (d.secs || 0), 0); },
+  weekSecs() {
+    const d = new Date(); let s = 0;
+    const dow = (d.getDay() + 6) % 7;
+    for (let i = 0; i <= dow; i++) { const x = new Date(d); x.setDate(d.getDate() - i); s += this.peek(dayKeyOf(x)).secs; }
+    return s;
+  },
+  goalReached() {
+    Store.saveStats();
+    const sk = this.streak();
+    UI.flash(ICONS.flame, 'Dagdoel gehaald!', sk.n === 1 ? 'Je reeks is begonnen.' : `${sk.n} dagen op rij.`, 'goal');
+    // de mijlpaal 'Dagdoel gehaald' zegt hetzelfde als deze melding
+    Badges.check({ skip: ['goal'] });
+    if (Engine.ctx) Engine.chime();
+  },
+  renderTop() {
+    const sk = this.streak(), secs = this.day().secs, goal = this.goalSecs();
+    const s = $('#streakChip');
+    if (s) { $('b', s).textContent = String(sk.n); s.classList.toggle('lit', sk.today); s.setAttribute('aria-label', `Reeks: ${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'}${sk.today ? ', vandaag gehaald' : ''}`); }
+    const g = $('#goalChip');
+    if (g) {
+      const pct = clamp(secs / goal, 0, 1);
+      $('b', g).textContent = `${Math.floor(secs / 60)}/${Math.round(goal / 60)}`;
+      const c = $('.ring-fg', g);
+      if (c) c.setAttribute('stroke-dasharray', `${(pct * 62.83).toFixed(2)} 62.83`);
+      g.classList.toggle('lit', pct >= 1);
+      g.setAttribute('aria-label', `Dagdoel: ${Math.floor(secs / 60)} van ${Math.round(goal / 60)} minuten`);
+    }
+  },
+  goalLine() {
+    const secs = this.day().secs, goal = this.goalSecs(), pct = clamp(secs / goal, 0, 1);
+    return h('div', { class: 'goal-line' },
+      h('div', { class: 'gl-text' }, h('span', { text: 'Dagdoel' }), h('b', { text: pct >= 1 ? 'gehaald' : `${Math.floor(secs / 60)} van ${Math.round(goal / 60)} min` })),
+      h('div', { class: 'progress' }, h('span', { style: `width:${(pct * 100).toFixed(1)}%` })));
+  },
+};
+setInterval(() => Progress.tick(), 1000);
+
+// ---------- Mijlpalen ----------
+const BADGES = [
+  { id: 'first', icon: 'star', title: 'Eerste stap', desc: 'Je eerste les in het leerpad', test: s => Object.values(s.path.nodes).some(n => n.done) },
+  { id: 'goal', icon: 'flame', title: 'Dagdoel gehaald', desc: 'Een dag je dagdoel gehaald', test: () => Progress.daysMet() >= 1 },
+  { id: 'streak3', icon: 'flame', title: 'Drie op rij', desc: '3 dagen op rij je dagdoel', test: () => Progress.bestStreak() >= 3 },
+  { id: 'streak7', icon: 'flame', title: 'Een week vol', desc: '7 dagen op rij je dagdoel', test: () => Progress.bestStreak() >= 7 },
+  { id: 'streak30', icon: 'flame', title: 'Een maand vol', desc: '30 dagen op rij je dagdoel', test: () => Progress.bestStreak() >= 30 },
+  { id: 'perfect', icon: 'check', title: 'Foutloos', desc: 'Een les zonder fouten', test: s => Object.values(s.path.nodes).some(n => n.perfect) },
+  { id: 'unit', icon: 'trophy', title: 'Unit voltooid', desc: 'Een unittoets gehaald', test: s => Object.values(s.path.nodes).some(n => n.test && n.done) },
+  { id: 'xp100', icon: 'bolt', title: '100 XP', desc: '100 XP verdiend', test: s => (s.xp || 0) >= 100 },
+  { id: 'xp500', icon: 'bolt', title: '500 XP', desc: '500 XP verdiend', test: s => (s.xp || 0) >= 500 },
+  { id: 'xp1000', icon: 'bolt', title: '1000 XP', desc: '1000 XP verdiend', test: s => (s.xp || 0) >= 1000 },
+  { id: 'notes100', icon: 'note', title: '100 noten', desc: '100 noten gevonden bij Noten zoeken', test: s => s.notes.found >= 100 },
+  { id: 'speed25', icon: 'bolt', title: 'Snelle vingers', desc: '25 noten in 60 seconden', test: s => s.challenge.best >= 25 },
+  { id: 'hours5', icon: 'clock', title: 'Vijf uur', desc: '5 uur geoefend in totaal', test: () => Progress.totalSecs() >= 18000 },
+];
+const Badges = {
+  // geeft de nieuw behaalde mijlpalen terug; quiet: geen melding (het eindscherm toont ze zelf)
+  check(o = {}) {
+    const s = Store.stats; s.badges = s.badges || {};
+    const fresh = [];
+    for (const b of BADGES) if (!s.badges[b.id] && b.test(s)) { s.badges[b.id] = todayKey(); fresh.push(b); }
+    if (fresh.length) Store.saveStats();
+    if (!o.quiet) for (const b of fresh) if (!(o.skip || []).includes(b.id)) UI.flash(ICONS[b.icon], `Nieuwe mijlpaal: ${b.title}`, b.desc, 'badge');
+    return fresh;
+  },
+};
+
+// ---------- Voortgang-scherm ----------
+const MONTHS = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
+const WD = ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'];
+function calLevel(secs) {
+  const goal = Progress.goalSecs();
+  if (secs <= 0) return 0;
+  if (secs >= goal) return 4;
+  if (secs >= goal * 0.66) return 3;
+  if (secs >= goal * 0.33) return 2;
+  return 1;
+}
+function renderCalendar(infoEl) {
+  const weeks = 16, cell = 15, gap = 3, L = 22, T = 16;
+  const today = new Date(); today.setHours(12, 0, 0, 0);
+  const dow = (today.getDay() + 6) % 7;
+  const start = new Date(today); start.setDate(today.getDate() - dow - (weeks - 1) * 7);
+  const W = L + weeks * (cell + gap), H = T + 7 * (cell + gap);
+  let g = '';
+  const monthOf = w => { const x = new Date(start); x.setDate(start.getDate() + w * 7); return x.getMonth(); };
+  for (let w = 0; w < weeks; w++) {
+    const m = monthOf(w);
+    const label = w === 0 ? monthOf(1) === m && monthOf(2) === m : m !== monthOf(w - 1);
+    if (label) g += `<text class="cal-m" x="${L + w * (cell + gap)}" y="10">${MONTHS[m]}</text>`;
+    for (let d = 0; d < 7; d++) {
+      const day = new Date(start); day.setDate(start.getDate() + w * 7 + d);
+      if (day > today) continue;
+      const k = dayKeyOf(day), secs = Progress.peek(k).secs, lv = calLevel(secs);
+      const label = `${day.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' })}: ${Math.round(secs / 60)} min`;
+      g += `<rect class="cal-c l${lv}${k === todayKey() ? ' today' : ''}" x="${L + w * (cell + gap)}" y="${T + d * (cell + gap)}" width="${cell}" height="${cell}" rx="3" tabindex="0" data-label="${label}" aria-label="${label}"></rect>`;
+    }
+  }
+  [0, 2, 4].forEach(d => { g += `<text class="cal-wd" x="0" y="${T + d * (cell + gap) + cell - 3}">${WD[d]}</text>`; });
+  const svg = h('div', { class: 'cal-wrap', html: `<svg class="cal" viewBox="0 0 ${W} ${H}" role="img" aria-label="Oefenkalender van de laatste ${weeks} weken">${g}</svg>` });
+  const show = e => { const c = e.target.closest && e.target.closest('.cal-c'); if (c) { infoEl.textContent = c.dataset.label; $$('.cal-c.sel', svg).forEach(x => x.classList.remove('sel')); c.classList.add('sel'); } };
+  svg.addEventListener('pointerover', show); svg.addEventListener('pointerdown', show); svg.addEventListener('focusin', show);
+  return svg;
+}
+function renderWeekChart(infoEl) {
+  const today = new Date(); today.setHours(12, 0, 0, 0);
+  const dow = (today.getDay() + 6) % 7, goalMin = Progress.goalSecs() / 60;
+  const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(today); d.setDate(today.getDate() - dow + i); const k = dayKeyOf(d); return { d, k, min: d > today ? null : Progress.peek(k).secs / 60, isToday: i === dow }; });
+  const maxV = Math.max(goalMin, ...days.map(x => x.min || 0));
+  const step = maxV > 40 ? 20 : maxV > 20 ? 10 : 5;
+  const top = Math.ceil((maxV * 1.1) / step) * step;
+  const W = 340, H = 170, L = 30, R = 34, T = 14, B = 26;
+  const Y = v => T + (1 - v / top) * (H - T - B);
+  const slot = (W - L - R) / 7, bw = Math.min(24, slot * 0.55);
+  let g = '';
+  for (let v = 0; v <= top; v += step) g += `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="tick" x="${L - 6}" y="${Y(v) + 4}" text-anchor="end">${v}</text>`;
+  days.forEach((x, i) => {
+    const cx = L + slot * (i + 0.5);
+    g += `<text class="tick${x.isToday ? ' now' : ''}" x="${cx}" y="${H - 8}" text-anchor="middle">${WD[i]}</text>`;
+    if (x.min == null) return;
+    const v = x.min, y = Y(v), base = Y(0), hgt = base - y, r = Math.min(4, hgt);
+    const label = `${x.d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'short' })}: ${Math.round(v)} min`;
+    if (hgt > 0.5) g += `<path class="bar${x.isToday ? ' now' : ''}" d="M${cx - bw / 2} ${base} V${y + r} Q${cx - bw / 2} ${y} ${cx - bw / 2 + r} ${y} H${cx + bw / 2 - r} Q${cx + bw / 2} ${y} ${cx + bw / 2} ${y + r} V${base} Z"/>`;
+    g += `<rect class="hit" x="${cx - slot / 2}" y="${T}" width="${slot}" height="${H - T - B}" tabindex="0" data-label="${label}" aria-label="${label}"/>`;
+    if (x.isToday && v > 0) g += `<text class="val" x="${cx}" y="${y - 6}" text-anchor="middle">${Math.round(v)}</text>`;
+  });
+  g += `<line class="goal" x1="${L}" x2="${W - R}" y1="${Y(goalMin)}" y2="${Y(goalMin)}"/><text class="goal-t" x="${W - R + 4}" y="${Y(goalMin) + 3}">doel</text>`;
+  const el = h('div', { class: 'week-wrap', html: `<svg class="week" viewBox="0 0 ${W} ${H}" role="img" aria-label="Minuten geoefend per dag deze week">${g}</svg>` });
+  const show = e => { const c = e.target.closest && e.target.closest('.hit'); if (c) infoEl.textContent = c.dataset.label; };
+  el.addEventListener('pointerover', show); el.addEventListener('pointerdown', show); el.addEventListener('focusin', show);
+  return el;
+}
+function renderProgress(view) {
+  Badges.check();
+  const st = Store.stats, sk = Progress.streak();
+  const tile = (label, value, sub, icon) => h('div', { class: 'tile' }, h('span', { class: 'tile-l' }, icon ? h('span', { class: 'tile-ico', html: icon }) : null, label), h('b', { class: 'tile-v', text: value }), sub ? h('small', { text: sub }) : null);
+  const wk = Math.round(Progress.weekSecs() / 60);
+  view.append(h('section', { class: 'kpis' },
+    tile('Reeks', String(sk.n), sk.today ? 'vandaag gehaald' : sk.n ? 'oefen vandaag om hem te houden' : 'haal je dagdoel', ICONS.flame),
+    tile('Beste reeks', String(Progress.bestStreak()), 'dagen'),
+    tile('XP', String(st.xp || 0), 'totaal', ICONS.bolt),
+    tile('Deze week', `${wk}`, 'minuten', ICONS.clock)));
+  const calInfo = h('p', { class: 'chart-info', text: 'Tik op een dag voor de minuten' });
+  view.append(h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Oefenkalender' }), h('p', { class: 'help', text: 'De laatste 16 weken. Hoe donkerder, hoe langer je oefende; de donkerste kleur is je dagdoel gehaald.' }), renderCalendar(calInfo),
+    h('div', { class: 'cal-legend', html: `<span>minder</span>${[0, 1, 2, 3, 4].map(l => `<i class="l${l}"></i>`).join('')}<span>dagdoel</span>` }), calInfo));
+  const wkInfo = h('p', { class: 'chart-info', text: 'Tik op een dag voor de minuten' });
+  view.append(h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Deze week' }), h('p', { class: 'help', text: `Minuten per dag. De lijn is je dagdoel van ${Math.round(Progress.goalSecs() / 60)} minuten.` }), renderWeekChart(wkInfo), wkInfo));
+  const units = PathData.units();
+  view.append(h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Leerpad' }),
+    units.length ? h('div', { class: 'unit-list' }, units.map((u, i) => {
+      const nodes = unitNodes(u), done = nodes.filter((n, k) => nodeDone(u, k)).length, test = nodeDone(u, nodes.length - 1);
+      return h('div', { class: 'ul-row' }, h('div', { class: 'ul-t' }, h('b', { text: `Unit ${i + 1} · ${unitMeta(u).title}` }), h('span', { class: 'help', text: test ? 'unittoets gehaald' : `${done} van ${nodes.length} stappen` })), h('div', { class: 'progress' }, h('span', { style: `width:${(100 * done / nodes.length).toFixed(0)}%` })));
+    })) : h('p', { class: 'help', text: 'Na les 1 verschijnt hier je eerste unit.' })));
+  const got = st.badges || {};
+  view.append(h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: `Mijlpalen · ${Object.keys(got).length} van ${BADGES.length}` }),
+    h('div', { class: 'badges' }, BADGES.map(b => h('div', { class: 'badge' + (got[b.id] ? ' got' : '') }, h('span', { class: 'b-ico', html: ICONS[b.icon] }), h('b', { text: b.title }), h('small', { text: got[b.id] ? `${niceDate(got[b.id])}` : b.desc }))))));
+  const r = st.bends.recent, bendAvg = r.length ? Math.round(r.reduce((a, b) => a + Math.abs(b), 0) / r.length) : null;
+  const earOk = Object.values(st.ear.ok).reduce((a, b) => a + b, 0);
+  const rows = [
+    ['Noten zoeken', st.notes.found ? `gemiddeld ${fmt1(st.notes.totalTime / st.notes.found)} s · snelste ${st.notes.best != null ? fmt1(st.notes.best) + ' s' : '–'}` : 'nog niet geoefend'],
+    ['60 seconden', st.challenge.best ? `record ${st.challenge.best} noten` : 'nog niet gespeeld'],
+    ['Toonladders', Object.keys(st.scales.best).length ? `${Object.keys(st.scales.best).length} boxen met een record` : 'nog geen record'],
+    ['Bends', bendAvg != null ? `gemiddeld ${bendAvg} cent ernaast` : 'nog niet geoefend'],
+    ['Op gehoor', earOk ? `${earOk} keer goed nagespeeld` : 'nog niet geoefend'],
+    ['Totaal geoefend', `${Math.round(Progress.totalSecs() / 60)} minuten`],
+  ];
+  view.append(h('div', { class: 'card hard' }, h('p', { class: 'eyebrow', text: 'Records' }), h('ol', {}, rows.map(([a, b]) => h('li', {}, h('span', { text: a }), h('span', { text: b })))),
+    h('div', { class: 'row links' }, h('a', { class: 'link', href: '#m-heatmap', text: 'Hittekaart van de hals ›' }), h('a', { class: 'link', href: '#instellingen', text: 'Instellingen ›' }))));
+}
+
+// ---------- Oefen vandaag: een sessie die zichzelf samenstelt ----------
+const Daily = {
+  active: false, steps: [], idx: 0, left: 0, timer: 0, startXP: 0, startSecs: 0,
+  plan() {
+    const remainMin = Math.max(5, Math.ceil((Progress.goalSecs() - Progress.day().secs) / 60));
+    const steps = [];
+    let est = 0;
+    const add = s => { steps.push(s); est += s.minutes; };
+    add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
+    const nx = nextNode();
+    if (nx) add({ kind: 'node', ref: nx, minutes: 4, title: 'Leerpad', sub: `Unit ${nx.unitNo}: ${nx.node.title}` });
+    if (Review.available()) add({ kind: 'review', minutes: 3, title: 'Herhalen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst' });
+    const cu = nx ? nx.unit : PathData.units().slice(-1)[0];
+    if (cu) {
+      const d = unitMeta(cu).drill;
+      if (d && MODES[d.mode] && d.mode !== 'notes') add({ kind: 'drill', mode: d.mode, set: d.set, minutes: 3, title: 'Toepassen', sub: `${MODES[d.mode].title} · past bij les ${cu.lesson}` });
+    }
+    const extras = shuffle([{ mode: 'challenge', minutes: 2, sub: '60 seconden' }, { mode: 'scales', minutes: 3, sub: 'Toonladders' }, { mode: 'positions', minutes: 2, sub: 'Alle posities' }, { mode: 'ear', minutes: 3, sub: 'Op gehoor naspelen' }]);
+    for (const x of extras) { if (est >= remainMin) break; add({ kind: 'drill', mode: x.mode, minutes: x.minutes, title: 'Extra', sub: x.sub }); }
+    return steps;
+  },
+  showPlan() {
+    if (this.active) return this.run();
+    const steps = this.plan(), total = steps.reduce((a, s) => a + s.minutes, 0);
+    const met = Progress.met(todayKey());
+    const sheet = h('div', { class: 'sheet-wrap', onclick: e => { if (e.target === sheet) sheet.remove(); } },
+      h('div', { class: 'sheet' },
+        h('p', { class: 'eyebrow', text: met ? 'Dagdoel al gehaald' : 'Oefen vandaag' }),
+        h('h3', { text: `${total} minuten` }),
+        h('ol', { class: 'plan' }, steps.map((s, i) => h('li', {}, h('span', { class: 'pl-n', text: String(i + 1) }), h('div', {}, h('b', { text: s.title }), h('small', { text: s.sub })), h('span', { class: 'pl-m', text: `${s.minutes} min` })))),
+        h('p', { class: 'help', text: 'De oefentijd telt alleen als je echt bezig bent. Tussen de stappen ga je vanzelf door.' }),
+        h('button', { class: 'primary big', type: 'button', text: 'Start', onclick: () => { sheet.remove(); this.start(steps); } })));
+    document.body.append(sheet);
+  },
+  start(steps) {
+    this.steps = steps; this.idx = 0; this.active = true;
+    this.startXP = Store.stats.xp || 0; this.startSecs = Progress.day().secs;
+    if (!Engine.mic && !((Store.settings.cantPlayUntil || 0) > Date.now())) Engine.startMic();
+    this.run();
+  },
+  run() {
+    const st = this.steps[this.idx];
+    if (!st) return this.finish();
+    clearInterval(this.timer);
+    if (st.kind === 'node') {
+      const units = PathData.units(), u = units.find(x => x.lesson === st.ref.unit.lesson) || st.ref.unit;
+      const nodes = unitNodes(u);
+      if (nodeState(u, nodes, st.ref.index) === 'done') { const nx = nextNode(); if (nx) { st.ref = nx; st.sub = `Unit ${nx.unitNo}: ${nx.node.title}`; } }
+      const nodes2 = unitNodes(st.ref.unit);
+      startNode(st.ref.unit, st.ref.index, nodes2, () => this.advance());
+    } else if (st.kind === 'review') {
+      const items = Review.build(8);
+      if (!items.length) return this.advance();
+      Lesson.open({ title: 'Herhalen', items, xp: 10, onDone: () => this.advance(), onExit: () => { location.hash = ''; } });
+    } else {
+      if (st.set && st.mode === 'scales') { Object.assign(Store.settings.scales, st.set); Store.saveSettings(); }
+      this.left = st.minutes * 60;
+      if (location.hash === '#m-' + st.mode) Router.render(); else location.hash = '#m-' + st.mode;
+      this.timer = setInterval(() => this.tick(), 1000);
     }
     this.renderBar();
   },
-  nextBlock(auto) {
-    if (auto) Engine.chime();
-    this.idx++;
-    if (this.idx >= this.blocks.length) return this.finish();
-    this.left = Store.settings.routine.minutes * 60;
-    this.go();
+  tick() {
+    const st = this.steps[this.idx];
+    if (!this.active || !st || st.kind !== 'drill') return;
+    const onIt = current && current.id === st.mode;
+    if (Engine.mic && onIt && document.visibilityState === 'visible') {
+      this.left--;
+      if (this.left <= 0) { if (Engine.ctx) Engine.chime(); return this.advance(); }
+    }
+    this.renderBar();
   },
+  advance() { clearInterval(this.timer); this.idx++; if (this.idx >= this.steps.length) return this.finish(); this.run(); },
+  stop() { this.active = false; clearInterval(this.timer); this.renderBar(); if (location.hash.startsWith('#m-')) location.hash = ''; },
   finish() {
-    this.active = false; clearInterval(this.timer);
-    const days = Store.stats.routine.days, t = todayKey();
-    if (!days.includes(t)) days.push(t);
-    while (days.length > 400) days.shift();
-    Store.saveStats();
-    this.justDone = { minutes: this.blocks.length * Store.settings.routine.minutes };
+    this.active = false; clearInterval(this.timer); this.renderBar();
+    const min = Math.max(0, Math.round((Progress.day().secs - this.startSecs) / 60)), xp = Math.max(0, (Store.stats.xp || 0) - this.startXP);
     if (location.hash === '' || location.hash === '#') Router.render(); else location.hash = '';
+    setTimeout(() => this.celebrate(min, xp), 60);
   },
-  stop() { this.active = false; clearInterval(this.timer); $('#routineBar').hidden = true; },
-  decorate() { this.renderBar(); },
+  celebrate(min, xp) {
+    const sk = Progress.streak();
+    const sheet = h('div', { class: 'sheet-wrap', onclick: e => { if (e.target === sheet) sheet.remove(); } },
+      h('div', { class: 'sheet center' },
+        h('div', { class: 'end-ico', html: ICONS.trophy }),
+        h('h3', { text: 'Sessie klaar!' }),
+        h('p', { class: 'help', text: `${min} ${min === 1 ? 'minuut' : 'minuten'} geoefend · +${xp} XP${sk.today ? ` · reeks ${sk.n}` : ''}` }),
+        Progress.goalLine(),
+        h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => sheet.remove() })));
+    document.body.append(sheet);
+  },
   renderBar() {
-    const bar = $('#routineBar');
-    if (!this.active) { bar.hidden = true; return; }
-    bar.hidden = false;
-    const id = this.blocks[this.idx], onBlock = current && current.id === id;
+    const bar = $('#sessionBar');
+    if (!bar) return;
+    if (!this.active) { bar.hidden = true; bar._k = ''; return; }
+    const st = this.steps[this.idx];
+    if (!st) { bar.hidden = true; return; }
+    const onIt = st.kind === 'drill' && current && current.id === st.mode;
     const mm = `${Math.floor(this.left / 60)}:${String(this.left % 60).padStart(2, '0')}`;
-    const html = onBlock
-      ? `<span class="rb-txt"><b>Routine ${this.idx + 1}/${this.blocks.length}</b> · ${ROUTINE_BLOCKS[id].title}${Engine.mic ? '' : ' · gepauzeerd'}</span><span class="rb-time">${mm}</span>`
-      : `<span class="rb-txt"><b>Routine gepauzeerd</b> · ${ROUTINE_BLOCKS[id].title}</span>`;
-    if (bar._html === html + onBlock) return;
-    bar._html = html + onBlock;
-    bar.innerHTML = html;
-    bar.append(onBlock ? h('button', { type: 'button', text: 'Volgende', onclick: () => this.nextBlock(false) }) : h('button', { type: 'button', text: 'Ga verder', onclick: () => this.go() }), h('button', { type: 'button', text: 'Stop', onclick: () => this.stop() }));
-  },
-  streak() {
-    const days = new Set(Store.stats.routine.days);
-    const d = new Date();
-    const key = x => `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`;
-    const today = days.has(key(d));
-    if (!today) d.setDate(d.getDate() - 1);
-    let n = 0;
-    while (days.has(key(d))) { n++; d.setDate(d.getDate() - 1); }
-    return { n, today };
+    const dots = this.steps.map((s, i) => `<i class="${i < this.idx ? 'done' : i === this.idx ? 'now' : ''}"></i>`).join('');
+    const k = [this.idx, onIt, onIt ? mm : '', Engine.mic].join('|');
+    bar.hidden = false;
+    if (bar._k === k) return;
+    bar._k = k;
+    bar.innerHTML = `<span class="sb-dots">${dots}</span><span class="sb-txt"><b>${onIt ? st.sub : 'Oefen vandaag'}</b>${onIt ? (Engine.mic ? '' : ' · druk op Start') : ` · stap ${this.idx + 1} van ${this.steps.length}`}</span>${onIt ? `<span class="sb-time">${mm}</span>` : ''}`;
+    bar.append(onIt ? h('button', { type: 'button', text: 'Volgende', onclick: () => this.advance() }) : h('button', { type: 'button', class: 'primary', text: 'Ga verder', onclick: () => this.run() }), h('button', { type: 'button', text: 'Stop', onclick: () => this.stop() }));
   },
 };
 
 // ---------- Opstarten ----------
 Store.load();
-$('#backBtn').addEventListener('click', () => { location.hash = ''; });
+$('#backBtn').addEventListener('click', () => Router.back());
 $('#micPill').addEventListener('click', () => (Engine.mic ? Engine.stopMic() : Engine.startMic()));
 window.addEventListener('hashchange', () => Router.render());
 let lastNarrow = null, resizeT = 0;
@@ -2661,14 +4176,35 @@ window.addEventListener('resize', () => {
 });
 // testhaak: welke tonen verwacht de huidige oefening
 window.__fj = {
-  mode: () => (current ? current.id : null),
-  expected: () => (current && current.expected ? current.expected() : []),
-  routine: () => ({ active: Routine.active, idx: Routine.idx, left: Routine.left }),
+  mode: () => (current ? current.id || document.body.dataset.view : document.body.dataset.view),
+  expected: () => {
+    if (current === Lesson) {
+      const it = Lesson.cur;
+      if (!it || Lesson.answered || it.type !== 'play') return [];
+      const st = it.steps[Lesson.ps.idx];
+      if (!st) return [];
+      if (st.k === 'set') return st.pcs.filter(pc => !Lesson.ps.found.has(pc)).map(pc => 48 + pc);
+      if (st.k === 'rel') return [Lesson.ps.last + st.semis];
+      return [48 + st.pc];
+    }
+    return current && current.expected ? current.expected() : [];
+  },
+  lesson: () => (current === Lesson && Lesson.cur ? { type: Lesson.cur.type, answer: Lesson.cur.answer, options: Lesson.cur.options, correct: Lesson.cur.correct, valid: Lesson.cur.valid, answered: Lesson.answered, done: Lesson.doneIds.size, total: Lesson.total, finished: Lesson.finished } : (current === Lesson ? { finished: Lesson.finished } : null)),
   onsets: () => Engine.onsetLog.slice(),
   latency: () => Engine.latency(),
   metro: () => ({ on: Metronome.on, beats: Metronome.recent.map(b => b.t), now: Engine.ctx ? Engine.ctx.currentTime : 0, bpm: Metronome.bpm }),
+  daily: () => ({ active: Daily.active, idx: Daily.idx, steps: Daily.steps.map(s => s.kind + ':' + (s.mode || '')) }),
+  progress: () => ({ secs: Progress.day().secs, xp: Store.stats.xp, streak: Progress.streak(), nodes: Store.stats.path.nodes, badges: Store.stats.badges }),
+  addSecs: n => { Progress.day().secs += n; Store.saveStats(); Progress.renderTop(); },
 };
+$('#streakChip .chip-ico').innerHTML = ICONS.flame;
+$('#goalChip .chip-ico').innerHTML = ICONS.ring;
+$('#micPill .chip-ico').innerHTML = ICONS.mic;
+const TAB_ICONS = { path: ICONS.path, practice: ICONS.grid, progress: ICONS.chart };
+$$('.tabbar a').forEach(a => { $('.tb-ico', a).innerHTML = TAB_ICONS[a.dataset.tab]; });
 Router.render();
+PathData.load();
+setTimeout(() => Badges.check(), 1500);
 
 })();
 </script>

@@ -2,7 +2,7 @@
 // o = { from, to, highlight: [snaren], marks: [{s, f, kind, label}], range: {min, max} | null }
 function drawNeck(svg, o) {
   const narrow = (svg.getBoundingClientRect().width || 1000) < 560;
-  const W = narrow ? 640 : 1000, TOP = 16, GAP = 30, BOARD_H = 28 + 5 * GAP, X0 = 86;
+  const W = narrow ? (o.tap ? 470 : 640) : 1000, TOP = 16, GAP = 30, BOARD_H = 28 + 5 * GAP, X0 = 86;
   const from = Math.max(0, o.from || 0), to = Math.max(from + 3, o.to == null ? 12 : o.to);
   const d = n => 1 - Math.pow(2, -n / 12);
   const leftN = from === 0 ? 0 : from - 1;
@@ -58,6 +58,12 @@ function drawNeck(svg, o) {
     const fs = Math.max(10, Math.min(15, r * 0.95));
     const lbl = m.label == null ? '' : String(m.label);
     h += `<g class="mk ${m.kind || ''}"><circle cx="${x}" cy="${y}" r="${r.toFixed(1)}"/>${lbl ? `<text x="${x}" y="${(y + fs * 0.34).toFixed(1)}" text-anchor="middle" font-size="${fs.toFixed(1)}">${lbl}</text>` : ''}</g>`;
+  }
+  if (o.tap) {
+    for (let s = 0; s < 6; s++) for (let f = Math.max(0, from); f <= to; f++) {
+      const x0 = f === 0 ? X0 - 50 : xOf(f - 1), x1 = f === 0 ? X0 - 6 : xOf(f);
+      h += `<rect class="cell" data-s="${s}" data-f="${f}" x="${x0.toFixed(1)}" y="${(yOf(s) - GAP / 2).toFixed(1)}" width="${(x1 - x0).toFixed(1)}" height="${GAP}"/>`;
+    }
   }
   svg.innerHTML = h;
 }
