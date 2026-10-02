@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fretjacht</title>
+<meta name="theme-color" content="#ECEEF1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101216" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fretjacht">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAET0lEQVR42u3dPWsUQRzH8TyckjdglUYI2Apir9hokCDEt2BlIShi5SsQUbD2LShIkHSCZUACxk6wCinyDoIStDjQ5W53nZvbh5ndz7fLZe9u2fnOb2bu/rO3enp8tBLM7s07K6ny6OXb69eufjn8WnzwzdMHzjaatRWAHCAHyAFygBwgB8iBYTBZ6Oiz81TOe2Nd2yUmRyJNcnYeqmk6Nuco9CRHo8OvcjrtESJ0UirnKsdQhU4tWkxIQQ6QA+QAOUAOkAPkADlADpADIAfCWT04/OYqQHKAHGiIyeVLv8OPXn6v7I+zi1X/2tr4ucwr2yvbvBwdvEeNEFWHLSkKMpAjUIuqJ1IkJznCixxPfl1syq3NCyWKqD5PTo7AJqkJjO+vNqv+deXJSZVnMxGi+jzLYaVKixon5o+Zt2RmlFF9np8cpWaEaFH6lFJF8p2F5Fh9PmnPjAgt/qtI1n5kx1qaZtS8TvQKCD0kx0xrNaVFTYTIj5ySoz0zOnhltCVHXyFvcEldjrYHlPrw4Ec2w0o3sW9wyUOOFDqu8MggObrs0MIjdTnS6bLCI+nk6L4rC4/MJqQgB8gRPMz3lfDF9zXtkBwgB5IhZsfbvZ2dFBYOxe9pP+ztaUvJAXIgAeJ2vCW3Oni4e/vZ65I9ZC8eJ7SHrFgiasdbP9c95PHuce9zLKxvmirHzzmK9ZtVO5G6XKqoJzUhBTkwJDm6H1n6GsvIsfC0o19MOFIfVrrsymIjAzlS6LJiI48JaTcdWmxkI8dMx2275WZeX2yknhx9tRAzchpW2g4PA0r3TBrpxMUqzmkrNlgENK+F2MgpOeZbq6mOzoy8k6M0P5aPkFK9mJGlHKV+xClSlTrMyFiOv+1XpchK1H1IaTEQOWoiJHouwoxByVETIbQYrByLFjlOb1secR/06RNr3s69z5OTI65Jttb/BUAjv7fi3ufd4DfeUIkyQZAD5ECTE9KOfwCwPfwAYM+rlXHy7tN+8c/7t7YtZTGrRfHBMShCjgW0GJsiJqQxZkQcSQ6QQ2yMIzzIAXK0GQNDDQ9ygBwgB8gBcnRO3CeeQ/2clBwgR2sxMOCvV9qtPm8P1efJyZFIk7RdfX73xvbHz/uBRw5Y6Cy/sg+/ytHtMR0saj76nB4Q/vrufT7M+UcjlWA53vucHKOectazevD+ueaHpSzIAXKAHOhvQnp6fBR+tB1vozpbyQFygBwgB8gBcoAcIAfIAXKAHMAcqs/RkBwjqT4ndIwc2V3ldNpD9TmW0jS1aDEhBTlADpAD5ECv2PEGyQFygBwgB8iBRFcrtkM6W8kBcoAcIAfIAXIgL1SfoyE5VJ+PSmjV5wkJrfp8pKg+h9UKyAFyAOQAOUAOkAP9YVMTJAfIAXKAHCAHyIHclrJ2vDlbyQFyoDlUn6MhOVSfj0po1ecJCa36fKSoPofVCsgBcgDkADlADpAD5AA5QA6QA+TASPkDjY7NaobqexUAAAAASUVORK5CYII=">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAET0lEQVR42u3dPWsUQRzH8TyckjdglUYI2Apir9hokCDEt2BlIShi5SsQUbD2LShIkHSCZUACxk6wCinyDoIStDjQ5W53nZvbh5ndz7fLZe9u2fnOb2bu/rO3enp8tBLM7s07K6ny6OXb69eufjn8WnzwzdMHzjaatRWAHCAHyAFygBwgB8iBYTBZ6Oiz81TOe2Nd2yUmRyJNcnYeqmk6Nuco9CRHo8OvcjrtESJ0UirnKsdQhU4tWkxIQQ6QA+QAOUAOkAPkADlADpADIAfCWT04/OYqQHKAHGiIyeVLv8OPXn6v7I+zi1X/2tr4ucwr2yvbvBwdvEeNEFWHLSkKMpAjUIuqJ1IkJznCixxPfl1syq3NCyWKqD5PTo7AJqkJjO+vNqv+deXJSZVnMxGi+jzLYaVKixon5o+Zt2RmlFF9np8cpWaEaFH6lFJF8p2F5Fh9PmnPjAgt/qtI1n5kx1qaZtS8TvQKCD0kx0xrNaVFTYTIj5ySoz0zOnhltCVHXyFvcEldjrYHlPrw4Ec2w0o3sW9wyUOOFDqu8MggObrs0MIjdTnS6bLCI+nk6L4rC4/MJqQgB8gRPMz3lfDF9zXtkBwgB5IhZsfbvZ2dFBYOxe9pP+ztaUvJAXIgAeJ2vCW3Oni4e/vZ65I9ZC8eJ7SHrFgiasdbP9c95PHuce9zLKxvmirHzzmK9ZtVO5G6XKqoJzUhBTkwJDm6H1n6GsvIsfC0o19MOFIfVrrsymIjAzlS6LJiI48JaTcdWmxkI8dMx2275WZeX2yknhx9tRAzchpW2g4PA0r3TBrpxMUqzmkrNlgENK+F2MgpOeZbq6mOzoy8k6M0P5aPkFK9mJGlHKV+xClSlTrMyFiOv+1XpchK1H1IaTEQOWoiJHouwoxByVETIbQYrByLFjlOb1secR/06RNr3s69z5OTI65Jttb/BUAjv7fi3ufd4DfeUIkyQZAD5ECTE9KOfwCwPfwAYM+rlXHy7tN+8c/7t7YtZTGrRfHBMShCjgW0GJsiJqQxZkQcSQ6QQ2yMIzzIAXK0GQNDDQ9ygBwgB8gBcnRO3CeeQ/2clBwgR2sxMOCvV9qtPm8P1efJyZFIk7RdfX73xvbHz/uBRw5Y6Cy/sg+/ytHtMR0saj76nB4Q/vrufT7M+UcjlWA53vucHKOectazevD+ueaHpSzIAXKAHOhvQnp6fBR+tB1vozpbyQFygBwgB8gBcoAcIAfIAXKAHMAcqs/RkBwjqT4ndIwc2V3ldNpD9TmW0jS1aDEhBTlADpAD5ECv2PEGyQFygBwgB8iBRFcrtkM6W8kBcoAcIAfIAXIgL1SfoyE5VJ+PSmjV5wkJrfp8pKg+h9UKyAFyAOQAOUAOkAP9YVMTJAfIAXKAHCAHyIHclrJ2vDlbyQFyoDlUn6MhOVSfj0po1ecJCa36fKSoPofVCsgBcgDkADlADpAD5AA5QA6QA+TASPkDjY7NaobqexUAAAAASUVORK5CYII=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: oefenbord. Opdracht + live stemmeter bovenaan, een hals op echte schaal over de volle breedte, daaronder knoppen, scores en instellingen. */
+:root {
+  /* licht = esdoorn (maple) toets */
+  --bg: #ECEEF1;
+  --surface: #FFFFFF;
+  --ink: #15171C;
+  --muted: #5D6471;
+  --line: #D5D9E0;
+  --led-off: #E2E5EA;
+  --accent: #E8990C;
+  --accent-ink: #15171C;
+  --accent-text: #925600;
+  --ok: #1D8A4C;
+  --ok-ink: #FFFFFF;
+  --bad: #C2412D;
+  --wood: #E8CB93;
+  --wood-2: #D7B06A;
+  --fret: #A3A9B0;
+  --fret-hi: #EEF0F2;
+  --nut: #F6F1E3;
+  --inlay: #2B2420;
+  --string: #7F848B;
+  --wound: #9C7F4E;
+  --wound-hi: #E2CFA4;
+  --display: "Big Shoulders Display", "Arial Narrow", "Roboto Condensed", Impact, sans-serif;
+  --body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* donker = palissander (rosewood) toets */
+    --bg: #101216; --surface: #181B20; --ink: #ECEEF1; --muted: #9AA2AE; --line: #2A2E36; --led-off: #252930;
+    --accent: #F2A93B; --accent-ink: #15171C; --accent-text: #F4B65A; --ok: #3CC475; --ok-ink: #0C1A12; --bad: #F07A62;
+    --wood: #3B231A; --wood-2: #2C1912; --fret: #8C9299; --fret-hi: #CDD1D6; --nut: #E9E3D2; --inlay: #E8E1D1;
+    --string: #B8BDC4; --wound: #B39662; --wound-hi: #E6D3A6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101216; --surface: #181B20; --ink: #ECEEF1; --muted: #9AA2AE; --line: #2A2E36; --led-off: #252930;
+  --accent: #F2A93B; --accent-ink: #15171C; --accent-text: #F4B65A; --ok: #3CC475; --ok-ink: #0C1A12; --bad: #F07A62;
+  --wood: #3B231A; --wood-2: #2C1912; --fret: #8C9299; --fret-hi: #CDD1D6; --nut: #E9E3D2; --inlay: #E8E1D1;
+  --string: #B8BDC4; --wound: #B39662; --wound-hi: #E6D3A6;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 var(--body);
+  -webkit-font-smoothing: antialiased;
+  padding-inline: 16px;
+  padding-block: max(20px, env(safe-area-inset-top, 0px)) max(40px, env(safe-area-inset-bottom, 0px));
+}
+.app { max-width: 960px; margin: 0 auto; display: grid; gap: 16px; }
+
+/* kop */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 4px 14px; flex-wrap: wrap; min-width: 0; }
+.brand h1 { margin: 0; font: 800 38px/1 var(--display); text-transform: uppercase; letter-spacing: .02em; }
+.brand p { margin: 0; color: var(--muted); }
+.pill {
+  display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--muted); font: 500 13px/1 var(--mono);
+}
+.pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.pill[data-state="on"] { color: var(--ink); }
+.pill[data-state="on"] i { background: var(--ok); box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 22%, transparent); }
+.pill[data-state="err"] i { background: var(--bad); }
+
+/* kaarten */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; min-width: 0; }
+.eyebrow { margin: 0; font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.split { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 720px) { .split { grid-template-columns: minmax(0, 1fr); } }
+
+/* opdracht */
+.prompt { display: grid; gap: 4px; align-content: start; }
+.note {
+  margin: 10px 0 2px; display: flex; align-items: flex-start;
+  font: 800 clamp(104px, 21vw, 170px)/.8 var(--display); letter-spacing: -.01em;
+  transition: color .15s ease;
+}
+.note svg { width: .34em; height: .56em; margin: -.02em 0 0 .03em; fill: currentColor; flex: none; }
+.where { font: 500 clamp(18px, 3.6vw, 22px)/1.35 var(--body); text-wrap: balance; }
+.where b { font-weight: 600; color: var(--accent-text); }
+.where small { margin-left: 8px; font: 400 13px/1 var(--mono); color: var(--muted); white-space: nowrap; }
+.leds { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px; margin-top: 14px; }
+.leds span { height: 10px; border-radius: 2px; background: var(--led-off); transition: background-color .06s linear; }
+.leds span.on { background: var(--accent); }
+.prompt.hit .leds span { background: var(--ok); }
+.prompt.hit .note { color: var(--ok); }
+.toast { min-height: 1.5em; margin-top: 6px; font: 500 14px/1.5 var(--mono); color: var(--muted); }
+.prompt.hit .toast { color: var(--ok); }
+
+/* stemmeter */
+.tuner { display: grid; gap: 16px; align-content: start; }
+.heard { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; min-height: 56px; }
+.heard strong { font: 700 52px/1 var(--display); letter-spacing: .01em; }
+.heard strong sub { font: 500 18px/1 var(--mono); color: var(--muted); vertical-align: baseline; margin-left: 2px; }
+.heard span { font: 400 13px/1.4 var(--mono); color: var(--muted); }
+.meter { position: relative; height: 38px; }
+.meter .track { position: absolute; left: 0; right: 0; top: 14px; height: 2px; background: var(--line); }
+.meter .zone { position: absolute; left: 40%; width: 20%; top: 9px; height: 12px; border-radius: 3px; background: color-mix(in srgb, var(--ok) 22%, transparent); }
+.meter .tick { position: absolute; top: 6px; width: 1px; height: 18px; background: var(--muted); }
+.meter .needle { position: absolute; top: 2px; width: 3px; height: 26px; margin-left: -1.5px; border-radius: 2px; background: var(--ink); transition: left .08s linear; }
+.meter .scale { position: absolute; left: 0; right: 0; top: 26px; display: flex; justify-content: space-between; font: 400 11px/1 var(--mono); color: var(--muted); }
+.lvl { display: grid; gap: 6px; }
+.lvl-head { display: flex; justify-content: space-between; gap: 8px; font: 400 12px/1.2 var(--mono); color: var(--muted); }
+.level { position: relative; height: 8px; border-radius: 4px; background: var(--led-off); }
+.level .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 4px; background: var(--muted); }
+.level .fill.loud { background: var(--accent); }
+.level .gate { position: absolute; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; background: var(--ink); }
+
+/* hals */
+.neck { margin: 0; padding: 14px 12px 8px; }
+.neck svg { display: block; width: 100%; height: auto; }
+.neck figcaption { display: flex; justify-content: space-between; gap: 4px 12px; flex-wrap: wrap; padding: 8px 6px 2px; font: 400 12px/1.4 var(--mono); color: var(--muted); }
+.neck .w1 { stop-color: var(--wood); }
+.neck .w2 { stop-color: var(--wood-2); }
+.neck .grain { fill: none; stroke: var(--wood-2); stroke-width: 1.4; opacity: .55; }
+.neck .shade { fill: var(--surface); opacity: .62; }
+.neck .fretw { stroke: var(--fret); stroke-width: 4.5; }
+.neck .freth { stroke: var(--fret-hi); stroke-width: 1.2; opacity: .8; }
+.neck .nut { fill: var(--nut); stroke: var(--line); stroke-width: 1; }
+.neck .inlay { fill: var(--inlay); }
+.neck .str { stroke: var(--string); stroke-linecap: round; }
+.neck .str.wound { stroke: var(--wound); }
+.neck .wind { stroke: var(--wound-hi); stroke-dasharray: 1.4 2.4; opacity: .7; }
+.neck .glow { stroke: var(--accent); opacity: .32; stroke-linecap: round; }
+.neck .str.target { stroke: var(--accent); }
+.neck .slbl { font: 500 22px var(--mono); fill: var(--muted); }
+.neck .slbl.target { fill: var(--accent-text); font-weight: 600; }
+.neck .fnum { font: 400 22px var(--mono); fill: var(--muted); }
+.neck .mk circle { stroke-width: 3; }
+.neck .mk text { font: 600 15px var(--mono); }
+.neck .mk.found circle { fill: var(--ok); stroke: var(--surface); }
+.neck .mk.found text { fill: var(--ok-ink); }
+.neck .mk.hint circle { fill: var(--surface); stroke: var(--accent); stroke-dasharray: 5 4; animation: pulse 1.1s ease-in-out infinite; }
+.neck .mk.hint text { fill: var(--accent-text); }
+@keyframes pulse { 50% { opacity: .45; } }
+
+/* knoppen */
+.controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+button {
+  font: 600 15px/1 var(--body); padding: 13px 18px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+}
+button:hover { border-color: var(--muted); }
+button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); min-width: 170px; }
+button.primary.stop { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+kbd { margin-left: 8px; padding: 2px 6px; border: 1px solid var(--line); border-radius: 4px; font: 500 11px/1 var(--mono); color: var(--muted); }
+@media (hover: none) { kbd { display: none; } }
+.mini { display: none; gap: 8px; align-items: baseline; font: 400 13px/1.4 var(--mono); color: var(--muted); }
+.mini b { font: 700 20px/1 var(--display); color: var(--ink); letter-spacing: .01em; }
+
+/* telefoon: alles wat je tijdens het spelen nodig hebt op één scherm */
+@media (max-width: 560px) {
+  body { padding-block: max(12px, env(safe-area-inset-top, 0px)) max(28px, env(safe-area-inset-bottom, 0px)); }
+  .app { gap: 12px; }
+  .brand h1 { font-size: 28px; }
+  .brand p { display: none; }
+  .stage { display: contents; }
+  .prompt { order: 1; }
+  .neck { order: 2; }
+  .controls { order: 3; }
+  .tuner { order: 4; }
+  .scores { order: 5; }
+  .settings { order: 6; }
+  .foot { order: 7; }
+  .card { padding: 16px; }
+  .neck { padding: 10px 8px 4px; }
+  .neck figcaption span:last-child { display: none; }
+  .note { font-size: 112px; margin-top: 8px; }
+  .leds { margin-top: 10px; }
+  .mini { display: flex; }
+  .controls { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+  .controls button { padding: 15px 8px; min-width: 0; }
+}
+.msg { border: 1px solid var(--bad); background: color-mix(in srgb, var(--bad) 9%, var(--surface)); border-radius: 10px; padding: 12px 14px; }
+
+/* scores */
+.figures { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 14px 0 0; }
+@media (max-width: 460px) { .figures { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.fig { margin: 0; }
+.fig dt { font: 500 11px/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.fig dd { margin: 6px 0 0; font: 700 32px/1 var(--display); font-variant-numeric: tabular-nums; }
+.fig dd small { font: 400 12px/1 var(--mono); color: var(--muted); margin-left: 4px; }
+.hard ol { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.hard li { display: flex; justify-content: space-between; gap: 12px; }
+.hard li span:last-child { font: 400 13px/1.5 var(--mono); color: var(--muted); white-space: nowrap; }
+.hard .empty { margin: 12px 0 0; color: var(--muted); font-size: 14px; }
+
+/* instellingen */
+details.settings { padding: 0; }
+details.settings summary { list-style: none; cursor: pointer; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px; font: 600 15px/1.2 var(--body); border-radius: 14px; }
+details.settings summary::-webkit-details-marker { display: none; }
+details.settings summary b { font-weight: 600; }
+details.settings summary span { font: 400 12px/1.2 var(--mono); color: var(--muted); }
+details.settings summary::after { content: "+"; font: 500 20px/1 var(--mono); color: var(--muted); }
+details.settings[open] summary::after { content: "–"; }
+@media (max-width: 520px) {
+  details.settings summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; row-gap: 4px; }
+  details.settings summary b { grid-column: 1; grid-row: 1; font-weight: 600; }
+  details.settings summary span { grid-column: 1; grid-row: 2; }
+  details.settings summary::after { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+}
+.set-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 32px; padding: 4px 20px 22px; }
+@media (max-width: 640px) { .set-grid { grid-template-columns: minmax(0, 1fr); } }
+.field { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.field .lbl { font: 600 13px/1.3 var(--body); }
+.field .help { font-size: 13px; line-height: 1.45; color: var(--muted); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { padding: 9px 12px; border-radius: 8px; font: 500 14px/1 var(--mono); }
+.seg button small { font-size: 11px; color: var(--muted); margin-left: 3px; }
+.seg button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.seg button[aria-pressed="true"] small { color: inherit; opacity: .7; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 14px; }
+select { font: 500 14px/1.2 var(--body); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; cursor: pointer; }
+.check input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--accent); flex: none; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.danger { color: var(--bad); }
+
+.foot { margin: 4px 2px 0; max-width: 70ch; color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="brand">
+      <h1>Fretjacht</h1>
+      <p>Speel de noot op de juiste snaar. De app luistert mee.</p>
+    </div>
+    <span class="pill" id="status" data-state="off"><i></i><span id="statusText">Microfoon uit</span></span>
+  </header>
+
+  <div class="msg" id="msg" role="alert" hidden></div>
+
+  <section class="split stage">
+    <div class="card prompt" id="prompt" aria-live="polite">
+      <p class="eyebrow">Speel</p>
+      <div class="note" id="note"></div>
+      <div class="where" id="where"></div>
+      <div class="leds" id="leds" aria-hidden="true"></div>
+      <div class="toast" id="toast"></div>
+      <div class="mini" aria-hidden="true">Ik hoor <b id="miniNote">–</b><span id="miniCents"></span></div>
+    </div>
+
+    <div class="card tuner">
+      <p class="eyebrow">Ik hoor</p>
+      <div class="heard"><strong id="heardNote">–</strong><span id="heardInfo">microfoon uit</span></div>
+      <div class="meter" aria-hidden="true">
+        <div class="zone"></div>
+        <div class="track"></div>
+        <div class="tick" style="left:50%"></div>
+        <div class="needle" id="needle" hidden></div>
+        <div class="scale"><span>−50</span><span>0 cent</span><span>+50</span></div>
+      </div>
+      <div class="lvl">
+        <div class="lvl-head"><span>Invoerniveau</span><span id="lvlText">– dB</span></div>
+        <div class="level" aria-hidden="true"><div class="fill" id="lvlFill"></div><div class="gate" id="lvlGate"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <figure class="card neck">
+    <svg id="neck" viewBox="0 0 1000 244" role="img" aria-label="Gitaarhals met de doelsnaar uitgelicht"></svg>
+    <figcaption><span id="rangeText"></span><span>Hoge E bovenaan, net als in tabs</span></figcaption>
+  </figure>
+
+  <div class="controls">
+    <button class="primary" id="startBtn" type="button">Start</button>
+    <button id="hintBtn" type="button">Hint<kbd>H</kbd></button>
+    <button id="skipBtn" type="button">Overslaan<kbd>S</kbd></button>
+  </div>
+
+  <section class="split scores">
+    <div class="card">
+      <p class="eyebrow">Scores</p>
+      <dl class="figures">
+        <div class="fig"><dt>Gevonden</dt><dd id="sFound">0</dd></div>
+        <div class="fig"><dt>Gemiddeld</dt><dd id="sAvg">–</dd></div>
+        <div class="fig"><dt>Snelste</dt><dd id="sBest">–</dd></div>
+        <div class="fig"><dt>Reeks &lt; 5 s</dt><dd id="sStreak">0</dd></div>
+      </dl>
+    </div>
+    <div class="card hard">
+      <p class="eyebrow">Lastigste noten</p>
+      <div id="hardList"></div>
+    </div>
+  </section>
+
+  <details class="card settings" id="settings">
+    <summary><b>Instellingen</b><span id="setSummary"></span></summary>
+    <div class="set-grid">
+      <div class="field">
+        <span class="lbl" id="lblStrings">Snaren</span>
+        <div class="seg" id="strSeg" role="group" aria-labelledby="lblStrings"></div>
+        <span class="help" id="strHelp">Kies welke snaren je wilt oefenen.</span>
+      </div>
+      <div class="field">
+        <span class="lbl">Fretbereik</span>
+        <div class="row">
+          <label for="minFret">van</label><select id="minFret"></select>
+          <label for="maxFret">tot en met</label><select id="maxFret"></select>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl" id="lblNotes">Noten</span>
+        <div class="seg" id="notesSeg" role="group" aria-labelledby="lblNotes">
+          <button type="button" data-mode="naturals">Stamtonen</button>
+          <button type="button" data-mode="sharps">met ♯</button>
+          <button type="button" data-mode="flats">met ♭</button>
+          <button type="button" data-mode="both">♯ en ♭</button>
+        </div>
+        <span class="help">Stamtonen zijn C D E F G A B. Met ♯ en ♭ leer je ook dat F♯ en G♭ dezelfde toets zijn.</span>
+      </div>
+      <div class="field">
+        <span class="lbl">Controle</span>
+        <label class="check"><input type="checkbox" id="strict"><span>Octaaf moet kloppen<br><span class="help">Alleen de toonhoogte van die snaar telt. Werkt het best met een goede microfoon of via een versterker; een laptopmicrofoon hoort lage noten soms een octaaf te hoog.</span></span></label>
+        <label class="check"><input type="checkbox" id="sound"><span>Geluidje bij een goede noot</span></label>
+      </div>
+      <div class="field">
+        <label class="lbl" for="autoHint">Automatische hint</label>
+        <select id="autoHint">
+          <option value="0">Uit</option>
+          <option value="5">Na 5 seconden</option>
+          <option value="10">Na 10 seconden</option>
+          <option value="20">Na 20 seconden</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="lbl" for="gate">Drempel microfoon <span id="gateText" class="help"></span></label>
+        <input type="range" id="gate" min="-70" max="-20" step="1">
+        <span class="help">Links reageert de app op zachte tonen, rechts negeert hij meer achtergrondgeluid. De zwarte streep bij Invoerniveau is deze drempel.</span>
+      </div>
+      <div class="field">
+        <span class="lbl">Scores</span>
+        <div class="row"><button type="button" id="resetBtn">Scores wissen</button></div>
+      </div>
+    </div>
+  </details>
+
+  <p class="foot">De app hoort alleen welke toon klinkt, niet op welke snaar je hem speelt. Speel dus echt op de snaar die er staat. Leg je telefoon dicht bij de gitaar. Lastige noten komen vaker terug.</p>
+</main>
+
+<script>
+(() => {
+'use strict';
+
+// ---------- Muziek ----------
+const OPEN = [64, 59, 55, 50, 45, 40];              // snaar 1 (hoge E) t/m 6 (lage E), MIDI-nummers
+const LETTER = ['e', 'B', 'G', 'D', 'A', 'E'];
+const NAME = ['hoge E-snaar', 'B-snaar', 'G-snaar', 'D-snaar', 'A-snaar', 'lage E-snaar'];
+const GAUGE = [10, 13, 17, 26, 36, 46];             // snaardikte in duizendsten van een inch
+const SHARP = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+const FLAT  = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'];
+const NATURAL = new Set([0, 2, 4, 5, 7, 9, 11]);
+const TOL = 0.45;        // 45 cent speling
+const HOLD = 0.18;       // seconden dat de juiste toon moet klinken
+const COOLDOWN = 700;    // ms pauze na een goede noot
+const MAX_FRET = 19;
+
+// ---------- Opslag ----------
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('fretjacht.' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('fretjacht.' + k, JSON.stringify(v)); } catch (e) {} }
+};
+const DEFAULTS = { strings: [0, 1, 2, 3, 4, 5], minFret: 0, maxFret: 12, notes: 'sharps', strict: false, autoHint: 0, sound: true, gateDb: -48 };
+let settings = Object.assign({}, DEFAULTS, store.get('settings', {}));
+(function validate() {
+  const s = settings;
+  if (!Array.isArray(s.strings)) s.strings = DEFAULTS.strings.slice();
+  s.strings = s.strings.filter(n => Number.isInteger(n) && n >= 0 && n <= 5);
+  if (!s.strings.length) s.strings = DEFAULTS.strings.slice();
+  s.minFret = Math.max(0, Math.min(MAX_FRET - 1, s.minFret | 0));
+  s.maxFret = Math.max(s.minFret + 1, Math.min(MAX_FRET, s.maxFret | 0));
+  if (!['naturals', 'sharps', 'flats', 'both'].includes(s.notes)) s.notes = 'sharps';
+  s.gateDb = Math.max(-70, Math.min(-20, Number(s.gateDb) || DEFAULTS.gateDb));
+  s.autoHint = [0, 5, 10, 20].includes(Number(s.autoHint)) ? Number(s.autoHint) : 0;
+  s.strict = !!s.strict; s.sound = s.sound !== false;
+})();
+const EMPTY_STATS = () => ({ items: {}, found: 0, totalTime: 0, best: null, streak: 0, bestStreak: 0 });
+let stats = Object.assign(EMPTY_STATS(), store.get('stats', {}));
+const saveSettings = () => store.set('settings', settings);
+const saveStats = () => store.set('stats', stats);
+
+// ---------- Toonhoogte (McLeod Pitch Method) ----------
+function createDetector(N, sr, minF, maxF) {
+  const maxTau = Math.min(Math.floor(sr / minF) + 2, N - 2);
+  const minTau = Math.max(2, Math.floor(sr / maxF));
+  const nsdf = new Float32Array(maxTau + 2);
+  const x = new Float32Array(N), sq = new Float32Array(N);
+  return function detect(buf) {
+    let mean = 0;
+    for (let i = 0; i < N; i++) mean += buf[i];
+    mean /= N;
+    let energy = 0;
+    for (let i = 0; i < N; i++) { const v = buf[i] - mean; x[i] = v; sq[i] = v * v; energy += sq[i]; }
+    const rms = Math.sqrt(energy / N);
+    if (energy <= 1e-12) return { freq: 0, clarity: 0, rms };
+    let m = 2 * energy;
+    for (let tau = 0; tau <= maxTau + 1; tau++) {
+      if (tau > 0) m -= sq[tau - 1] + sq[N - tau];
+      let r = 0;
+      const lim = N - tau;
+      for (let j = 0; j < lim; j++) r += x[j] * x[j + tau];
+      nsdf[tau] = m > 1e-12 ? (2 * r) / m : 0;
+    }
+    let tau = 1;
+    while (tau <= maxTau && nsdf[tau] > 0) tau++;
+    const peaks = [];
+    let best = -1, bestV = -Infinity;
+    for (; tau <= maxTau; tau++) {
+      const v = nsdf[tau];
+      if (v > 0) { if (v > bestV) { bestV = v; best = tau; } }
+      else if (best >= 0) { peaks.push(best); best = -1; bestV = -Infinity; }
+    }
+    if (best >= 0 && best < maxTau) peaks.push(best);
+    let highest = 0;
+    for (const p of peaks) if (p >= minTau && nsdf[p] > highest) highest = nsdf[p];
+    if (highest <= 0) return { freq: 0, clarity: 0, rms };
+    const thr = 0.9 * highest;
+    let t = -1;
+    for (const p of peaks) if (p >= minTau && nsdf[p] >= thr) { t = p; break; }
+    const a = nsdf[t - 1], b = nsdf[t], c = nsdf[t + 1];
+    const den = a - 2 * b + c;
+    const shift = den !== 0 ? (0.5 * (a - c)) / den : 0;
+    return { freq: sr / (t + shift), clarity: b - 0.25 * (a - c) * shift, rms };
+  };
+}
+
+// ---------- Elementen ----------
+const $ = id => document.getElementById(id);
+const promptEl = $('prompt'), noteEl = $('note'), whereEl = $('where'), ledsEl = $('leds'), toastEl = $('toast');
+const heardNote = $('heardNote'), heardInfo = $('heardInfo'), needle = $('needle'), miniNote = $('miniNote'), miniCents = $('miniCents');
+const lvlFill = $('lvlFill'), lvlGate = $('lvlGate'), lvlText = $('lvlText');
+const neckEl = $('neck'), startBtn = $('startBtn'), msgEl = $('msg');
+for (let i = 0; i < 12; i++) ledsEl.appendChild(document.createElement('span'));
+const leds = Array.from(ledsEl.children);
+
+const ACC_SVG = {
+  '♯': '<svg viewBox="0 0 50 100" aria-hidden="true"><path d="M14 10h6v88h-6zM30 2h6v88h-6zM4 38L46 26v14L4 52zM4 68L46 56v14L4 82z"/></svg>',
+  '♭': '<svg viewBox="0 0 44 100" aria-hidden="true"><path fill-rule="evenodd" d="M6 0h7v55c7-8 17-11 23-7 8 5 6 18-4 28L6 98zM13 64v24c9-7 17-15 18-22 1-7-7-10-18-2z"/></svg>'
+};
+const spoken = n => n[0] + (n[1] === '♯' ? ' kruis' : n[1] === '♭' ? ' mol' : '');
+const fmt = s => s.toLocaleString('nl-NL', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const nameOf = (pc, mode) => (mode === 'flats' ? FLAT : SHARP)[((pc % 12) + 12) % 12];
+
+// ---------- Opdrachten ----------
+function buildPool() {
+  const pool = [];
+  for (const s of settings.strings) {
+    const byPc = new Map();
+    for (let f = settings.minFret; f <= settings.maxFret; f++) {
+      const pc = (OPEN[s] + f) % 12;
+      if (settings.notes === 'naturals' && !NATURAL.has(pc)) continue;
+      if (!byPc.has(pc)) byPc.set(pc, []);
+      byPc.get(pc).push(f);
+    }
+    for (const [pc, frets] of byPc) pool.push({ s, pc, frets });
+  }
+  return pool;
+}
+function spell(pc) {
+  if (NATURAL.has(pc) || settings.notes === 'sharps') return SHARP[pc];
+  if (settings.notes === 'flats') return FLAT[pc];
+  return Math.random() < 0.5 ? SHARP[pc] : FLAT[pc];
+}
+function pickTarget(prev) {
+  const pool = buildPool();
+  let cands = pool.filter(it => !prev || it.pc !== prev.pc);
+  if (!cands.length) cands = pool;
+  const weights = cands.map(it => {
+    const st = stats.items[it.s + '-' + it.pc];
+    return st && st.n ? 1 + Math.min(2.5, st.total / st.n / 4) : 1.6;
+  });
+  let r = Math.random() * weights.reduce((a, b) => a + b, 0);
+  let it = cands[cands.length - 1];
+  for (let i = 0; i < cands.length; i++) { r -= weights[i]; if (r <= 0) { it = cands[i]; break; } }
+  return { s: it.s, pc: it.pc, frets: it.frets, name: spell(it.pc), midis: it.frets.map(f => OPEN[it.s] + f) };
+}
+
+// ---------- Hals tekenen ----------
+let VB_W = 1000;
+const TOP = 16, GAP = 30, X0 = 86;
+const BOARD_H = 28 + 5 * GAP;
+const yOf = s => TOP + 14 + s * GAP;
+let fShow = 12, S = 1;
+const xOf = n => X0 + S * (1 - Math.pow(2, -n / 12));
+const midOf = f => f === 0 ? X0 - 32 : (xOf(f - 1) + xOf(f)) / 2;
+let marks = [];
+
+function drawNeck() {
+  // op smalle schermen een kortere viewBox, zodat de hals hoger en leesbaar blijft
+  VB_W = (neckEl.getBoundingClientRect().width || 1000) < 560 ? 640 : 1000;
+  neckEl.setAttribute('viewBox', `0 0 ${VB_W} 244`);
+  fShow = Math.max(12, settings.maxFret);
+  S = (VB_W - 12 - X0) / (1 - Math.pow(2, -(fShow + 0.45) / 12));
+  const yB = TOP + BOARD_H;
+  let h = '<defs><linearGradient id="wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="w1"/><stop offset=".5" class="w2"/><stop offset="1" class="w1"/></linearGradient></defs>';
+  h += `<rect x="${X0}" y="${TOP}" width="${VB_W - X0}" height="${BOARD_H}" fill="url(#wood)"/>`;
+  // houtnerf
+  for (let i = 0; i < 9; i++) {
+    const y = TOP + 10 + i * (BOARD_H - 20) / 8;
+    const a = 3 + (i * 7) % 5, ph = i * 1.7;
+    let d = `M${X0} ${y.toFixed(1)}`;
+    for (let x = X0 + 60; x <= VB_W; x += 60) d += ` L${x} ${(y + a * Math.sin(x / 140 + ph)).toFixed(1)}`;
+    h += `<path class="grain" d="${d}"/>`;
+  }
+  // buiten oefenbereik
+  for (let f = 1; f <= fShow; f++) {
+    if (f < settings.minFret || f > settings.maxFret) h += `<rect class="shade" x="${xOf(f - 1).toFixed(1)}" y="${TOP}" width="${(xOf(f) - xOf(f - 1)).toFixed(1)}" height="${BOARD_H}"/>`;
+  }
+  if (fShow + 1 > settings.maxFret) h += `<rect class="shade" x="${xOf(fShow).toFixed(1)}" y="${TOP}" width="${(VB_W - xOf(fShow)).toFixed(1)}" height="${BOARD_H}"/>`;
+  // inlays
+  const mid = (yOf(2) + yOf(3)) / 2;
+  for (let f = 1; f <= fShow; f++) {
+    if ([3, 5, 7, 9, 15, 17, 19].includes(f)) h += `<circle class="inlay" cx="${midOf(f).toFixed(1)}" cy="${mid}" r="8"/>`;
+    if (f === 12) {
+      h += `<circle class="inlay" cx="${midOf(f).toFixed(1)}" cy="${(yOf(1) + yOf(2)) / 2}" r="8"/>`;
+      h += `<circle class="inlay" cx="${midOf(f).toFixed(1)}" cy="${(yOf(3) + yOf(4)) / 2}" r="8"/>`;
+    }
+  }
+  // fretdraden
+  for (let f = 1; f <= fShow; f++) {
+    const x = xOf(f).toFixed(1);
+    h += `<line class="fretw" x1="${x}" y1="${TOP}" x2="${x}" y2="${yB}"/><line class="freth" x1="${x - 1}" y1="${TOP}" x2="${x - 1}" y2="${yB}"/>`;
+  }
+  h += `<rect class="nut" x="${X0 - 9}" y="${TOP - 3}" width="10" height="${BOARD_H + 6}" rx="2"/>`;
+  // snaren
+  for (let s = 0; s < 6; s++) {
+    const y = yOf(s), w = 1 + GAUGE[s] / 12, wound = s >= 3, isT = target && target.s === s;
+    if (isT) h += `<line class="glow" x1="${X0 - 52}" y1="${y}" x2="${VB_W}" y2="${y}" stroke-width="${(w + 10).toFixed(1)}"/>`;
+    h += `<line class="str${wound ? ' wound' : ''}${isT ? ' target' : ''}" x1="${X0 - 52}" y1="${y}" x2="${VB_W}" y2="${y}" stroke-width="${w.toFixed(1)}"/>`;
+    if (wound) h += `<line class="wind" x1="${X0 - 52}" y1="${y}" x2="${VB_W}" y2="${y}" stroke-width="${(w * 0.55).toFixed(1)}"/>`;
+    h += `<text class="slbl${isT ? ' target' : ''}" x="16" y="${y + 7}" text-anchor="middle">${LETTER[s]}</text>`;
+  }
+  // fretnummers
+  for (const f of [3, 5, 7, 9, 12, 15, 17, 19]) {
+    if (f <= fShow) h += `<text class="fnum" x="${midOf(f).toFixed(1)}" y="${yB + 30}" text-anchor="middle">${f}</text>`;
+  }
+  h += '<g id="marks"></g>';
+  neckEl.innerHTML = h;
+  drawMarks();
+  $('rangeText').textContent = `Oefenbereik: fret ${settings.minFret} t/m ${settings.maxFret} · ${settings.strings.length} ${settings.strings.length === 1 ? 'snaar' : 'snaren'}`;
+}
+function drawMarks() {
+  const g = document.getElementById('marks');
+  if (!g) return;
+  g.innerHTML = marks.map(m => {
+    const x = midOf(m.f).toFixed(1), y = yOf(m.s);
+    return `<g class="mk ${m.kind}"><circle cx="${x}" cy="${y}" r="16"/><text x="${x}" y="${y + 5}" text-anchor="middle">${m.label}</text></g>`;
+  }).join('');
+}
+
+// ---------- Weergave ----------
+let target = null;
+function renderPrompt() {
+  const letter = target.name[0], acc = target.name.slice(1);
+  noteEl.innerHTML = `<span>${letter}</span>${acc ? ACC_SVG[acc] : ''}`;
+  noteEl.setAttribute('aria-label', spoken(target.name));
+  whereEl.innerHTML = `op de <b>${NAME[target.s]}</b><small>snaar ${target.s + 1}</small>`;
+  promptEl.dataset.midis = target.midis.join(',');
+  promptEl.dataset.pc = target.pc;
+  promptEl.classList.remove('hit');
+  toastEl.textContent = running ? '' : 'Druk op Start en sta de microfoon toe.';
+  renderLeds(0);
+}
+let ledsLit = -1;
+function renderLeds(v) {
+  const n = Math.round(v * 12);
+  if (n === ledsLit) return;
+  ledsLit = n;
+  leds.forEach((el, i) => el.classList.toggle('on', i < n));
+}
+function renderStats() {
+  $('sFound').textContent = stats.found;
+  $('sAvg').innerHTML = stats.found ? `${fmt(stats.totalTime / stats.found)}<small>s</small>` : '–';
+  $('sBest').innerHTML = stats.best != null ? `${fmt(stats.best)}<small>s</small>` : '–';
+  $('sStreak').innerHTML = `${stats.streak}${stats.bestStreak ? `<small>beste ${stats.bestStreak}</small>` : ''}`;
+  const rows = Object.entries(stats.items)
+    .filter(([, v]) => v.n > 0)
+    .map(([k, v]) => { const [s, pc] = k.split('-').map(Number); return { s, pc, avg: v.total / v.n, n: v.n }; })
+    .sort((a, b) => b.avg - a.avg).slice(0, 4);
+  const list = $('hardList');
+  if (!rows.length) { list.innerHTML = '<p class="empty">Na een paar noten zie je hier welke noten je het langst zoekt. Die komen vaker terug.</p>'; return; }
+  const label = pc => NATURAL.has(pc) ? SHARP[pc] : settings.notes === 'flats' ? FLAT[pc] : settings.notes === 'both' ? `${SHARP[pc]}/${FLAT[pc]}` : SHARP[pc];
+  list.innerHTML = '<ol>' + rows.map(r => `<li><span>${label(r.pc)} op de ${NAME[r.s]}</span><span>${fmt(r.avg)} s · ${r.n}×</span></li>`).join('') + '</ol>';
+}
+let heardHist = [], lastHeard = '';
+function renderHeard(midi, freq) {
+  heardHist.push(midi);
+  if (heardHist.length > 5) heardHist.shift();
+  const vals = heardHist.filter(v => v !== null);
+  let key;
+  if (vals.length < 3) {
+    key = running ? 'stil' : 'uit';
+    if (key !== lastHeard) { heardNote.textContent = '–'; heardInfo.textContent = running ? 'speel een noot' : 'microfoon uit'; needle.hidden = true; miniNote.textContent = '–'; miniCents.textContent = running ? '' : 'microfoon uit'; }
+    lastHeard = key;
+    return;
+  }
+  const m = vals.slice().sort((a, b) => a - b)[Math.floor(vals.length / 2)];
+  const n = Math.round(m), cents = Math.round((m - n) * 100);
+  const nm = nameOf(n, settings.notes);
+  key = nm + n + cents;
+  if (key === lastHeard) return;
+  lastHeard = key;
+  heardNote.innerHTML = `${nm}<sub>${Math.floor(n / 12) - 1}</sub>`;
+  const ct = `${cents > 0 ? '+' : cents < 0 ? '−' : ''}${Math.abs(cents)} cent`;
+  heardInfo.textContent = `${ct} · ${freq.toFixed(1)} Hz`;
+  miniNote.textContent = `${nm}${Math.floor(n / 12) - 1}`;
+  miniCents.textContent = ct;
+  needle.style.left = `${50 + Math.max(-50, Math.min(50, cents))}%`;
+  needle.hidden = false;
+}
+function renderLevel(db) {
+  const pct = v => Math.max(0, Math.min(100, (v + 70) / 60 * 100));
+  lvlFill.style.width = pct(db) + '%';
+  lvlFill.classList.toggle('loud', db >= settings.gateDb);
+  lvlGate.style.left = pct(settings.gateDb) + '%';
+  lvlText.textContent = db > -100 ? `${Math.round(db)} dB` : '– dB';
+}
+function setStatus(state, text) { $('status').dataset.state = state; $('statusText').textContent = text; }
+function showMsg(t) { msgEl.textContent = t; msgEl.hidden = false; }
+
+// ---------- Oefenlus ----------
+let running = false, ctx = null, stream = null, analyser = null, buf = null, detect = null, rafId = 0, wakeLock = null;
+let lastTs = 0, hold = 0, cooldownUntil = 0, elapsed = 0, hintUsed = false, nextTimer = 0;
+
+function matches(m) {
+  if (settings.strict) return target.midis.some(v => Math.abs(m - v) <= TOL);
+  const d = (((m - target.pc) % 12) + 12) % 12;
+  return Math.min(d, 12 - d) <= TOL;
+}
+function nextTarget() {
+  clearTimeout(nextTimer);
+  target = pickTarget(target);
+  elapsed = 0; hold = 0; hintUsed = false; marks = [];
+  renderPrompt();
+  drawNeck();
+}
+function showHint() {
+  if (!target || promptEl.classList.contains('hit')) return;
+  hintUsed = true;
+  marks = target.frets.map(f => ({ s: target.s, f, kind: 'hint', label: target.name }));
+  drawMarks();
+  toastEl.textContent = target.frets.length > 1 ? `Hint: fret ${target.frets.join(' of ')}` : `Hint: fret ${target.frets[0]}`;
+}
+function skip() {
+  if (promptEl.classList.contains('hit')) return;
+  stats.streak = 0; saveStats(); renderStats();
+  nextTarget();
+}
+function success(m) {
+  const t = elapsed;
+  hold = 0;
+  let frets = target.frets;
+  if (settings.strict) {
+    let bi = 0;
+    target.midis.forEach((v, i) => { if (Math.abs(m - v) < Math.abs(m - target.midis[bi])) bi = i; });
+    frets = [target.frets[bi]];
+  }
+  marks = frets.map(f => ({ s: target.s, f, kind: 'found', label: target.name }));
+  drawMarks();
+  promptEl.classList.add('hit');
+  renderLeds(1);
+  toastEl.textContent = `Goed! Fret ${frets.join(' en ')} · ${fmt(t)} s`;
+  const key = target.s + '-' + target.pc;
+  const it = stats.items[key] || (stats.items[key] = { n: 0, total: 0 });
+  it.n++; it.total += t;
+  stats.found++; stats.totalTime += t;
+  if (!hintUsed && (stats.best == null || t < stats.best)) stats.best = t;
+  if (!hintUsed && t <= 5) { stats.streak++; stats.bestStreak = Math.max(stats.bestStreak, stats.streak); } else stats.streak = 0;
+  saveStats(); renderStats();
+  ding();
+  cooldownUntil = performance.now() + COOLDOWN;
+  clearTimeout(nextTimer);
+  nextTimer = setTimeout(nextTarget, COOLDOWN);
+}
+function ding() {
+  if (!settings.sound || !ctx) return;
+  const t0 = ctx.currentTime;
+  [1568, 2093].forEach((f, i) => {
+    const o = ctx.createOscillator(), g = ctx.createGain(), t = t0 + i * 0.07;
+    o.type = 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.12, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t); o.stop(t + 0.3);
+  });
+}
+function loop(ts) {
+  if (!running) return;
+  rafId = requestAnimationFrame(loop);
+  if (ts - lastTs < 20) return;
+  const dt = Math.min(0.1, (ts - lastTs) / 1000);
+  lastTs = ts;
+  analyser.getFloatTimeDomainData(buf);
+  const r = detect(buf);
+  const db = r.rms > 0 ? 20 * Math.log10(r.rms) : -120;
+  renderLevel(db);
+  const voiced = db >= settings.gateDb && r.freq > 0 && r.clarity >= 0.8;
+  const midi = voiced ? 69 + 12 * Math.log2(r.freq / 440) : null;
+  renderHeard(midi, r.freq);
+  if (performance.now() < cooldownUntil || promptEl.classList.contains('hit')) return;
+  elapsed += dt;
+  if (settings.autoHint && !hintUsed && elapsed >= settings.autoHint) showHint();
+  if (midi === null) hold = Math.max(0, hold - dt / 0.6);
+  else if (matches(midi)) hold = Math.min(1, hold + dt / HOLD);
+  else hold = Math.max(0, hold - dt / 0.25);
+  renderLeds(hold);
+  if (hold >= 1) success(midi);
+}
+async function start() {
+  msgEl.hidden = true;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showMsg('Deze browser geeft de pagina geen toegang tot de microfoon. Open de link in Safari (iPhone) of Chrome (Android). Een los gedownload bestand werkt op een telefoon niet.');
+    setStatus('err', 'Geen microfoon');
+    return;
+  }
+  const AC = window.AudioContext || window.webkitAudioContext;
+  ctx = new AC();
+  ctx.resume().catch(() => {});
+  startBtn.disabled = true;
+  setStatus('off', 'Toegang vragen…');
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+  } catch (e) {
+    ctx.close().catch(() => {}); ctx = null;
+    startBtn.disabled = false;
+    setStatus('err', 'Geen toegang');
+    const n = e && e.name;
+    if (n === 'NotAllowedError' || n === 'SecurityError') showMsg('De microfoon is geblokkeerd. Klik in de adresbalk op het microfoon- of slotjesicoon, kies Toestaan en druk daarna opnieuw op Start. Op een iPhone: Instellingen › Safari › Microfoon.');
+    else if (n === 'NotFoundError' || n === 'OverconstrainedError') showMsg('Er is geen microfoon gevonden. Sluit er een aan of kies een andere invoer in je systeeminstellingen en probeer het opnieuw.');
+    else if (n === 'NotReadableError') showMsg('De microfoon wordt al gebruikt door een andere app, bijvoorbeeld Teams of Discord. Sluit die app en probeer het opnieuw.');
+    else showMsg(`De microfoon kon niet starten (${n || 'onbekende fout'}). Herlaad de pagina en probeer het opnieuw.`);
+    return;
+  }
+  await ctx.resume().catch(() => {});
+  const src = ctx.createMediaStreamSource(stream);
+  const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 70;
+  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1400;
+  analyser = ctx.createAnalyser();
+  analyser.fftSize = ctx.sampleRate > 50000 ? 4096 : 2048;
+  analyser.smoothingTimeConstant = 0;
+  const mute = ctx.createGain(); mute.gain.value = 0;
+  src.connect(hp); hp.connect(lp); lp.connect(analyser); analyser.connect(mute); mute.connect(ctx.destination);
+  buf = new Float32Array(analyser.fftSize);
+  detect = createDetector(analyser.fftSize, ctx.sampleRate, 70, 1100);
+  running = true; hold = 0; lastTs = performance.now(); heardHist = []; lastHeard = '';
+  startBtn.disabled = false;
+  startBtn.textContent = 'Stop';
+  startBtn.classList.add('stop');
+  setStatus('on', 'Luistert');
+  if (promptEl.classList.contains('hit')) nextTarget(); else toastEl.textContent = '';
+  requestWake();
+  rafId = requestAnimationFrame(loop);
+}
+function stop() {
+  running = false;
+  cancelAnimationFrame(rafId);
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  if (ctx) ctx.close().catch(() => {});
+  stream = null; ctx = null; analyser = null;
+  if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+  startBtn.textContent = 'Start';
+  startBtn.classList.remove('stop');
+  setStatus('off', 'Microfoon uit');
+  hold = 0; renderLeds(0); heardHist = []; lastHeard = ''; renderHeard(null, 0); renderLevel(-120);
+  if (!promptEl.classList.contains('hit')) toastEl.textContent = 'Gepauzeerd. Druk op Start om verder te gaan.';
+}
+async function requestWake() {
+  try { if (navigator.wakeLock && running) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { wakeLock = null; }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && running && !wakeLock) requestWake(); });
+
+startBtn.addEventListener('click', () => { running ? stop() : start(); });
+$('hintBtn').addEventListener('click', showHint);
+$('skipBtn').addEventListener('click', skip);
+document.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey || (e.target.closest && e.target.closest('input, select, textarea'))) return;
+  const k = e.key.toLowerCase();
+  if (k === 'h') { e.preventDefault(); showHint(); }
+  else if (k === 's' || k === 'arrowright') { e.preventDefault(); skip(); }
+});
+
+// ---------- Instellingen ----------
+const strSeg = $('strSeg');
+strSeg.innerHTML = [0, 1, 2, 3, 4, 5].map(s => `<button type="button" data-s="${s}" aria-label="${NAME[s]}">${LETTER[s]}<small>${s + 1}</small></button>`).join('');
+const minSel = $('minFret'), maxSel = $('maxFret');
+for (let f = 0; f < MAX_FRET; f++) minSel.add(new Option(String(f), String(f)));
+for (let f = 1; f <= MAX_FRET; f++) maxSel.add(new Option(String(f), String(f)));
+
+function syncSettingsUI() {
+  strSeg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(settings.strings.includes(Number(b.dataset.s)))));
+  $('notesSeg').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === settings.notes)));
+  minSel.value = String(settings.minFret);
+  maxSel.value = String(settings.maxFret);
+  $('strict').checked = settings.strict;
+  $('sound').checked = settings.sound;
+  $('autoHint').value = String(settings.autoHint);
+  $('gate').value = String(settings.gateDb);
+  $('gateText').textContent = `(${settings.gateDb} dB)`;
+  const modeTxt = { naturals: 'stamtonen', sharps: 'met ♯', flats: 'met ♭', both: '♯ en ♭' }[settings.notes];
+  $('setSummary').textContent = `${settings.strings.length} ${settings.strings.length === 1 ? 'snaar' : 'snaren'} · fret ${settings.minFret}–${settings.maxFret} · ${modeTxt}`;
+  renderLevel(running ? -120 : -120);
+}
+function poolChanged() {
+  saveSettings(); syncSettingsUI();
+  const stillValid = target && buildPool().some(it => it.s === target.s && it.pc === target.pc);
+  if (!stillValid || promptEl.classList.contains('hit')) nextTarget();
+  else {
+    // fretlijst kan veranderd zijn door het bereik
+    const it = buildPool().find(p => p.s === target.s && p.pc === target.pc);
+    target.frets = it.frets; target.midis = it.frets.map(f => OPEN[target.s] + f);
+    if (!NATURAL.has(target.pc)) { target.name = spell(target.pc); renderPrompt(); }
+    promptEl.dataset.midis = target.midis.join(',');
+    marks = []; drawNeck();
+  }
+  renderStats();
+}
+strSeg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const s = Number(b.dataset.s);
+  const has = settings.strings.includes(s);
+  if (has && settings.strings.length === 1) { $('strHelp').textContent = 'Je hebt minstens één snaar nodig.'; return; }
+  $('strHelp').textContent = 'Kies welke snaren je wilt oefenen.';
+  settings.strings = has ? settings.strings.filter(x => x !== s) : settings.strings.concat(s).sort();
+  poolChanged();
+});
+$('notesSeg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  settings.notes = b.dataset.mode; poolChanged();
+});
+minSel.addEventListener('change', () => {
+  settings.minFret = Number(minSel.value);
+  if (settings.maxFret <= settings.minFret) settings.maxFret = settings.minFret + 1;
+  poolChanged();
+});
+maxSel.addEventListener('change', () => {
+  settings.maxFret = Number(maxSel.value);
+  if (settings.minFret >= settings.maxFret) settings.minFret = settings.maxFret - 1;
+  poolChanged();
+});
+$('strict').addEventListener('change', e => { settings.strict = e.target.checked; saveSettings(); });
+$('sound').addEventListener('change', e => { settings.sound = e.target.checked; saveSettings(); });
+$('autoHint').addEventListener('change', e => { settings.autoHint = Number(e.target.value); saveSettings(); });
+$('gate').addEventListener('input', e => { settings.gateDb = Number(e.target.value); $('gateText').textContent = `(${settings.gateDb} dB)`; lvlGate.style.left = Math.max(0, Math.min(100, (settings.gateDb + 70) / 60 * 100)) + '%'; saveSettings(); });
+let resetArmed = 0;
+$('resetBtn').addEventListener('click', e => {
+  const b = e.currentTarget;
+  if (!resetArmed) {
+    b.textContent = 'Zeker weten? Klik nog een keer'; b.classList.add('danger');
+    resetArmed = setTimeout(() => { resetArmed = 0; b.textContent = 'Scores wissen'; b.classList.remove('danger'); }, 3500);
+    return;
+  }
+  clearTimeout(resetArmed); resetArmed = 0;
+  stats = EMPTY_STATS(); saveStats(); renderStats();
+  b.textContent = 'Scores gewist'; b.classList.remove('danger');
+  setTimeout(() => { b.textContent = 'Scores wissen'; }, 2000);
+});
+
+let lastNarrow = null, resizeT = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeT);
+  resizeT = setTimeout(() => {
+    const narrow = neckEl.getBoundingClientRect().width < 560;
+    if (narrow !== lastNarrow) { lastNarrow = narrow; drawNeck(); }
+  }, 120);
+});
+
+// ---------- Start ----------
+syncSettingsUI();
+target = pickTarget(null);
+renderPrompt();
+drawNeck();
+renderStats();
+renderLevel(-120);
+})();
+</script>
+</body>
+</html>
