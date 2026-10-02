@@ -53,7 +53,8 @@ const Daily = {
       if (!items.length) return this.advance();
       Lesson.open({ title: 'Herhalen', items, xp: 10, onDone: () => this.advance(), onExit: () => { location.hash = ''; } });
     } else {
-      if (st.set && st.mode === 'scales') { Object.assign(Store.settings.scales, st.set); Store.saveSettings(); }
+      // instellingen die bij de les horen gelden alleen tijdens deze stap
+      if (st.set && Store.settings[st.mode]) { if (!this.saved) this.saved = { mode: st.mode, prev: JSON.parse(JSON.stringify(Store.settings[st.mode])) }; Object.assign(Store.settings[st.mode], st.set); }
       this.left = st.minutes * 60;
       if (location.hash === '#m-' + st.mode) Router.render(); else location.hash = '#m-' + st.mode;
       this.timer = setInterval(() => this.tick(), 1000);
@@ -70,10 +71,16 @@ const Daily = {
     }
     this.renderBar();
   },
-  advance() { clearInterval(this.timer); this.idx++; if (this.idx >= this.steps.length) return this.finish(); this.run(); },
-  stop() { this.active = false; clearInterval(this.timer); this.renderBar(); if (location.hash.startsWith('#m-')) location.hash = ''; },
+  restore() {
+    if (!this.saved) return;
+    const cur = Store.settings[this.saved.mode], prev = this.saved.prev;
+    for (const k of Object.keys(cur)) if (!(k in prev)) delete cur[k];
+    Object.assign(cur, prev); this.saved = null; Store.saveSettings();
+  },
+  advance() { clearInterval(this.timer); this.restore(); this.idx++; if (this.idx >= this.steps.length) return this.finish(); this.run(); },
+  stop() { this.active = false; clearInterval(this.timer); this.restore(); this.renderBar(); if (location.hash.startsWith('#m-')) location.hash = ''; },
   finish() {
-    this.active = false; clearInterval(this.timer); this.renderBar();
+    this.active = false; clearInterval(this.timer); this.restore(); this.renderBar();
     const min = Math.max(0, Math.round((Progress.day().secs - this.startSecs) / 60)), xp = Math.max(0, (Store.stats.xp || 0) - this.startXP);
     if (location.hash === '' || location.hash === '#') Router.render(); else location.hash = '';
     setTimeout(() => this.celebrate(min, xp), 60);

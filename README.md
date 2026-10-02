@@ -23,7 +23,9 @@ Gitaaroefenapp die via de microfoon meeluistert. Open op je telefoon: https://th
   "quiz": [{ "q": "…", "options": ["…", "…", "…"], "answer": 0, "explain": "…" }] }
 ```
 
-`topic` kiest de oefeningen die de app zelf maakt: `twelve-tones`, `intervals`, `major-scale`, `keys-circle`, `minor`, `chord-building`, `diatonic-chords`, `progressions`, `scale-boxes` (met `"params": { "scale": "minpent", "root": "A", "boxes": [1, 2] }`) of `generic`. De vragen in `quiz` komen bij de laatste les van de unit en in de unittoets.
+`topic` kiest de oefeningen die de app zelf maakt: `twelve-tones`, `intervals`, `major-scale`, `keys-circle`, `minor`, `chord-building`, `diatonic-chords`, `progressions`, `scale-boxes` (met `"params": { "scale": "minpent", "root": "A", "boxes": [1, 2] }`) of `generic`. De vragen in `quiz` komen bij de laatste les van de unit en in de unittoets. Een `generic` unit heeft minstens 3 vragen nodig. Met `"drill": { "mode": "ear" }` kies je zelf welke oefening bij Oefen vandaag hoort.
+
+Controleer het bestand voor je het pusht: `node tests/check_path.js`.
 
 Staat een gegeven les een dag later nog niet in `path.json`, dan opent de app de unit uit het cursusschema in `src/js/11-content.js`.
 

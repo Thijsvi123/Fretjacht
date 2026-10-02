@@ -358,7 +358,7 @@ const G = {
 const ALL_SEMIS = INTERVALS.map(i => i.semis);
 const TOPICS = {
   'twelve-tones': {
-    title: 'Waarom 12 tonen', subtitle: 'Octaaf, kwint en de kwintencirkel', drill: { mode: 'intervals' },
+    title: 'Waarom 12 tonen', subtitle: 'Octaaf, kwint en de kwintencirkel', drill: { mode: 'intervals', set: { set: [7, 12] } },
     nodes: [
       { title: 'Het octaaf', gen: () => [G.octRatio(), G.octSemis(), G.tapOctave(), G.tapOctave(), G.playOctave(), G.playOctave()] },
       { title: 'De kwint', gen: () => [G.fifthRatio(), G.fifthSemis(), G.fifthAbove(), G.fifthAbove(), G.tapFifth(), G.playFifth(), G.playFifth()] },
@@ -477,6 +477,7 @@ function unitNodes(unit) {
   const p = Object.assign({ set: ALL_SEMIS, scale: 'minpent', root: 'A', boxes: [1, 2] }, unit.params || {});
   const nodes = tp.nodes.map(n => ({ title: n.title, gen: () => n.gen(p) }));
   const authored = authoredItems(unit);
+  if (unit.topic === 'generic' && !authored.length) nodes.shift();   // geen eigen vragen: geen lege theorieles
   if (authored.length) {
     const i = unit.topic === 'generic' ? 0 : nodes.length - 1;
     const base = nodes[i].gen;
@@ -493,5 +494,10 @@ function unitNodes(unit) {
 }
 function unitMeta(unit) {
   const tp = TOPICS[unit.topic] || TOPICS.generic;
-  return { title: unit.title || tp.title, subtitle: unit.subtitle != null ? unit.subtitle : tp.subtitle, drill: unit.drill || tp.drill };
+  let drill = unit.drill || tp.drill;
+  if (!unit.drill && unit.topic === 'scale-boxes') {
+    const p = Object.assign({ scale: 'minpent', root: 'A', boxes: [1, 2] }, unit.params || {});
+    drill = { mode: 'scales', set: { scale: p.scale, root: p.root, box: p.boxes[0] } };
+  }
+  return { title: unit.title || tp.title, subtitle: unit.subtitle != null ? unit.subtitle : tp.subtitle, drill };
 }

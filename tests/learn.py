@@ -100,12 +100,14 @@ async def main():
                     await run_lesson()
                     await page.click('.ls-foot button.primary'); await page.wait_for_timeout(600)
                 elif v == 'mode':
+                    if 'intervals' in seq[-1]: R['intervals_set_during'] = await ev('__fj.settings().intervals.set')
                     e = await ev('__fj.expected()')
                     if e: await ev(f'__fake.play({e[0]})'); await page.wait_for_timeout(800)
                     await page.click('#sessionBar button'); await page.wait_for_timeout(600)
                 else:
                     break
             R['daily_seq'] = seq
+            R['intervals_set_after'] = await ev("(JSON.parse(localStorage.getItem('fretjacht.settings') || '{}').intervals || {}).set")
             R['daily_done'] = await ev("!!document.querySelector('.sheet h3') && document.querySelector('.sheet h3').textContent")
             if await page.locator('.sheet button.primary').count(): await page.click('.sheet button.primary')
             # dagdoel halen

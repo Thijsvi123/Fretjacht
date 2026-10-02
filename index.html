@@ -3213,7 +3213,7 @@ const G = {
 const ALL_SEMIS = INTERVALS.map(i => i.semis);
 const TOPICS = {
   'twelve-tones': {
-    title: 'Waarom 12 tonen', subtitle: 'Octaaf, kwint en de kwintencirkel', drill: { mode: 'intervals' },
+    title: 'Waarom 12 tonen', subtitle: 'Octaaf, kwint en de kwintencirkel', drill: { mode: 'intervals', set: { set: [7, 12] } },
     nodes: [
       { title: 'Het octaaf', gen: () => [G.octRatio(), G.octSemis(), G.tapOctave(), G.tapOctave(), G.playOctave(), G.playOctave()] },
       { title: 'De kwint', gen: () => [G.fifthRatio(), G.fifthSemis(), G.fifthAbove(), G.fifthAbove(), G.tapFifth(), G.playFifth(), G.playFifth()] },
@@ -3332,6 +3332,7 @@ function unitNodes(unit) {
   const p = Object.assign({ set: ALL_SEMIS, scale: 'minpent', root: 'A', boxes: [1, 2] }, unit.params || {});
   const nodes = tp.nodes.map(n => ({ title: n.title, gen: () => n.gen(p) }));
   const authored = authoredItems(unit);
+  if (unit.topic === 'generic' && !authored.length) nodes.shift();   // geen eigen vragen: geen lege theorieles
   if (authored.length) {
     const i = unit.topic === 'generic' ? 0 : nodes.length - 1;
     const base = nodes[i].gen;
@@ -3348,7 +3349,12 @@ function unitNodes(unit) {
 }
 function unitMeta(unit) {
   const tp = TOPICS[unit.topic] || TOPICS.generic;
-  return { title: unit.title || tp.title, subtitle: unit.subtitle != null ? unit.subtitle : tp.subtitle, drill: unit.drill || tp.drill };
+  let drill = unit.drill || tp.drill;
+  if (!unit.drill && unit.topic === 'scale-boxes') {
+    const p = Object.assign({ scale: 'minpent', root: 'A', boxes: [1, 2] }, unit.params || {});
+    drill = { mode: 'scales', set: { scale: p.scale, root: p.root, box: p.boxes[0] } };
+  }
+  return { title: unit.title || tp.title, subtitle: unit.subtitle != null ? unit.subtitle : tp.subtitle, drill };
 }
 
 // ---------- Lesspeler (één oefening tegelijk, zoals Duolingo) ----------
@@ -4107,7 +4113,8 @@ const Daily = {
       if (!items.length) return this.advance();
       Lesson.open({ title: 'Herhalen', items, xp: 10, onDone: () => this.advance(), onExit: () => { location.hash = ''; } });
     } else {
-      if (st.set && st.mode === 'scales') { Object.assign(Store.settings.scales, st.set); Store.saveSettings(); }
+      // instellingen die bij de les horen gelden alleen tijdens deze stap
+      if (st.set && Store.settings[st.mode]) { if (!this.saved) this.saved = { mode: st.mode, prev: JSON.parse(JSON.stringify(Store.settings[st.mode])) }; Object.assign(Store.settings[st.mode], st.set); }
       this.left = st.minutes * 60;
       if (location.hash === '#m-' + st.mode) Router.render(); else location.hash = '#m-' + st.mode;
       this.timer = setInterval(() => this.tick(), 1000);
@@ -4124,10 +4131,16 @@ const Daily = {
     }
     this.renderBar();
   },
-  advance() { clearInterval(this.timer); this.idx++; if (this.idx >= this.steps.length) return this.finish(); this.run(); },
-  stop() { this.active = false; clearInterval(this.timer); this.renderBar(); if (location.hash.startsWith('#m-')) location.hash = ''; },
+  restore() {
+    if (!this.saved) return;
+    const cur = Store.settings[this.saved.mode], prev = this.saved.prev;
+    for (const k of Object.keys(cur)) if (!(k in prev)) delete cur[k];
+    Object.assign(cur, prev); this.saved = null; Store.saveSettings();
+  },
+  advance() { clearInterval(this.timer); this.restore(); this.idx++; if (this.idx >= this.steps.length) return this.finish(); this.run(); },
+  stop() { this.active = false; clearInterval(this.timer); this.restore(); this.renderBar(); if (location.hash.startsWith('#m-')) location.hash = ''; },
   finish() {
-    this.active = false; clearInterval(this.timer); this.renderBar();
+    this.active = false; clearInterval(this.timer); this.restore(); this.renderBar();
     const min = Math.max(0, Math.round((Progress.day().secs - this.startSecs) / 60)), xp = Math.max(0, (Store.stats.xp || 0) - this.startXP);
     if (location.hash === '' || location.hash === '#') Router.render(); else location.hash = '';
     setTimeout(() => this.celebrate(min, xp), 60);
@@ -4195,6 +4208,7 @@ window.__fj = {
   metro: () => ({ on: Metronome.on, beats: Metronome.recent.map(b => b.t), now: Engine.ctx ? Engine.ctx.currentTime : 0, bpm: Metronome.bpm }),
   daily: () => ({ active: Daily.active, idx: Daily.idx, steps: Daily.steps.map(s => s.kind + ':' + (s.mode || '')) }),
   progress: () => ({ secs: Progress.day().secs, xp: Store.stats.xp, streak: Progress.streak(), nodes: Store.stats.path.nodes, badges: Store.stats.badges }),
+  settings: () => JSON.parse(JSON.stringify(Store.settings)),
   addSecs: n => { Progress.day().secs += n; Store.saveStats(); Progress.renderTop(); },
 };
 $('#streakChip .chip-ico').innerHTML = ICONS.flame;

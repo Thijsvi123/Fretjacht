@@ -32,6 +32,7 @@ window.__fj = {
   metro: () => ({ on: Metronome.on, beats: Metronome.recent.map(b => b.t), now: Engine.ctx ? Engine.ctx.currentTime : 0, bpm: Metronome.bpm }),
   daily: () => ({ active: Daily.active, idx: Daily.idx, steps: Daily.steps.map(s => s.kind + ':' + (s.mode || '')) }),
   progress: () => ({ secs: Progress.day().secs, xp: Store.stats.xp, streak: Progress.streak(), nodes: Store.stats.path.nodes, badges: Store.stats.badges }),
+  settings: () => JSON.parse(JSON.stringify(Store.settings)),
   addSecs: n => { Progress.day().secs += n; Store.saveStats(); Progress.renderTop(); },
 };
 $('#streakChip .chip-ico').innerHTML = ICONS.flame;
