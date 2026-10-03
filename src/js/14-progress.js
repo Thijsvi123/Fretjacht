@@ -24,29 +24,37 @@ const Progress = {
   },
   tick() {
     const v = document.body.dataset.view;
-    const practicing = document.visibilityState === 'visible' && Activity.active() && (v === 'lesson' || (v === 'mode' && Engine.mic));
+    const practicing = document.visibilityState === 'visible' && Activity.active() && (v === 'lesson' || (v === 'mode' && (Engine.mic || (current && current.noMic))));
     if (!practicing) return;
     const d = this.day(), before = d.secs;
     d.secs++;
     if (v === 'mode' && ++this.drillSecs >= 30) { this.drillSecs = 0; this.addXP(1); }
     if (v === 'mode' && current && current.id) { const md = Store.stats.modeDays || (Store.stats.modeDays = {}); md[current.id] = todayKey(); }
     if (before < this.goalSecs() && d.secs >= this.goalSecs()) this.goalReached();
-    if (d.secs % 5 === 0) Store.saveStats();
+    if (d.secs % 5 === 0) { Store.saveStats(); Quests.check(); }
     this.renderTop();
   },
+  // reeks: aaneengesloten dagen met je dagdoel; een bevroren dag houdt de reeks vast maar telt niet mee
   streak() {
-    const d = new Date(), today = this.met(dayKeyOf(d));
+    const fr = Store.stats.frozen || {}, d = new Date(), today = this.met(dayKeyOf(d));
+    d.setHours(12, 0, 0, 0);
     if (!today) d.setDate(d.getDate() - 1);
     let n = 0;
-    while (this.met(dayKeyOf(d))) { n++; d.setDate(d.getDate() - 1); }
+    for (let i = 0; i < 4000; i++) {
+      const k = dayKeyOf(d);
+      if (this.met(k)) n++; else if (!fr[k]) break;
+      d.setDate(d.getDate() - 1);
+    }
     return { n, today };
   },
   bestStreak() {
-    const keys = Object.keys(Store.stats.days).filter(k => this.met(k)).sort();
+    const fr = Store.stats.frozen || {};
+    const keys = Array.from(new Set(Object.keys(Store.stats.days).filter(k => this.met(k)).concat(Object.keys(fr)))).sort();
     let best = 0, run = 0, prev = null;
     for (const k of keys) {
       const d = new Date(k + 'T12:00:00');
-      run = prev && Math.round((d - prev) / 86400000) === 1 ? run + 1 : 1;
+      if (!(prev && Math.round((d - prev) / 86400000) === 1)) run = 0;
+      if (this.met(k)) run++;
       best = Math.max(best, run); prev = d;
     }
     return best;
@@ -168,8 +176,8 @@ function renderCalendar(infoEl) {
       const day = new Date(start); day.setDate(start.getDate() + w * 7 + d);
       if (day > today) continue;
       const k = dayKeyOf(day), secs = Progress.peek(k).secs, lv = calLevel(secs);
-      const label = `${day.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' })}: ${Math.round(secs / 60)} min`;
-      g += `<rect class="cal-c l${lv}${k === todayKey() ? ' today' : ''}" x="${L + w * (cell + gap)}" y="${T + d * (cell + gap)}" width="${cell}" height="${cell}" rx="3" tabindex="0" data-label="${label}" aria-label="${label}"></rect>`;
+      const label = `${day.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' })}: ${Math.round(secs / 60)} min${(Store.stats.frozen || {})[k] ? ', bevroren' : ''}`;
+      g += `<rect class="cal-c l${lv}${k === todayKey() ? ' today' : ''}${(Store.stats.frozen || {})[k] ? ' frozen' : ''}" x="${L + w * (cell + gap)}" y="${T + d * (cell + gap)}" width="${cell}" height="${cell}" rx="3" tabindex="0" data-label="${label}" aria-label="${label}"></rect>`;
     }
   }
   [0, 2, 4].forEach(d => { g += `<text class="cal-wd" x="0" y="${T + d * (cell + gap) + cell - 3}">${WD[d]}</text>`; });
@@ -210,13 +218,15 @@ function renderProgress(view) {
   Badges.check();
   const st = Store.stats, sk = Progress.streak(), goalMin = Math.round(Progress.goalSecs() / 60);
   const left = Math.max(0, Math.ceil((Progress.goalSecs() - Progress.day().secs) / 60));
-  const mood = sk.today ? 'juich' : sk.n ? 'blij' : 'slaap';
+  const fz = Store.stats.freezes || 0, yest = new Date(); yest.setDate(yest.getDate() - 1);
+  const mood = (Store.stats.frozen || {})[dayKeyOf(yest)] ? 'ijs' : sk.today ? 'juich' : sk.n ? 'blij' : 'slaap';
   const msg = sk.today ? `Vandaag gehaald. Morgen weer ${goalMin} minuten om je reeks te houden.` : sk.n ? `Nog ${left} ${left === 1 ? 'minuut' : 'minuten'} vandaag, anders begint je reeks morgen opnieuw.` : `Oefen vandaag ${goalMin} minuten om een reeks te beginnen.`;
   view.append(h('section', { class: 'streak-card' },
     h('div', { class: 'sc-fret', html: Mascot.svg(mood) }),
     h('div', { class: 'sc-text' },
       h('p', { class: 'sc-n' }, h('span', { html: ICONS.flame }), h('b', { text: String(sk.n) }), h('span', { text: sk.n === 1 ? 'dag op rij' : 'dagen op rij' })),
-      h('p', { class: 'help', text: msg }))));
+      h('p', { class: 'help', text: msg }),
+      h('p', { class: 'sc-freeze' }, h('span', { html: ICONS.ice }), fz ? `${fz} ${fz === 1 ? 'reeksbevriezer' : 'reeksbevriezers'} op voorraad` : 'Nog geen reeksbevriezer. Doe de drie opdrachten van een dag.'))));
   const tile = (label, value, sub, icon, onclick) => h(onclick ? 'button' : 'div', { class: 'tile' + (onclick ? ' tap' : ''), type: onclick ? 'button' : null, onclick },
     h('span', { class: 'tile-l' }, icon ? h('span', { class: 'tile-ico', html: icon }) : null, label), h('b', { class: 'tile-v', text: value }), sub ? h('small', { text: sub }) : null);
   const wk = Math.round(Progress.weekSecs() / 60), nb = Bin.count();
@@ -225,6 +235,14 @@ function renderProgress(view) {
     tile('Deze week', `${wk}`, 'minuten', ICONS.clock),
     tile('Beste reeks', String(Progress.bestStreak()), Progress.bestStreak() === 1 ? 'dag' : 'dagen', ICONS.flame),
     tile('Foutenbak', String(nb), nb ? 'tik om te herstellen' : 'leeg', ICONS.plaster, nb ? () => Bin.start() : null)));
+  const sumOut = h('pre', { class: 'cc-out', hidden: true });
+  view.append(h('div', { class: 'card course-card' },
+    h('div', { class: 'cc-fret', html: Mascot.svg('boek') }),
+    h('div', { class: 'cc-text' },
+      h('h2', { class: 'card-h', text: 'Voor je muziektheorieles' }),
+      h('p', { class: 'help', text: 'Kopieer je voortgang en plak hem als reactie op je volgende les. Dan stem ik de lessen af op wat je nog lastig vindt.' }),
+      h('button', { class: 'primary', type: 'button', id: 'copyProgress', html: `${ICONS.copy}<span>Kopieer voortgang</span>`, onclick: () => copyCourseSummary(sumOut) })),
+    sumOut));
   const calInfo = h('p', { class: 'chart-info', text: 'Tik op een dag voor de minuten' });
   view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Oefenkalender' }), h('p', { class: 'help', text: 'De laatste 16 weken. Hoe donkerder, hoe langer je oefende. De donkerste kleur is je dagdoel gehaald.' }), renderCalendar(calInfo),
     h('div', { class: 'cal-legend', html: `<span>minder</span>${[0, 1, 2, 3, 4].map(l => `<i class="l${l}"></i>`).join('')}<span>dagdoel</span>` }), calInfo));

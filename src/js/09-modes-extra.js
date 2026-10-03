@@ -84,6 +84,7 @@ registerMode({
     st.runs++; st.last = this.score;
     if (rec) st.best = this.score;
     Store.saveStats();
+    Quests.max('challenge', this.score);
     this.timerEl.textContent = '0';
     this.card.classList.add('hit');
     $('.pr-note', this.card).innerHTML = `<span class="deg">${this.score}</span>`;

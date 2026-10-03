@@ -1,8 +1,17 @@
 // ---------- Opstarten ----------
 Store.load();
+Freeze.check();
 $('#backBtn').addEventListener('click', () => Router.back());
 $('#micPill').addEventListener('click', () => (Engine.mic ? Engine.stopMic() : Engine.startMic()));
 window.addEventListener('hashchange', () => Router.render());
+// terug in de app op een nieuwe dag: bevriezer toepassen en nieuwe opdrachten tonen
+let lastDay = todayKey();
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || todayKey() === lastDay) return;
+  lastDay = todayKey();
+  Freeze.check();
+  if (['path', 'progress', 'practice'].includes(document.body.dataset.view)) Router.render();
+});
 let lastNarrow = null, resizeT = 0;
 window.addEventListener('resize', () => {
   clearTimeout(resizeT);
@@ -35,6 +44,13 @@ window.__fj = {
   progress: () => ({ secs: Progress.day().secs, xp: Store.stats.xp, streak: Progress.streak(), nodes: Store.stats.path.nodes, badges: Store.stats.badges, bin: Bin.count(), binCleared: Store.stats.binCleared || 0 }),
   bin: () => Bin.list().map(x => ({ k: x.k, n: x.n, type: x.it.type })),
   settings: () => JSON.parse(JSON.stringify(Store.settings)),
+  quests: () => Quests.today().map(q => ({ id: q.id, target: q.target, v: Quests.progress(q), done: !!(Progress.day().qd || {})[q.id] })),
+  questBump: (k, n) => (k === 'combo' || k === 'challenge' ? Quests.max(k, n) : Quests.bump(k, n)),
+  markPlayed: ids => { const md = Store.stats.modeDays || (Store.stats.modeDays = {}); ids.forEach(i => { md[i] = todayKey(); }); Quests.check(); },
+  freezes: () => ({ n: Store.stats.freezes || 0, frozen: Store.stats.frozen || {} }),
+  targets: () => (current && current.id === 'targets' ? { want: current.want, chord: current.chord && current.chord.name, hit: current.hit, idx: current.idx } : null),
+  summary: () => courseSummary(),
+  earq: () => (current && current.id === 'earq' && current.q ? current.q.key : null),
   addSecs: n => { Progress.day().secs += n; Store.saveStats(); Progress.renderTop(); },
 };
 $('#streakChip .chip-ico').innerHTML = ICONS.flame;

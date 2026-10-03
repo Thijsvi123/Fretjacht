@@ -492,6 +492,63 @@ function unitNodes(unit) {
   } });
   return nodes;
 }
+// ---------- Uitlegkaartje: de kern van de les in een paar zinnen ----------
+const TOPIC_SUMMARY = {
+  'twelve-tones': [
+    'Een octaaf hoger is dezelfde noot met de dubbele frequentie (2:1).',
+    'De kwint (3:2) is na het octaaf de sterkste samenklank. Grondtoon, kwint en octaaf samen vormen een powerchord.',
+    'Twaalf kwinten op elkaar komen bijna uit op zeven octaven. Daarom delen we het octaaf in twaalf halve tonen.',
+  ],
+  'intervals': [
+    'Een interval is de afstand tussen twee tonen, geteld in halve tonen. Op de gitaar is één fret één halve toon.',
+    'Kleine terts 3, grote terts 4, reine kwart 5, reine kwint 7 en octaaf 12 halve tonen.',
+    'Elk interval heeft een vaste vorm op de hals. Alleen over de B-snaar schuift die vorm één fret op.',
+  ],
+  'major-scale': [
+    'De majeurtoonladder volgt het patroon heel, heel, half, heel, heel, heel, half.',
+    'Elke toon heeft een trapnummer: 1 is de grondtoon, 5 de dominant en 7 de leidtoon.',
+    'De leidtoon ligt een halve toon onder de grondtoon en trekt er sterk naartoe.',
+  ],
+  'keys-circle': [
+    'De voortekens van een toonsoort vertellen welke noten een ♯ of ♭ krijgen.',
+    'Op de kwintencirkel komt er bij elke stap rechtsom, een kwint omhoog, één kruis bij.',
+    'Kruisen komen in de volgorde F♯ C♯ G♯ D♯ A♯ E♯ B♯, mollen precies andersom: B♭ E♭ A♭ D♭ G♭ C♭ F♭.',
+  ],
+  'minor': [
+    'Natuurlijk mineur is majeur vanaf trap 6: A mineur heeft dezelfde tonen als C majeur.',
+    'Harmonisch mineur verhoogt de 7, zodat er weer een leidtoon naar de grondtoon is.',
+    'Melodisch mineur verhoogt de 6 en de 7 (in de klassieke muziek alleen omhoog).',
+  ],
+  'chord-building': [
+    'Een drieklank stapelt twee tertsen: grondtoon, terts en kwint.',
+    'Grote terts plus kleine terts is majeur. Kleine terts plus grote terts is mineur.',
+    'Een septiemakkoord zet er nog een terts bovenop: dominant 7 krijgt een kleine septiem, groot 7 een grote.',
+  ],
+  'diatonic-chords': [
+    'Op elke trap van de majeurtoonladder ligt een drieklank: I ii iii IV V vi vii°.',
+    'Hoofdletters zijn majeur, kleine letters mineur en ° is verminderd.',
+    'I is de tonica (rust), IV de subdominant (beweging) en V de dominant (spanning naar I).',
+  ],
+  'progressions': [
+    'I, IV en V zijn de basis van rock en blues. De 12-maten blues gebruikt alleen deze drie akkoorden.',
+    'ii, V, I is de kern van jazz: elke stap gaat een kwint omlaag, terug naar huis.',
+    'Een V7 wil oplossen naar I: de leidtoon gaat een halve toon omhoog naar de grondtoon.',
+  ],
+};
+function unitSummary(unit) {
+  if (Array.isArray(unit.summary) && unit.summary.some(x => typeof x === 'string' && x.trim())) return unit.summary.filter(x => typeof x === 'string' && x.trim()).slice(0, 4);
+  if (unit.topic === 'scale-boxes') {
+    const p = Object.assign({ scale: 'minpent', root: 'A', boxes: [1, 2] }, unit.params || {});
+    if (!SCALES[p.scale]) return [];
+    const tones = scaleTones(p.scale, p.root);
+    return [
+      `${SCALES[p.scale].name} in ${p.root}: ${tones.map(t => t.name).join(' ')} (${tones.map(t => t.label).join(' ')}).`,
+      'Een box is een vast patroon van toonladdertonen op één plek op de hals. Zoek eerst de grondtonen: dat zijn je ankers.',
+      `Box ${p.boxes.join(' en ')} sluiten op elkaar aan. Samen dekken ze een groot stuk van de hals.`,
+    ];
+  }
+  return TOPIC_SUMMARY[unit.topic] || [];
+}
 function unitMeta(unit) {
   const tp = TOPICS[unit.topic] || TOPICS.generic;
   let drill = unit.drill || tp.drill;

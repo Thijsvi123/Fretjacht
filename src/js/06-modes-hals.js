@@ -45,6 +45,7 @@ const NoteGame = {
     const it = st.items[key] || (st.items[key] = { n: 0, total: 0 });
     it.n++; it.total += secs;
     st.found++; st.totalTime += secs;
+    Quests.bump('notes');
     if (!hinted && (st.best == null || secs < st.best)) st.best = secs;
     if (!hinted && secs <= 5) { st.streak++; st.bestStreak = Math.max(st.bestStreak, st.streak); } else st.streak = 0;
     Store.saveStats();

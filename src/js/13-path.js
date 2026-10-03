@@ -62,6 +62,7 @@ function recordNode(unit, i, node, res) {
   if (node.test) st.test = true;
   if (res.passed) st.done = true;
   if (res.passed && !wasDone) PathFx.justDone = k;
+  if (res.passed) Quests.bump('nodes');
   Store.saveStats();
 }
 function nodeKindIcon(node) {
@@ -79,7 +80,7 @@ function startNode(unit, i, nodes, after) {
   const cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
   const needMic = !cantPlay && items.some(x => x.type === 'play') && !Engine.mic;
   Loader.run({ title: node.test ? 'Unittoets' : node.title, sub: needMic ? 'Microfoon aanzetten…' : null, wait: needMic ? Engine.startMic() : null }, () => Lesson.open({
-    title: `Les ${unit.lesson}: ${node.title}`, items, test: !!node.test, xp: node.test ? 20 : 10,
+    title: `Les ${unit.lesson}: ${node.title}`, topic: unit.topic, items, test: !!node.test, xp: node.test ? 20 : 10,
     onFinish: res => recordNode(unit, i, node, res),
     onDone: after || (() => { location.hash = ''; }),
     onExit: () => { location.hash = ''; },
@@ -90,7 +91,9 @@ function niceDate(iso) {
   const d = new Date(iso + 'T12:00:00');
   return d.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' });
 }
-const SIDE_MOODS = ['luister', 'zwaai', 'denk', 'blij'];
+// de fret naast het pad wisselt van houding: per unit en per dag
+const SIDE_MOODS = ['gitaar', 'noot', 'hals', 'luister', 'boek'];
+const dayNo = () => Math.floor(new Date(todayKey() + 'T12:00:00') / 86400000);
 function renderPath(view) {
   const units = PathData.units();
   const intro = PathFx.intro && !reducedMotion(); PathFx.intro = false;
@@ -100,6 +103,7 @@ function renderPath(view) {
     const until = new Date(Store.settings.cantPlayUntil).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
     wrap.append(h('div', { class: 'note-bar' }, h('span', { text: `Speelopdrachten staan uit tot ${until}.` }), h('button', { type: 'button', text: 'Weer aanzetten', onclick: () => { Store.settings.cantPlayUntil = 0; Store.saveSettings(); Router.render(); } })));
   }
+  if (units.length) wrap.append(Quests.card());
   if (!units.length) wrap.append(h('div', { class: 'card empty' }, h('div', { class: 'empty-fret', html: Mascot.svg('slaap') }), h('h2', { text: 'Je leerpad begint na les 1' }), h('p', { class: 'help', text: 'Zodra je eerste muziektheorieles binnen is, verschijnt hier de eerste unit met oefeningen.' })));
   const nx = nextNode();
   let delay = 0;
@@ -125,9 +129,15 @@ function renderPath(view) {
       track.append(row);
     });
     // de fret zit naast het pad, aan de kant waar plek is
-    const mood = complete ? 'juich' : nx && nx.unit.lesson === u.lesson ? 'zwaai' : SIDE_MOODS[ui % SIDE_MOODS.length];
+    const current = nx && nx.unit.lesson === u.lesson;
+    const mood = complete ? 'juich' : current ? ['zwaai', 'gitaar', 'noot', 'hals'][dayNo() % 4] : SIDE_MOODS[(ui + dayNo()) % SIDE_MOODS.length];
     if (nodes.length >= 3) track.append(h('div', { class: 'side-fret', html: Mascot.svg(mood) }));
-    wrap.append(h('div', { class: `unit c-${color}`, id: `unit-${u.lesson}` }, head, track));
+    // uitlegkaartje: de kern van de les, open bij de unit waar je nu bent
+    const sum = unitSummary(u);
+    const card = sum.length ? h('details', { class: 'unit-sum', open: current && !doneCount ? true : null },
+      h('summary', {}, h('span', { class: 'us-ico', html: ICONS.book }), h('span', { text: 'De les in het kort' })),
+      h('div', { class: 'us-body' }, h('div', { class: 'us-fret', html: Mascot.svg('boek') }), h('ul', {}, sum.map(t => h('li', { text: t }))))) : null;
+    wrap.append(h('div', { class: `unit c-${color}`, id: `unit-${u.lesson}` }, head, card, track));
   });
   for (const up of PathData.upcoming()) {
     const tp = TOPICS[up.topic];
@@ -170,7 +180,7 @@ const Review = {
       const st = nodeStat(u, i);
       if (!st || !st.done) return;
       const days = (Date.now() - (st.last || 0)) / 86400000;
-      out.push({ node, w: 1 + Math.min(3, st.mistakes / Math.max(1, st.runs)) + Math.min(3, days / 2) });
+      out.push({ node, topic: u.topic, w: 1 + Math.min(3, st.mistakes / Math.max(1, st.runs)) + Math.min(3, days / 2) });
     });
     return out;
   },
@@ -181,7 +191,7 @@ const Review = {
     for (let k = 0; k < 40 && items.length < (n || 8); k++) {
       let r = Math.random() * cands.reduce((a, c) => a + c.w, 0), c = cands[0];
       for (const x of cands) { r -= x.w; if (r <= 0) { c = x; break; } }
-      items.push(...shuffle(c.node.gen()).slice(0, 2));
+      items.push(...shuffle(c.node.gen()).slice(0, 2).map(it => Object.assign(it, { _topic: c.topic })));
     }
     return items.slice(0, n || 8);
   },

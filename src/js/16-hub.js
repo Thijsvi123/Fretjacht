@@ -1,14 +1,16 @@
 // ---------- Oefenen: het pedalboard ----------
 const HUB = [
   { title: 'De hals', ids: ['notes', 'positions', 'intervals', 'degrees'] },
-  { title: 'Solo’s en gehoor', ids: ['scales', 'chords', 'bends', 'ear'] },
+  { title: 'Solo’s', ids: ['scales', 'chords', 'targets', 'bends'] },
+  { title: 'Gehoor', ids: ['earq', 'ear'] },
   { title: 'Uitdaging', ids: ['challenge', 'heatmap'] },
-  { title: 'Gereedschap', ids: ['metro', 'tuner'], tools: true },
+  { title: 'Gereedschap', ids: ['explorer', 'metro', 'tuner'], tools: true },
 ];
 const PEDAL_SUB = {
   notes: 'Vind de noot op de snaar', positions: 'Eén noot, elke snaar', intervals: 'Van toon naar toon', degrees: 'Trap 1 tot 7 in een toonsoort',
   scales: 'Boxen en patronen', chords: 'Alle tonen van een akkoord', bends: 'Zuiver omhoog buigen', ear: 'Luister en speel na',
   challenge: 'Zoveel noten in één minuut', heatmap: 'Waar zit je zwakke plek?', metro: 'Strak op de tel', tuner: 'Stem je gitaar',
+  targets: 'De terts op elk akkoord', earq: 'Zonder gitaar, alleen luisteren', explorer: 'Toonladders en akkoorden op de hals',
 };
 const PEDAL_TIP = {
   notes: 'Speel de noot op de snaar die oplicht.', positions: 'Speel dezelfde noot op elke snaar, van laag naar hoog.',
@@ -16,8 +18,9 @@ const PEDAL_TIP = {
   scales: 'Speel de box van laag naar hoog.', chords: 'Speel alle tonen van het akkoord, in elke volgorde.',
   bends: 'Bend tot de lijn het doel raakt, en houd hem even vast.', ear: 'Luister goed en zoek de noot op de hals.',
   challenge: 'Eén minuut, zoveel mogelijk noten.', tuner: 'Speel één snaar tegelijk en laat hem uitklinken.',
+  targets: 'Het akkoord klinkt eerst. Speel dan de doeltoon.',
 };
-const NO_MIC = ['metro', 'heatmap'];
+const NO_MIC = ['metro', 'heatmap', 'explorer', 'earq'];
 // vaste knopstand per pedaal, zodat het bord er elke keer hetzelfde uitziet
 const knobAngle = (id, k) => { let x = 7; for (const c of id + k) x = (x * 31 + c.charCodeAt(0)) % 997; return -130 + (x % 260); };
 // pedaal intrappen: lampje aan, klik, microfoon aan en dan naar de oefening
@@ -27,6 +30,7 @@ function stomp(e, id, before) {
   if (el.classList.contains('stomp')) return;
   el.classList.add('stomp');
   Sfx.play('tap');
+  Engine.ensureCtx();
   if (before) before();
   const mic = !NO_MIC.includes(id) && !Engine.mic ? Engine.startMic() : null;
   const go = () => { if (location.hash === href) Router.render(); else location.hash = href; };

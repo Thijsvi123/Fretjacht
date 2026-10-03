@@ -11,7 +11,7 @@ vm.createContext(ctx);
 const src = ['01-theory.js', '01b-theory2.js', '11-content.js'].map(f => fs.readFileSync(__dirname + '/../src/js/' + f, 'utf8')).join('\n');
 vm.runInContext(src + '\nthis.C = { TOPICS, SCALES, MINOR_ROOTS, MAJOR_ROOTS, unitNodes, boxCount };', ctx);
 const { TOPICS, SCALES, MINOR_ROOTS, MAJOR_ROOTS, unitNodes, boxCount } = ctx.C;
-const DRILLS = ['notes', 'positions', 'intervals', 'degrees', 'scales', 'chords', 'bends', 'ear', 'challenge', 'metro'];
+const DRILLS = ['notes', 'positions', 'intervals', 'degrees', 'scales', 'chords', 'bends', 'ear', 'challenge', 'metro', 'targets', 'earq'];
 const isStr = x => typeof x === 'string' && x.trim().length > 0;
 if (!data || !Array.isArray(data.units)) { console.error('path.json mist de lijst "units"'); process.exit(1); }
 if (data.updated != null && !/^\d{4}-\d{2}-\d{2}$/.test(data.updated)) err('"updated" moet JJJJ-MM-DD zijn');
@@ -28,6 +28,10 @@ data.units.forEach((u, n) => {
   if (!isStr(u.title)) err(`${at}: "title" ontbreekt`);
   if (u.subtitle != null && typeof u.subtitle !== 'string') err(`${at}: "subtitle" moet tekst zijn`);
   if (u.doc != null && !/^https:\/\//.test(u.doc)) err(`${at}: "doc" moet een https-link zijn`);
+  if (u.summary != null) {
+    if (!Array.isArray(u.summary) || !u.summary.length || u.summary.length > 4) err(`${at}: "summary" moet een lijst met 1 tot 4 korte zinnen zijn`);
+    else u.summary.forEach((t, i) => { if (!isStr(t)) err(`${at}: summary ${i + 1} is leeg`); else if (t.length > 170) err(`${at}: summary ${i + 1} is te lang (${t.length} tekens, maximaal 170)`); });
+  }
   if (u.topic === 'scale-boxes') {
     const p = u.params || {};
     if (!SCALES[p.scale]) err(`${at}: params.scale moet een van ${Object.keys(SCALES).join(', ')} zijn`);

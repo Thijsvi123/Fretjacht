@@ -106,6 +106,7 @@ registerMode({
     const s = Store.settings.scales, secs = (t - this.t0) / 1000;
     const st = Store.stats.scales, key = `${s.scale}-${s.root}-${s.box}-${s.order}`;
     st.runs++;
+    Quests.bump('scales');
     const rec = !this.errors && (st.best[key] == null || secs < st.best[key]);
     if (rec) st.best[key] = secs;
     Store.saveStats();

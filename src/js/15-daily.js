@@ -6,7 +6,7 @@ const Daily = {
     const steps = [];
     let est = 0;
     const add = s => { steps.push(s); est += s.minutes; };
-    add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
+    if (!((Store.settings.cantPlayUntil || 0) > Date.now())) add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
     const nx = nextNode();
     if (nx) add({ kind: 'node', ref: nx, minutes: 4, title: 'Leerpad', sub: `Unit ${nx.unitNo}: ${nx.node.title}` });
     const nb = Bin.count();
@@ -15,9 +15,10 @@ const Daily = {
     const cu = nx ? nx.unit : PathData.units().slice(-1)[0];
     if (cu) {
       const d = unitMeta(cu).drill;
-      if (d && MODES[d.mode] && d.mode !== 'notes') add({ kind: 'drill', mode: d.mode, set: d.set, minutes: 3, title: 'Toepassen', sub: `${MODES[d.mode].title}, past bij les ${cu.lesson}` });
+      if (d && MODES[d.mode] && d.mode !== 'notes' && !((Store.settings.cantPlayUntil || 0) > Date.now())) add({ kind: 'drill', mode: d.mode, set: d.set, minutes: 3, title: 'Toepassen', sub: `${MODES[d.mode].title}, past bij les ${cu.lesson}` });
     }
-    const extras = shuffle([{ mode: 'challenge', minutes: 2, sub: '60 seconden' }, { mode: 'scales', minutes: 3, sub: 'Toonladders' }, { mode: 'positions', minutes: 2, sub: 'Alle posities' }, { mode: 'ear', minutes: 3, sub: 'Op gehoor naspelen' }]);
+    const cant = (Store.settings.cantPlayUntil || 0) > Date.now();
+    const extras = cant ? [{ mode: 'earq', minutes: 4, sub: 'Gehoortraining, zonder gitaar' }] : shuffle([{ mode: 'challenge', minutes: 2, sub: '60 seconden' }, { mode: 'scales', minutes: 3, sub: 'Toonladders' }, { mode: 'positions', minutes: 2, sub: 'Alle posities' }, { mode: 'ear', minutes: 3, sub: 'Op gehoor naspelen' }, { mode: 'targets', minutes: 3, sub: 'Doeltonen over akkoordwissels' }, { mode: 'earq', minutes: 3, sub: 'Gehoortraining' }]);
     for (const x of extras) { if (est >= remainMin) break; add({ kind: 'drill', mode: x.mode, minutes: x.minutes, title: 'Extra', sub: x.sub }); }
     return steps;
   },
@@ -70,7 +71,7 @@ const Daily = {
     const st = this.steps[this.idx];
     if (!this.active || !st || st.kind !== 'drill') return;
     const onIt = current && current.id === st.mode;
-    if (Engine.mic && onIt && document.visibilityState === 'visible') {
+    if ((Engine.mic || current.noMic) && onIt && document.visibilityState === 'visible') {
       this.left--;
       if (this.left <= 0) { if (Engine.ctx && Sfx.on()) Engine.chime(); return this.advance(); }
     }
@@ -109,7 +110,7 @@ const Daily = {
     bar.hidden = false;
     if (bar._k === k) return;
     bar._k = k;
-    bar.innerHTML = `<span class="sb-dots">${dots}</span><span class="sb-txt"><b>${onIt ? st.sub : 'Oefen vandaag'}</b>${onIt ? (Engine.mic ? '' : ', druk op Start') : `, stap ${this.idx + 1} van ${this.steps.length}`}</span>${onIt ? `<span class="sb-time">${mm}</span>` : ''}`;
+    bar.innerHTML = `<span class="sb-dots">${dots}</span><span class="sb-txt"><b>${onIt ? st.sub : 'Oefen vandaag'}</b>${onIt ? (Engine.mic || current.noMic ? '' : ', druk op Start') : `, stap ${this.idx + 1} van ${this.steps.length}`}</span>${onIt ? `<span class="sb-time">${mm}</span>` : ''}`;
     bar.append(onIt ? h('button', { type: 'button', text: 'Volgende', onclick: () => this.advance() }) : h('button', { type: 'button', class: 'primary', text: 'Ga verder', onclick: () => this.run() }), h('button', { type: 'button', text: 'Stop', onclick: () => this.stop() }));
   },
 };

@@ -8,6 +8,11 @@
       "title": "Waarom 12 tonen",
       "subtitle": "Octaaf, kwint en de kwintencirkel",
       "doc": "https://claude.ai/code/artifact/a8cea592-791b-4211-9b66-8fdbddcd8c09",
+      "summary": [
+        "Een octaaf hoger is dezelfde noot met de dubbele frequentie (2:1).",
+        "De kwint (3:2) is na het octaaf de sterkste samenklank. Grondtoon, kwint en octaaf samen vormen een powerchord.",
+        "Twaalf kwinten op elkaar komen bijna uit op zeven octaven. Daarom delen we het octaaf in twaalf halve tonen."
+      ],
       "quiz": [
         {
           "q": "Waarom blijft een powerchord strak klinken, ook met veel distortion?",

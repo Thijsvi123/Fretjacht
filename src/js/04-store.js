@@ -10,6 +10,9 @@ const DEFAULT_SETTINGS = {
   bends: { semis: 2, tol: 15 },
   ear: { level: 1, key: 'minpent-A', help: true, slow: false },
   metro: { bpm: 80, beats: 4, accent: true, onbeat: false, phones: false, corr: 0 },
+  explorer: { root: 'A', kind: 'scale', scale: 'minpent', chord: 'm7', labels: 'names', range: 'low' },
+  targets: { prog: 'blues', key: 'A', target: '3', tempo: 0, show: true },
+  earq: { kind: 'iv', ivs: [3, 4, 5, 7, 12], dir: 'up', chords: ['maj', 'min', 'dom7'] },
 };
 const DEFAULT_STATS = () => ({
   notes: { items: {}, found: 0, totalTime: 0, best: null, streak: 0, bestStreak: 0 },
@@ -23,6 +26,9 @@ const DEFAULT_STATS = () => ({
   bends: { recent: [] },
   rhythm: { recent: [], sessions: 0 },
   xp: 0, days: {}, path: { nodes: {} }, badges: {}, bin: [], binCleared: 0, modeDays: {},
+  topics: {}, skills: {}, freezes: 0, frozen: {},
+  targets: { hits: 0, tries: 0, time: 0, near: 0, best: 0, by: {} },
+  earq: { ok: {}, n: {} },
 });
 function deepMerge(base, over) {
   if (base === null) return over === undefined ? null : over;
@@ -58,6 +64,12 @@ const Store = {
     s.ear.level = clamp(s.ear.level | 0, 1, 5);
     s.metro.bpm = clamp(s.metro.bpm | 0, 30, 240);
     if (![10, 15, 20, 30].includes(Number(s.goal))) s.goal = 15;
+    s.earq.ivs = (s.earq.ivs || []).filter(n => n >= 1 && n <= 12);
+    if (s.earq.ivs.length < 2) s.earq.ivs = [3, 4, 5, 7, 12];
+    s.earq.chords = (s.earq.chords || []).filter(t => CHORDS[t]);
+    if (s.earq.chords.length < 2) s.earq.chords = ['maj', 'min', 'dom7'];
+    if (!SCALES[s.explorer.scale]) s.explorer.scale = 'minpent';
+    if (!CHORDS[s.explorer.chord]) s.explorer.chord = 'm7';
     this.stats = deepMerge(DEFAULT_STATS(), this.get('stats', {}));
   },
   saveSettings() { this.put('settings', this.settings); },

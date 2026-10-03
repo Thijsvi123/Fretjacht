@@ -185,14 +185,18 @@ const Lesson = {
     }
     this.combo++;
     if ([3, 5, 8, 12].includes(this.combo)) this.showCombo(this.combo);
+    Track.answer(it, true, this.spec && this.spec.topic);
+    Quests.max('combo', this.combo);
+    if (fixedNow) Quests.bump('fixed');
     Sfx.play(fixedNow ? 'fixed' : 'right');
     this.feedback(true, title || (fixedNow ? pick(FIXED) : pick(PRAISE)), it.explain || '', auto, fixedNow ? 'Uit je foutenbak.' : '');
   },
   wrong(it, title, text) {
     this.combo = 0;
+    Track.answer(it, false, this.spec && this.spec.topic);
     let note = '';
     if (this.bin) { Bin.add(it); note = 'Hij blijft in je foutenbak.'; }
-    else { this.wrongKeys.add(Bin.add(it, this.spec && this.spec.title)); note = 'In je foutenbak gezet. Herstel hem later voor bonus-XP.'; }
+    else { this.wrongKeys.add(Bin.add(it, this.spec && this.spec.title, (this.spec && this.spec.topic) || it._topic)); note = 'In je foutenbak gezet. Herstel hem later voor bonus-XP.'; }
     Sfx.play('wrong');
     this.feedback(false, title, text, 0, note);
   },

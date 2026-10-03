@@ -721,3 +721,116 @@ button.tile.tap .tile-ico .ico { color: var(--bad); }
 .plan-head { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 12px; align-items: center; }
 .plan-head .help { margin: 4px 0 0; }
 .plan-fret svg { width: 78px; height: 78px; display: block; }
+
+
+/* ===================== Opdrachten, uitleg, cursus, halsverkenner, doeltonen, gehoortraining ===================== */
+/* dagelijkse opdrachten */
+.quests { position: relative; display: grid; gap: 10px; padding: 12px 16px 12px; border-radius: 18px; background: var(--surface); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
+.q-head { display: grid; grid-template-columns: minmax(0, 1fr) 76px; gap: 8px; align-items: end; margin: -4px -6px -4px 0; }
+.q-title { display: grid; gap: 6px; justify-items: start; padding-bottom: 6px; }
+.q-fret { width: 76px; height: 76px; pointer-events: none; }
+.q-fret svg { width: 100%; height: 100%; display: block; }
+.q-head h2 { margin: 0; font: 800 semi-condensed 22px/1.05 var(--display); letter-spacing: -.01em; }
+.q-freeze { display: inline-flex; align-items: center; gap: 3px; padding: 4px 8px 4px 6px; border-radius: 999px; background: var(--surface-2); color: var(--muted); font: 700 13px/1 var(--body); }
+.q-freeze .ico { width: 16px; height: 16px; }
+.q-freeze.has { background: #E3F2FC; color: #1F6FA8; }
+.q-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; position: relative; }
+.q-list li { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.q-ico { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text); }
+.q-ico .ico { width: 17px; height: 17px; }
+.q-text { display: grid; gap: 5px; font: 600 14px/1.25 var(--body); min-width: 0; }
+.q-bar { display: block; height: 7px; border-radius: 4px; background: var(--led-off); overflow: hidden; }
+.q-bar i { display: block; height: 100%; border-radius: 4px; background: var(--accent); transition: width .5s cubic-bezier(.2, .8, .2, 1); }
+.q-n { font: 700 12.5px/1 var(--body); color: var(--muted); min-width: 34px; text-align: right; }
+.q-list li.done .q-ico { background: var(--ok); color: var(--ok-ink); }
+.q-list li.done .q-text > span:first-child { color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.q-list li.done .q-bar i { background: var(--ok); }
+.q-foot { margin: 0; font-size: 13px; color: var(--muted); }
+.quests.all { padding-bottom: 14px; border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); box-shadow: 0 4px 0 color-mix(in srgb, var(--ok) 35%, var(--line)); }
+.quests.all .q-head h2 { color: var(--ok); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .q-freeze.has { background: #15324A; color: #9BD0F5; } }
+
+/* uitlegkaartje per unit */
+.unit-sum { margin: 12px 4px 0; border-radius: 16px; background: var(--c-soft, var(--accent-soft)); border: 2px solid color-mix(in srgb, var(--c, var(--accent)) 30%, transparent); }
+.unit-sum summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 11px 14px; font: 700 14px/1.2 var(--body); color: var(--c-text, var(--accent-text)); }
+.unit-sum summary::-webkit-details-marker { display: none; }
+.unit-sum summary::after { content: "+"; margin-left: auto; font: 600 20px/1 var(--body); }
+.unit-sum[open] summary::after { content: "–"; }
+.us-ico .ico { width: 19px; height: 19px; }
+.us-body { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 10px; align-items: start; padding: 0 14px 14px 8px; }
+.us-fret svg { width: 74px; height: 74px; display: block; }
+.unit-sum ul { margin: 0; padding: 0 0 0 18px; display: grid; gap: 7px; font-size: 14.5px; line-height: 1.4; }
+.unit-sum li::marker { color: var(--c-text, var(--accent-text)); }
+
+/* voortgang: bevriezer en cursus */
+.sc-freeze { margin: 8px 0 0; display: flex; align-items: center; gap: 6px; font: 600 13px/1.3 var(--body); opacity: .85; }
+.sc-freeze .ico { width: 16px; height: 16px; }
+.cal-c.frozen { fill: #9BD0F5; }
+.course-card { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 12px; align-items: center; }
+.cc-fret svg { width: 86px; height: 86px; display: block; }
+.cc-text .help { margin: 2px 0 12px; }
+.cc-text button { display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 0 var(--accent-deep); }
+.cc-text button .ico { width: 19px; height: 19px; }
+.cc-out { grid-column: 1 / -1; margin: 4px 0 0; padding: 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); font: 500 13px/1.5 var(--body); white-space: pre-wrap; overflow-wrap: anywhere; user-select: all; -webkit-user-select: all; }
+
+/* halsverkenner */
+.exp-card { display: grid; gap: 14px; }
+.exp-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px; align-items: center; }
+.exp-fret svg { width: 96px; height: 96px; display: block; }
+.exp-title { margin: 2px 0 0; font: 800 semi-condensed 28px/1.05 var(--display); letter-spacing: -.01em; text-wrap: balance; }
+.exp-kind button { flex: 1; }
+.exp-roots { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.exp-roots button { padding: 10px 2px; font: 700 15px/1 var(--body); }
+.exp-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.exp-row .seg button { flex: 1; padding: 9px 6px; }
+.exp-slots { margin-top: 0; }
+.exp-info { display: block; font: 600 14px/1.4 var(--body); color: var(--ink); padding: 4px 0 0; }
+.neck .mk.ex circle { fill: var(--surface); stroke: var(--ink); stroke-width: 2.5; }
+.neck .mk.ex text { fill: var(--ink); }
+.neck .mk.ex.root circle { fill: var(--accent); stroke: var(--accent-ink); }
+.neck .mk.ex.root text { fill: var(--accent-ink); }
+.neck .mk.ex.hit circle { fill: var(--ok); stroke: var(--surface); stroke-width: 3; }
+.neck .mk.ex.hit text { fill: var(--ok-ink); }
+
+/* doeltonen */
+.prog { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.prog.long { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.prog span { padding: 8px 2px; border-radius: 9px; text-align: center; background: var(--surface-2); border: 1.5px solid var(--line); font: 700 14px/1 var(--body); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prog span.past { color: var(--ink); }
+.prog span.now { background: var(--accent); border-color: var(--accent-deep); color: var(--accent-ink); box-shadow: 0 3px 0 var(--accent-deep); }
+.prompt.miss .note { color: var(--bad); }
+
+/* gehoortraining */
+.eq-card { display: grid; gap: 14px; }
+.eq-kind button { flex: 1; }
+.eq-stage { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 12px; align-items: center; }
+.eq-fret svg { width: 104px; height: 104px; display: block; }
+.eq-ask { display: grid; gap: 10px; justify-items: start; }
+.eq-play { width: 72px; height: 72px; border-radius: 50%; padding: 0; display: grid; place-items: center; background: var(--accent); border: 0; color: var(--accent-ink); box-shadow: 0 5px 0 var(--accent-deep); }
+.eq-play .ico { width: 30px; height: 30px; margin-left: 4px; }
+.eq-play:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--accent-deep); }
+.eq-q { margin: 0; font: 800 semi-condensed 23px/1.15 var(--display); letter-spacing: -.01em; }
+.eq-opts.grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.eq-opts .opt { padding: 14px 12px; font-size: 16px; }
+.eq-fb:empty { display: none; }
+.eq-fb { display: grid; gap: 10px; padding: 12px 14px; border-radius: 14px; }
+.eq-fb p { margin: 0; font-size: 15px; line-height: 1.4; }
+.eq-fb.ok { background: var(--ok-soft); }
+.eq-fb.ok b { color: var(--ok); }
+.eq-fb.bad { background: var(--bad-soft); }
+.eq-fb.bad b { color: var(--bad); }
+.eq-cmp { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.eq-cmp button { padding: 11px 8px; font-size: 14px; }
+.eq-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 9px; }
+.eq-list li { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 14px; }
+.eq-bar { height: 8px; border-radius: 4px; background: var(--led-off); overflow: hidden; }
+.eq-bar i { display: block; height: 100%; border-radius: 4px; background: var(--c, #7146D4); }
+.eq-list small { font: 600 12.5px/1 var(--body); color: var(--muted); min-width: 64px; text-align: right; }
+
+/* de fret speelt af en toe een akkoordje naast het pad */
+.side-fret .m-gitaar .m-strum { transform-box: fill-box; transform-origin: 20% 20%; animation: strum 3.2s ease-in-out infinite; }
+@keyframes strum { 0%, 70%, 100% { transform: rotate(0); } 75% { transform: rotate(-12deg); } 80% { transform: rotate(6deg); } 85% { transform: rotate(-12deg); } 90% { transform: rotate(6deg); } }
+.side-fret .m-noot .m-note { transform-box: fill-box; transform-origin: 50% 100%; animation: sway 4s ease-in-out infinite; }
+@keyframes sway { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(3deg); } }
+
+.mode-targets-own .pr-leds { display: none; }

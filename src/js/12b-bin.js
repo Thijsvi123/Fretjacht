@@ -14,12 +14,12 @@ const Bin = {
     for (const k of Object.keys(it)) if (k[0] !== '_') o[k] = it[k];
     return JSON.parse(JSON.stringify(o));
   },
-  add(it, from) {
+  add(it, from, topic) {
     const k = it._bin || this.key(it), list = this.list(), ex = list.find(x => x.k === k);
     const first = !this.list().length && !(Store.stats.binSeen);
     if (ex) { ex.n++; ex.t = Date.now(); }
     else {
-      list.push({ k, it: this.clean(it), n: 1, t: Date.now(), from: from || '' });
+      list.push({ k, it: this.clean(it), n: 1, t: Date.now(), from: from || '', topic: topic || it._topic || '' });
       while (list.length > this.MAX) list.shift();
     }
     if (first) Store.stats.binSeen = true;
@@ -46,7 +46,7 @@ const Bin = {
     return src.slice(0, max || 10).map(x => {
       const it = JSON.parse(JSON.stringify(x.it));
       if (it.type === 'mc') { const right = it.options[it.answer]; it.options = shuffle(it.options); it.answer = it.options.indexOf(right); }
-      it._bin = x.k;
+      it._bin = x.k; it._topic = x.topic || '';
       return it;
     });
   },

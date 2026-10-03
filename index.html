@@ -739,6 +739,119 @@ button.tile.tap .tile-ico .ico { color: var(--bad); }
 .plan-head .help { margin: 4px 0 0; }
 .plan-fret svg { width: 78px; height: 78px; display: block; }
 
+
+/* ===================== Opdrachten, uitleg, cursus, halsverkenner, doeltonen, gehoortraining ===================== */
+/* dagelijkse opdrachten */
+.quests { position: relative; display: grid; gap: 10px; padding: 12px 16px 12px; border-radius: 18px; background: var(--surface); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
+.q-head { display: grid; grid-template-columns: minmax(0, 1fr) 76px; gap: 8px; align-items: end; margin: -4px -6px -4px 0; }
+.q-title { display: grid; gap: 6px; justify-items: start; padding-bottom: 6px; }
+.q-fret { width: 76px; height: 76px; pointer-events: none; }
+.q-fret svg { width: 100%; height: 100%; display: block; }
+.q-head h2 { margin: 0; font: 800 semi-condensed 22px/1.05 var(--display); letter-spacing: -.01em; }
+.q-freeze { display: inline-flex; align-items: center; gap: 3px; padding: 4px 8px 4px 6px; border-radius: 999px; background: var(--surface-2); color: var(--muted); font: 700 13px/1 var(--body); }
+.q-freeze .ico { width: 16px; height: 16px; }
+.q-freeze.has { background: #E3F2FC; color: #1F6FA8; }
+.q-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; position: relative; }
+.q-list li { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.q-ico { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text); }
+.q-ico .ico { width: 17px; height: 17px; }
+.q-text { display: grid; gap: 5px; font: 600 14px/1.25 var(--body); min-width: 0; }
+.q-bar { display: block; height: 7px; border-radius: 4px; background: var(--led-off); overflow: hidden; }
+.q-bar i { display: block; height: 100%; border-radius: 4px; background: var(--accent); transition: width .5s cubic-bezier(.2, .8, .2, 1); }
+.q-n { font: 700 12.5px/1 var(--body); color: var(--muted); min-width: 34px; text-align: right; }
+.q-list li.done .q-ico { background: var(--ok); color: var(--ok-ink); }
+.q-list li.done .q-text > span:first-child { color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.q-list li.done .q-bar i { background: var(--ok); }
+.q-foot { margin: 0; font-size: 13px; color: var(--muted); }
+.quests.all { padding-bottom: 14px; border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); box-shadow: 0 4px 0 color-mix(in srgb, var(--ok) 35%, var(--line)); }
+.quests.all .q-head h2 { color: var(--ok); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .q-freeze.has { background: #15324A; color: #9BD0F5; } }
+
+/* uitlegkaartje per unit */
+.unit-sum { margin: 12px 4px 0; border-radius: 16px; background: var(--c-soft, var(--accent-soft)); border: 2px solid color-mix(in srgb, var(--c, var(--accent)) 30%, transparent); }
+.unit-sum summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 11px 14px; font: 700 14px/1.2 var(--body); color: var(--c-text, var(--accent-text)); }
+.unit-sum summary::-webkit-details-marker { display: none; }
+.unit-sum summary::after { content: "+"; margin-left: auto; font: 600 20px/1 var(--body); }
+.unit-sum[open] summary::after { content: "–"; }
+.us-ico .ico { width: 19px; height: 19px; }
+.us-body { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 10px; align-items: start; padding: 0 14px 14px 8px; }
+.us-fret svg { width: 74px; height: 74px; display: block; }
+.unit-sum ul { margin: 0; padding: 0 0 0 18px; display: grid; gap: 7px; font-size: 14.5px; line-height: 1.4; }
+.unit-sum li::marker { color: var(--c-text, var(--accent-text)); }
+
+/* voortgang: bevriezer en cursus */
+.sc-freeze { margin: 8px 0 0; display: flex; align-items: center; gap: 6px; font: 600 13px/1.3 var(--body); opacity: .85; }
+.sc-freeze .ico { width: 16px; height: 16px; }
+.cal-c.frozen { fill: #9BD0F5; }
+.course-card { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 12px; align-items: center; }
+.cc-fret svg { width: 86px; height: 86px; display: block; }
+.cc-text .help { margin: 2px 0 12px; }
+.cc-text button { display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 0 var(--accent-deep); }
+.cc-text button .ico { width: 19px; height: 19px; }
+.cc-out { grid-column: 1 / -1; margin: 4px 0 0; padding: 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); font: 500 13px/1.5 var(--body); white-space: pre-wrap; overflow-wrap: anywhere; user-select: all; -webkit-user-select: all; }
+
+/* halsverkenner */
+.exp-card { display: grid; gap: 14px; }
+.exp-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px; align-items: center; }
+.exp-fret svg { width: 96px; height: 96px; display: block; }
+.exp-title { margin: 2px 0 0; font: 800 semi-condensed 28px/1.05 var(--display); letter-spacing: -.01em; text-wrap: balance; }
+.exp-kind button { flex: 1; }
+.exp-roots { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.exp-roots button { padding: 10px 2px; font: 700 15px/1 var(--body); }
+.exp-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.exp-row .seg button { flex: 1; padding: 9px 6px; }
+.exp-slots { margin-top: 0; }
+.exp-info { display: block; font: 600 14px/1.4 var(--body); color: var(--ink); padding: 4px 0 0; }
+.neck .mk.ex circle { fill: var(--surface); stroke: var(--ink); stroke-width: 2.5; }
+.neck .mk.ex text { fill: var(--ink); }
+.neck .mk.ex.root circle { fill: var(--accent); stroke: var(--accent-ink); }
+.neck .mk.ex.root text { fill: var(--accent-ink); }
+.neck .mk.ex.hit circle { fill: var(--ok); stroke: var(--surface); stroke-width: 3; }
+.neck .mk.ex.hit text { fill: var(--ok-ink); }
+
+/* doeltonen */
+.prog { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.prog.long { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.prog span { padding: 8px 2px; border-radius: 9px; text-align: center; background: var(--surface-2); border: 1.5px solid var(--line); font: 700 14px/1 var(--body); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prog span.past { color: var(--ink); }
+.prog span.now { background: var(--accent); border-color: var(--accent-deep); color: var(--accent-ink); box-shadow: 0 3px 0 var(--accent-deep); }
+.prompt.miss .note { color: var(--bad); }
+
+/* gehoortraining */
+.eq-card { display: grid; gap: 14px; }
+.eq-kind button { flex: 1; }
+.eq-stage { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 12px; align-items: center; }
+.eq-fret svg { width: 104px; height: 104px; display: block; }
+.eq-ask { display: grid; gap: 10px; justify-items: start; }
+.eq-play { width: 72px; height: 72px; border-radius: 50%; padding: 0; display: grid; place-items: center; background: var(--accent); border: 0; color: var(--accent-ink); box-shadow: 0 5px 0 var(--accent-deep); }
+.eq-play .ico { width: 30px; height: 30px; margin-left: 4px; }
+.eq-play:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--accent-deep); }
+.eq-q { margin: 0; font: 800 semi-condensed 23px/1.15 var(--display); letter-spacing: -.01em; }
+.eq-opts.grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.eq-opts .opt { padding: 14px 12px; font-size: 16px; }
+.eq-fb:empty { display: none; }
+.eq-fb { display: grid; gap: 10px; padding: 12px 14px; border-radius: 14px; }
+.eq-fb p { margin: 0; font-size: 15px; line-height: 1.4; }
+.eq-fb.ok { background: var(--ok-soft); }
+.eq-fb.ok b { color: var(--ok); }
+.eq-fb.bad { background: var(--bad-soft); }
+.eq-fb.bad b { color: var(--bad); }
+.eq-cmp { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.eq-cmp button { padding: 11px 8px; font-size: 14px; }
+.eq-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 9px; }
+.eq-list li { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 14px; }
+.eq-bar { height: 8px; border-radius: 4px; background: var(--led-off); overflow: hidden; }
+.eq-bar i { display: block; height: 100%; border-radius: 4px; background: var(--c, #7146D4); }
+.eq-list small { font: 600 12.5px/1 var(--body); color: var(--muted); min-width: 64px; text-align: right; }
+
+/* de fret speelt af en toe een akkoordje naast het pad */
+.side-fret .m-gitaar .m-strum { transform-box: fill-box; transform-origin: 20% 20%; animation: strum 3.2s ease-in-out infinite; }
+@keyframes strum { 0%, 70%, 100% { transform: rotate(0); } 75% { transform: rotate(-12deg); } 80% { transform: rotate(6deg); } 85% { transform: rotate(-12deg); } 90% { transform: rotate(6deg); } }
+.side-fret .m-noot .m-note { transform-box: fill-box; transform-origin: 50% 100%; animation: sway 4s ease-in-out infinite; }
+@keyframes sway { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(3deg); } }
+
+.mode-targets-own .pr-leds { display: none; }
+
 </style>
 </head>
 <body data-view="path">
@@ -1424,6 +1537,9 @@ const DEFAULT_SETTINGS = {
   bends: { semis: 2, tol: 15 },
   ear: { level: 1, key: 'minpent-A', help: true, slow: false },
   metro: { bpm: 80, beats: 4, accent: true, onbeat: false, phones: false, corr: 0 },
+  explorer: { root: 'A', kind: 'scale', scale: 'minpent', chord: 'm7', labels: 'names', range: 'low' },
+  targets: { prog: 'blues', key: 'A', target: '3', tempo: 0, show: true },
+  earq: { kind: 'iv', ivs: [3, 4, 5, 7, 12], dir: 'up', chords: ['maj', 'min', 'dom7'] },
 };
 const DEFAULT_STATS = () => ({
   notes: { items: {}, found: 0, totalTime: 0, best: null, streak: 0, bestStreak: 0 },
@@ -1437,6 +1553,9 @@ const DEFAULT_STATS = () => ({
   bends: { recent: [] },
   rhythm: { recent: [], sessions: 0 },
   xp: 0, days: {}, path: { nodes: {} }, badges: {}, bin: [], binCleared: 0, modeDays: {},
+  topics: {}, skills: {}, freezes: 0, frozen: {},
+  targets: { hits: 0, tries: 0, time: 0, near: 0, best: 0, by: {} },
+  earq: { ok: {}, n: {} },
 });
 function deepMerge(base, over) {
   if (base === null) return over === undefined ? null : over;
@@ -1472,6 +1591,12 @@ const Store = {
     s.ear.level = clamp(s.ear.level | 0, 1, 5);
     s.metro.bpm = clamp(s.metro.bpm | 0, 30, 240);
     if (![10, 15, 20, 30].includes(Number(s.goal))) s.goal = 15;
+    s.earq.ivs = (s.earq.ivs || []).filter(n => n >= 1 && n <= 12);
+    if (s.earq.ivs.length < 2) s.earq.ivs = [3, 4, 5, 7, 12];
+    s.earq.chords = (s.earq.chords || []).filter(t => CHORDS[t]);
+    if (s.earq.chords.length < 2) s.earq.chords = ['maj', 'min', 'dom7'];
+    if (!SCALES[s.explorer.scale]) s.explorer.scale = 'minpent';
+    if (!CHORDS[s.explorer.chord]) s.explorer.chord = 'm7';
     this.stats = deepMerge(DEFAULT_STATS(), this.get('stats', {}));
   },
   saveSettings() { this.put('settings', this.settings); },
@@ -1780,51 +1905,60 @@ const FUR = {
   eye: '#1B110D', pick: '#F5A31A', pickLine: '#B5520F', plaster: '#F0C49A', plasterPad: '#E2A574', blush: '#F2A08F',
 };
 const Mascot = {
-  // mood: blij, juich, oeps, luister, ehbo, slaap, denk. crop: 'head' toont alleen het hoofd.
+  // stemmingen en houdingen: blij, zwaai, juich, oeps, luister, ehbo, slaap, denk,
+  // gitaar (speelt gitaar), noot (leunt op een grote noot), hals (kijkt over een fretboard), boek (leest), ijs (muts en sjaal).
+  // crop: 'head' toont alleen het hoofd.
   svg(mood = 'blij', o = {}) {
     const F = FUR, L = `stroke="${F.line}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"`;
     const thin = `stroke="${F.line}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"`;
-    const head = o.crop === 'head', raised = mood === 'juich' && !head, wave = mood === 'zwaai' && !head;
-    const arm = (d) => `<path d="${d}" fill="none" stroke="${F.line}" stroke-width="22" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${F.paw}" stroke-width="14" stroke-linecap="round"/>`;
+    const head = o.crop === 'head', pose = head ? 'head' : mood;
+    const arm = d => `<path d="${d}" fill="none" stroke="${F.line}" stroke-width="22" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${F.paw}" stroke-width="14" stroke-linecap="round"/>`;
+    const paw = (x, y, rx = 12, ry = 10) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${F.paw}" ${L}/>`;
+    const pick = (x, y, r) => `<g transform="translate(${x} ${y}) rotate(${r})"><path d="M0-16c13 0 20 4 20 11C20 6 9 18 0 26-9 18-20 6-20-5c0-7 7-11 20-11z" fill="${F.pick}" stroke="${F.pickLine}" stroke-width="3" stroke-linejoin="round"/><path d="M-6-8c4-2 9-2 12 0" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".6"/></g>`;
     let s = '';
-    // staart en lijf (niet bij alleen het hoofd)
-    if (!head) {
-      s += `<path d="M146 198c26-4 44-24 40-50-3-16-16-24-26-18 10 9 12 29-1 44-6 8-14 13-22 16z" fill="${F.tail}" ${L}/>`;
+    // grote noot achter de fret
+    if (pose === 'noot') s += `<g class="m-note"><ellipse cx="158" cy="178" rx="25" ry="17" transform="rotate(-22 158 178)" fill="${F.pick}" ${L}/><path d="M178 172V30" stroke="${F.line}" stroke-width="12" stroke-linecap="round"/><path d="M178 172V30" stroke="${F.pick}" stroke-width="5" stroke-linecap="round"/><path d="M180 28c4 20 26 26 17 62 4-26-8-34-17-38z" fill="${F.pick}" ${L}/></g>`;
+    // staart en lijf
+    if (!head && pose !== 'hals') {
+      if (pose !== 'noot') s += `<path d="M146 198c26-4 44-24 40-50-3-16-16-24-26-18 10 9 12 29-1 44-6 8-14 13-22 16z" fill="${F.tail}" ${L}/>`;
       s += `<path d="M56 126c-18 18-23 46-19 74h126c4-28-1-56-19-74z" fill="${F.body}" ${L}/>`;
       s += `<path d="M78 130c-6 20-2 44 22 56 24-12 28-36 22-56z" fill="${F.bib}"/>`;
     }
-    // armen
-    if (raised) s += arm('M60 146C36 136 22 104 22 54') + arm('M140 146c24-10 38-42 38-92');
-    if (wave) s += `<g class="m-wave">${arm('M140 146c22-8 34-34 36-70')}<ellipse cx="176" cy="72" rx="12" ry="10" fill="${F.paw}" ${L}/></g>`;
-    // oren
-    s += `<circle cx="46" cy="60" r="17" fill="${F.face}" ${L}/><circle cx="47" cy="61" r="8.5" fill="${F.earIn}"/>`;
-    s += `<circle cx="154" cy="60" r="17" fill="${F.face}" ${L}/><circle cx="153" cy="61" r="8.5" fill="${F.earIn}"/>`;
+    // armen die achter het hoofd langs gaan
+    if (pose === 'juich') s += arm('M60 146C36 136 22 104 22 54') + arm('M140 146c24-10 38-42 38-92');
+    if (pose === 'zwaai') s += `<g class="m-wave">${arm('M140 146c22-8 34-34 36-70')}${paw(176, 72)}</g>`;
+    if (pose === 'noot') s += arm('M138 146c18-8 30-22 36-40') + paw(176, 104, 11, 10);
+    // oren (onder een muts niet)
+    if (pose !== 'ijs') {
+      s += `<circle cx="46" cy="60" r="17" fill="${F.face}" ${L}/><circle cx="47" cy="61" r="8.5" fill="${F.earIn}"/>`;
+      s += `<circle cx="154" cy="60" r="17" fill="${F.face}" ${L}/><circle cx="153" cy="61" r="8.5" fill="${F.earIn}"/>`;
+    }
     // hoofd met kap, masker en snuit
     s += `<path d="M100 30c40 0 66 22 66 54 0 26-18 42-40 48-10 3-18 8-26 8s-16-5-26-8c-22-6-40-22-40-48 0-32 26-54 66-54z" fill="${F.face}" ${L}/>`;
     s += `<path d="M100 33c27 0 48 12 59 30-14-6-32-7-44-1-6 3-11 7-15 12-4-5-9-9-15-12-12-6-30-5-44 1 11-18 32-30 59-30z" fill="${F.cap}"/>`;
     s += `<path d="M40 88c4-14 22-21 40-15 10 3 14 6 20 6s10-3 20-6c18-6 36 1 40 15 2 10-10 18-24 18-12 0-22-6-28-11-5-3-11-3-16 0-6 5-16 11-28 11-14 0-26-8-24-18z" fill="${F.mask}"/>`;
     s += `<ellipse cx="100" cy="114" rx="30" ry="21" fill="${F.muzzle}"/>`;
     // ogen
-    if (mood === 'juich' || mood === 'luister') {
+    if (['juich', 'luister', 'gitaar'].includes(mood)) {
       s += `<path d="M58 92q11-14 22 0M120 92q11-14 22 0" stroke="${F.muzzle}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
     } else if (mood === 'slaap') {
       s += `<path d="M58 88q11 9 22 0M120 88q11 9 22 0" stroke="${F.muzzle}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
     } else {
-      const up = mood === 'denk' ? -3 : 0, dx = mood === 'denk' ? 2 : 0;
+      const up = mood === 'denk' ? -3 : mood === 'boek' ? 3 : 0, dx = mood === 'denk' ? 2 : 0;
       s += `<g class="m-eyes"><ellipse cx="${69 + dx}" cy="${88 + up}" rx="10" ry="11.5" fill="${F.eye}"/><ellipse cx="${131 + dx}" cy="${88 + up}" rx="10" ry="11.5" fill="${F.eye}"/>`;
       s += `<circle cx="${65.5 + dx}" cy="${83.5 + up}" r="4" fill="#fff"/><circle cx="${127.5 + dx}" cy="${83.5 + up}" r="4" fill="#fff"/><circle cx="${72.5 + dx}" cy="${92.5 + up}" r="1.8" fill="#fff"/><circle cx="${134.5 + dx}" cy="${92.5 + up}" r="1.8" fill="#fff"/></g>`;
     }
     if (mood === 'oeps') s += `<path d="M56 68q10-7 22-3M144 68q-10-7-22-3" ${thin}/>`;
-    // wangetjes
-    if (mood === 'juich' || mood === 'blij' || mood === 'ehbo' || mood === 'zwaai') s += `<ellipse cx="62" cy="110" rx="7" ry="4.5" fill="${F.blush}" opacity=".55"/><ellipse cx="138" cy="110" rx="7" ry="4.5" fill="${F.blush}" opacity=".55"/>`;
+    // wangetjes (in de kou wat roder)
+    if (['juich', 'blij', 'ehbo', 'zwaai', 'gitaar', 'noot', 'ijs'].includes(mood)) s += `<ellipse cx="62" cy="110" rx="7" ry="4.5" fill="${F.blush}" opacity="${mood === 'ijs' ? '.9' : '.55'}"/><ellipse cx="138" cy="110" rx="7" ry="4.5" fill="${F.blush}" opacity="${mood === 'ijs' ? '.9' : '.55'}"/>`;
     // neus, snorharen, mond
     s += `<path d="M89 102c4-5 18-5 22 0-1 6-6 10-11 10s-10-4-11-10z" fill="${F.nose}" stroke="${F.noseLine}" stroke-width="2" stroke-linejoin="round"/>`;
     s += `<path d="M74 112l-24-5M74 118l-24 2M126 112l24-5M126 118l24 2" stroke="${F.line}" stroke-width="2" stroke-linecap="round" opacity=".45"/>`;
-    if (mood === 'juich') s += `<path d="M86 117c4 13 24 13 28 0z" fill="${F.line}"/><path d="M92 124c4 4 12 4 16 0-4-3-12-3-16 0z" fill="${F.nose}"/>`;
+    if (mood === 'juich' || mood === 'gitaar') s += `<path d="M86 117c4 13 24 13 28 0z" fill="${F.line}"/><path d="M92 124c4 4 12 4 16 0-4-3-12-3-16 0z" fill="${F.nose}"/>`;
     else if (mood === 'oeps') s += `<path d="M90 121c3-3 6-3 10 0s7 3 10 0" ${thin}/>`;
     else if (mood === 'slaap' || mood === 'denk') s += `<path d="M95 119h10" ${thin}/>`;
     else s += `<path d="M100 112v4M100 116c-3 6-11 6-13 1M100 116c3 6 11 6 13 1" ${thin}/>`;
-    // extra's
+    // extra's op het hoofd
     if (mood === 'oeps') s += `<path d="M163 44c5 7 7 11 7 14a7 7 0 0 1-14 0c0-3 2-7 7-14z" fill="#7FC3EF" stroke="${F.line}" stroke-width="2.5" stroke-linejoin="round"/>`;
     if (mood === 'ehbo') s += `<g transform="rotate(-28 136 56)"><rect x="116" y="48" width="40" height="16" rx="8" fill="${F.plaster}" ${L} stroke-width="3"/><rect x="130" y="48" width="12" height="16" fill="${F.plasterPad}"/><circle cx="123" cy="56" r="1.4" fill="${F.line}" opacity=".4"/><circle cx="149" cy="56" r="1.4" fill="${F.line}" opacity=".4"/></g>`;
     if (mood === 'luister') {
@@ -1833,20 +1967,43 @@ const Mascot = {
     }
     if (mood === 'slaap') s += `<path d="M150 22h12l-12 14h12M170 6h8l-8 10h8" stroke="${F.pick}" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
     if (mood === 'denk') s += `<g class="m-dots" fill="${F.pick}" stroke="${F.line}" stroke-width="2.5"><circle cx="152" cy="30" r="5"/><circle cx="168" cy="20" r="6.5"/><circle cx="186" cy="10" r="8"/></g>`;
-    // plectrum in de pootjes
-    const pick = (x, y, r) => `<g transform="translate(${x} ${y}) rotate(${r})"><path d="M0-16c13 0 20 4 20 11C20 6 9 18 0 26-9 18-20 6-20-5c0-7 7-11 20-11z" fill="${F.pick}" stroke="${F.pickLine}" stroke-width="3" stroke-linejoin="round"/><path d="M-6-8c4-2 9-2 12 0" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".6"/></g>`;
-    if (head) { /* alleen het hoofd */ } else if (raised) {
-      s += pick(180, 26, 14);
-      s += `<ellipse cx="22" cy="50" rx="12" ry="10" fill="${F.paw}" ${L}/><ellipse cx="178" cy="50" rx="12" ry="10" fill="${F.paw}" ${L}/>`;
-    } else if (wave) {
-      s += pick(96, 168, -8);
-      s += `<ellipse cx="80" cy="168" rx="12" ry="10" fill="${F.paw}" ${L}/><ellipse cx="114" cy="170" rx="11" ry="9" fill="${F.paw}" ${L}/>`;
+    if (mood === 'boek') s += `<g fill="none" stroke="${F.pick}" stroke-width="3.5"><circle cx="69" cy="90" r="16"/><circle cx="131" cy="90" r="16"/><path d="M85 88q15-7 30 0" stroke-linecap="round"/></g>`;
+    if (mood === 'ijs') {
+      s += `<path d="M38 66C36 30 62 10 100 10s64 20 62 56z" fill="#2D6BD4" ${L}/><path d="M68 18c-5 14-7 30-7 44M100 10v54M132 18c5 14 7 30 7 44" stroke="#1D4C9E" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+      s += `<rect x="32" y="52" width="136" height="22" rx="11" fill="#5B8FE8" ${L}/><path d="M48 56v14M60 56v14M72 56v14M84 56v14M96 56v14M108 56v14M120 56v14M132 56v14M144 56v14M156 56v14" stroke="#2D6BD4" stroke-width="2.5" stroke-linecap="round" opacity=".6"/>`;
+      s += `<circle cx="100" cy="12" r="13" fill="${F.muzzle}" ${L}/>`;
+      s += `<g fill="none" stroke="#9BD0F5" stroke-width="2.6" stroke-linecap="round"><path d="M22 30v16M14 38h16M16.5 32.5l11 11M27.5 32.5l-11 11"/><path d="M182 92v14M175 99h14M177 94l10 10M187 94l-10 10"/><path d="M14 120v10M9 125h10"/></g>`;
+    }
+    // voorgrond per houding
+    if (head) { /* alleen het hoofd */ }
+    else if (pose === 'juich') s += pick(180, 26, 14) + paw(22, 50) + paw(178, 50);
+    else if (pose === 'zwaai' || pose === 'noot') s += pick(96, 168, -8) + paw(80, 168) + paw(114, 170, 11, 9);
+    else if (pose === 'gitaar') {
+      // gitaar schuin voor het lijf: body linksonder, hals naar rechtsboven
+      s += `<g transform="translate(64 170) rotate(-22)">`;
+      s += `<path d="M36-5h84v10H36z" fill="#4A2F22" ${L} stroke-width="3"/><path d="M50-5v10M61-5v10M71-5v10M80-5v10M88-5v10M96-5v10M103-5v10M110-5v10" stroke="#D9DDE2" stroke-width="1.6"/><circle cx="66" cy="0" r="1.8" fill="${F.muzzle}"/><circle cx="84" cy="0" r="1.8" fill="${F.muzzle}"/>`;
+      s += `<path d="M118-8h20c4 0 6 3 6 8s-2 8-6 8h-20z" fill="#2B1A14" ${L} stroke-width="3"/><circle cx="126" cy="-11" r="2.6" fill="#D9DDE2"/><circle cx="136" cy="-11" r="2.6" fill="#D9DDE2"/><circle cx="126" cy="11" r="2.6" fill="#D9DDE2"/><circle cx="136" cy="11" r="2.6" fill="#D9DDE2"/>`;
+      s += `<path d="M-8-30c14 0 18 10 28 10s14-6 22-6c14 0 20 9 20 20s-6 20-20 20c-8 0-12-6-22-6S6 30-8 30c-18 0-28-14-28-30s10-30 28-30z" fill="#9C4A12" ${L}/>`;
+      s += `<path d="M-8-23c12 0 16 9 26 9s13-5 20-5c10 0 15 7 15 14s-5 14-15 14c-7 0-10-5-20-5S4 23-8 23c-14 0-21-11-21-23s7-23 21-23z" fill="${F.pick}"/>`;
+      s += `<circle cx="18" cy="0" r="7.5" fill="#2B1A14"/><rect x="-22" y="-9" width="6" height="18" rx="2" fill="#2B1A14"/>`;
+      s += `<path d="M-19-3H140M-19 0H140M-19 3H140" stroke="#F4E3C9" stroke-width=".9" opacity=".85"/></g>`;
+      s += arm('M62 148c2 10 8 16 16 18') + arm('M140 148c6-4 10-8 12-14');
+      s += `<g class="m-strum">${pick(86, 160, 30)}${paw(78, 166)}</g>${paw(152, 134, 11, 9)}`;
+    } else if (pose === 'hals') {
+      s += `<rect x="2" y="128" width="196" height="54" rx="8" fill="#5A3624" ${L}/><path d="M8 140c40-3 80 3 120-1s50 2 64 1M8 170c30 3 70-2 110 1s60-1 74 0" stroke="#4A2C1D" stroke-width="2" fill="none"/>`;
+      s += `<path d="M38 130v50M88 130v50M134 130v50M174 130v50" stroke="#C9CED6" stroke-width="4"/><circle cx="63" cy="155" r="5" fill="${F.muzzle}"/><circle cx="111" cy="155" r="5" fill="${F.muzzle}"/>`;
+      s += `<path d="M4 136H196M4 145H196M4 155H196M4 164H196M4 173H196" stroke="#E6D3A6" stroke-width="1.6" opacity=".9"/>`;
+      s += paw(66, 128, 13, 10) + paw(134, 128, 13, 10) + `<path d="M60 134v-4M67 135v-4M74 134v-4M128 134v-4M135 135v-4M142 134v-4" stroke="${F.face}" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>`;
+    } else if (pose === 'boek') {
+      s += `<path d="M100 150 58 142 54 186 100 194 146 186 142 142z" fill="#2D6BD4" ${L}/><path d="M100 154 63 147 60 182 100 189zM100 154 137 147 140 182 100 189z" fill="${F.muzzle}" stroke="${F.line}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      s += `<path d="M70 158l22 3M69 166l23 3M68 174l24 3M108 161l22-3M108 169l23-3M108 177l24-3" stroke="#B9A79A" stroke-width="2" stroke-linecap="round"/>`;
+      s += paw(58, 166) + paw(142, 166);
     } else {
-      s += pick(100, 168, 0);
-      s += `<ellipse cx="80" cy="168" rx="12" ry="10" fill="${F.paw}" ${L}/><ellipse cx="120" cy="168" rx="12" ry="10" fill="${F.paw}" ${L}/>`;
+      if (pose === 'ijs') s += `<path d="M48 126c16 14 88 14 104 0l4 14c-20 16-92 16-112 0z" fill="#E0482F" ${L}/><path d="M66 134l6 10M86 138l4 10M110 138l-4 10M132 134l-6 10" stroke="${F.pick}" stroke-width="4" stroke-linecap="round"/><path d="M120 142c4 16 4 30 0 44l16-2c2-14 0-28-4-42z" fill="#E0482F" ${L}/><path d="M122 160h12M123 172h12" stroke="${F.pick}" stroke-width="4" stroke-linecap="round"/>`;
+      s += pick(100, 168, 0) + paw(80, 168) + paw(120, 168);
       s += `<path d="M76 172v-4M84 172v-4M116 172v-4M124 172v-4" stroke="${F.face}" stroke-width="1.8" stroke-linecap="round" opacity=".5"/>`;
     }
-    if (mood === 'juich') s += `<path d="M44 14l3 8 8 3-8 3-3 8-3-8-8-3 8-3zM182 120l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="${F.pick}"/>`;
+    if (mood === 'juich' || mood === 'gitaar') s += `<path d="M44 14l3 8 8 3-8 3-3 8-3-8-8-3 8-3zM182 120l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="${F.pick}"/>`;
     const vb = head ? '16 2 168 168' : '0 0 200 200';
     const size = o.size ? ` width="${o.size}" height="${o.size}"` : '';
     return `<svg class="mascot m-${mood}${o.cls ? ' ' + o.cls : ''}" viewBox="${vb}"${size} aria-hidden="true">${s}</svg>`;
@@ -1860,6 +2017,10 @@ Object.assign(ICONS, {
   sound: svgI('<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>'),
   mute: svgI('<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>'),
   play: svgI('<path d="M8 5.5v13l10.5-6.5z"/>', true),
+  ice: svgI('<path d="M12 2.5v19M3.8 7.3l16.4 9.4M3.8 16.7l16.4-9.4M9.5 3.8 12 6.3l2.5-2.5M9.5 20.2 12 17.7l2.5 2.5M3.4 10.6l3.4.9-.9-3.4M20.6 13.4l-3.4-.9.9 3.4M5.9 15.9l.9-3.4-3.4.9M18.1 8.1l-.9 3.4 3.4-.9"/>'),
+  ear: svgI('<path d="M7 9a5 5 0 0 1 10 0c0 3-2.6 4-3.5 6.2-.7 1.8-1.8 3.3-3.6 3.3A2.9 2.9 0 0 1 7 15.6"/><path d="M10 9.3a2 2 0 0 1 4 0c0 1.3-1.3 1.7-1.7 2.6"/>'),
+  target: svgI('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>'),
+  copy: svgI('<rect x="8.5" y="8.5" width="11" height="12" rx="2.5"/><path d="M15.5 8.5V6a2.5 2.5 0 0 0-2.5-2.5H7A2.5 2.5 0 0 0 4.5 6v8A2.5 2.5 0 0 0 7 16.5h1.5"/>'),
 });
 
 // ---------- Illustraties per oefening (48×48, lijnen in currentColor) ----------
@@ -1876,12 +2037,15 @@ const ART = {
   challenge: artSvg('<circle cx="24" cy="27" r="16"/><path d="M24 11V6M19 4h10M37 13l3-3"/><path d="M24 27V18"/><path d="M24 27l7 5"/>'),
   heatmap: artSvg('<rect x="6" y="6" width="10" height="10" rx="2.5" fill="currentColor" opacity=".25"/><rect x="19" y="6" width="10" height="10" rx="2.5" fill="currentColor" opacity=".9"/><rect x="32" y="6" width="10" height="10" rx="2.5" fill="currentColor" opacity=".5"/><rect x="6" y="19" width="10" height="10" rx="2.5" fill="currentColor" opacity=".7"/><rect x="19" y="19" width="10" height="10" rx="2.5" fill="currentColor" opacity=".25"/><rect x="32" y="19" width="10" height="10" rx="2.5" fill="currentColor"/><rect x="6" y="32" width="10" height="10" rx="2.5" fill="currentColor" opacity=".5"/><rect x="19" y="32" width="10" height="10" rx="2.5" fill="currentColor" opacity=".7"/><rect x="32" y="32" width="10" height="10" rx="2.5" fill="currentColor" opacity=".25"/>'),
   metro: artSvg('<path d="M17 6h14l8 36H9z"/><path d="M13 32h22" opacity=".55"/><path d="M24 34L33 12"/><circle cx="31" cy="17" r="3" fill="currentColor"/>'),
+  targets: artSvg('<rect x="4" y="8" width="12" height="10" rx="2.5"/><rect x="18" y="8" width="12" height="10" rx="2.5"/><rect x="32" y="8" width="12" height="10" rx="2.5"/><circle cx="24" cy="33" r="10"/><circle cx="24" cy="33" r="4.5"/><circle cx="24" cy="33" r="1.6" fill="currentColor"/><path d="M24 18v5"/>'),
+  earq: artSvg('<path d="M10 28v-4a14 14 0 0 1 28 0v4"/><rect x="6" y="26" width="8" height="14" rx="3.5"/><rect x="34" y="26" width="8" height="14" rx="3.5"/><path d="M20.5 18.5a3.5 3.5 0 1 1 5 3.2c-1 .5-1.5 1.3-1.5 2.3v1"/><circle cx="24" cy="29.5" r="1.6" fill="currentColor"/>'),
+  explorer: artSvg('<path d="M4 12h26M4 20h26M4 28h26" opacity=".5"/><path d="M12 6v28M22 6v28" opacity=".8"/><circle cx="17" cy="20" r="3" fill="currentColor"/><circle cx="31" cy="27" r="9"/><path d="M37.5 33.5 44 40"/>'),
   tuner: artSvg('<path d="M6 34a18 18 0 0 1 36 0"/><path d="M24 34l7-14"/><circle cx="24" cy="34" r="3.4" fill="currentColor"/><path d="M24 12v4M10.5 19l2.8 2.8M37.5 19l-2.8 2.8" opacity=".6"/>'),
 };
 
 // ---------- Kleuren voor units en pedalen ----------
 const UNIT_COLORS = ['amber', 'blauw', 'framboos', 'violet', 'groen', 'tabak'];
-const MODE_COLOR = { notes: 'blauw', positions: 'blauw', intervals: 'blauw', degrees: 'blauw', scales: 'framboos', chords: 'framboos', bends: 'framboos', ear: 'violet', challenge: 'groen', heatmap: 'groen', metro: 'leisteen', tuner: 'leisteen' };
+const MODE_COLOR = { notes: 'blauw', positions: 'blauw', intervals: 'blauw', degrees: 'blauw', scales: 'framboos', chords: 'framboos', targets: 'framboos', bends: 'framboos', ear: 'violet', earq: 'violet', challenge: 'groen', heatmap: 'groen', explorer: 'leisteen', metro: 'leisteen', tuner: 'leisteen' };
 const CONFETTI_COLORS = ['#F5A31A', '#2D6BD4', '#C4336F', '#7146D4', '#0B9C8E', '#FFD27A'];
 const reducedMotion = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -2070,6 +2234,7 @@ const NoteGame = {
     const it = st.items[key] || (st.items[key] = { n: 0, total: 0 });
     it.n++; it.total += secs;
     st.found++; st.totalTime += secs;
+    Quests.bump('notes');
     if (!hinted && (st.best == null || secs < st.best)) st.best = secs;
     if (!hinted && secs <= 5) { st.streak++; st.bestStreak = Math.max(st.bestStreak, st.streak); } else st.streak = 0;
     Store.saveStats();
@@ -2594,6 +2759,7 @@ registerMode({
     const s = Store.settings.scales, secs = (t - this.t0) / 1000;
     const st = Store.stats.scales, key = `${s.scale}-${s.root}-${s.box}-${s.order}`;
     st.runs++;
+    Quests.bump('scales');
     const rec = !this.errors && (st.best[key] == null || secs < st.best[key]);
     if (rec) st.best[key] = secs;
     Store.saveStats();
@@ -3209,6 +3375,7 @@ registerMode({
     st.runs++; st.last = this.score;
     if (rec) st.best = this.score;
     Store.saveStats();
+    Quests.max('challenge', this.score);
     this.timerEl.textContent = '0';
     this.card.classList.add('hit');
     $('.pr-note', this.card).innerHTML = `<span class="deg">${this.score}</span>`;
@@ -3292,6 +3459,393 @@ registerMode({
   },
 });
 
+
+// ---------- Gedeelde namen ----------
+const DEG_NAME = { R: 'de grondtoon', '♭2': 'de kleine secunde', 2: 'de grote secunde', '♭3': 'de kleine terts', 3: 'de grote terts', 4: 'de kwart', '♭5': 'de verminderde kwint', 5: 'de kwint', '♭6': 'de kleine sext', 6: 'de grote sext', '♭7': 'de kleine septiem', 7: 'de grote septiem' };
+const degName = label => DEG_NAME[label] || label;
+const pcOfName = n => spPc(parseName(n));
+
+// ---------- Halsverkenner ----------
+const EXP_ROOTS = ['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'];
+function expRootName(kind, type, pc) {
+  if (kind === 'scale') return rootsFor(type).find(x => pcOfName(x) === pc) || EXP_ROOTS[pc];
+  return CHORD_ROOTS.find(x => pcOfName(x) === pc && chordOk(type, x)) || CHORD_ROOTS.find(x => pcOfName(x) === pc) || EXP_ROOTS[pc];
+}
+registerMode({
+  id: 'explorer', group: 'handig', title: 'Halsverkenner', desc: 'Alle noten van een toonladder of akkoord op de hals',
+  homeStat: () => MODES.explorer.label(),
+  root() { const s = Store.settings.explorer; return expRootName(s.kind, s.kind === 'scale' ? s.scale : s.chord, pcOfName(s.root)); },
+  tones() { const s = Store.settings.explorer; return s.kind === 'scale' ? scaleTones(s.scale, this.root()) : chordTones(s.chord, this.root()); },
+  semis() { const s = Store.settings.explorer; return (s.kind === 'scale' ? SCALES[s.scale].degs : CHORDS[s.chord].tones).map(d => d.semis); },
+  label() { const s = Store.settings.explorer, r = this.root(); return s.kind === 'scale' ? `${r} ${SCALES[s.scale].short}` : `${r}${CHORDS[s.chord].sym} (${r} ${CHORDS[s.chord].name})`; },
+  range() { return Store.settings.explorer.range === 'high' ? [7, 19] : [0, 12]; },
+  mount(view) {
+    this.card = h('div', { class: 'card exp-card' });
+    this.info = h('span', { class: 'exp-info', 'aria-live': 'polite', text: 'Tik op een noot om hem te horen.' });
+    const tip = h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Zo gebruik je hem' }),
+      h('p', { class: 'help', text: 'Zoek eerst de grondtonen: dat zijn je ankers. Speel de toonladder rond één grondtoon en schuif dan naar de volgende. Bij improviseren klinken de grondtoon, de terts en de kwint het stevigst; daar kun je een zin goed op laten eindigen.' }));
+    const L = exLayout(view, { prompt: this.card, mic: false, caption: this.info, actions: [{ id: 'playBtn', label: 'Speel af', cls: 'primary', key: 'p', onClick: () => this.playAll() }], stats: tip });
+    this.svg = L.svg; this.keys = L.keys;
+    this.svg.addEventListener('click', e => this.tap(e));
+    this.renderControls();
+    this.draw();
+  },
+  unmount() { (this.timers || []).forEach(clearTimeout); this.timers = []; },
+  save() { Store.saveSettings(); this.renderControls(); this.draw(); },
+  renderControls() {
+    const s = Store.settings.explorer, rootPc = pcOfName(s.root);
+    const roots = h('div', { class: 'seg exp-roots', role: 'group' }, EXP_ROOTS.map((n, pc) => h('button', { type: 'button', 'aria-pressed': String(pc === rootPc), text: n, onclick: () => { s.root = n; this.save(); } })));
+    const typeSel = s.kind === 'scale'
+      ? selectEl('expType', Object.keys(SCALES).map(k => ({ value: k, label: SCALES[k].name })), s.scale, v => { s.scale = v; this.save(); })
+      : selectEl('expType', Object.keys(CHORDS).map(k => ({ value: k, label: `${CHORDS[k].name}${CHORDS[k].sym ? ` (${CHORDS[k].sym})` : ''}` })), s.chord, v => { s.chord = v; this.save(); });
+    this.slots = h('div', { class: 'slots exp-slots' });
+    this.card.innerHTML = '';
+    this.card.append(
+      h('div', { class: 'exp-head' }, h('div', { class: 'exp-fret', html: Mascot.svg('hals') }),
+        h('div', { class: 'exp-titles' }, h('p', { class: 'eyebrow', text: s.kind === 'scale' ? 'Toonladder' : 'Akkoord' }), h('h2', { class: 'exp-title', text: this.label() }))),
+      seg([{ value: 'scale', label: 'Toonladder' }, { value: 'chord', label: 'Akkoord' }], s.kind, v => { s.kind = v; this.save(); }, 'exp-kind'),
+      field('Grondtoon', roots),
+      field(s.kind === 'scale' ? 'Welke toonladder' : 'Welk akkoord', typeSel, null, 'expType'),
+      h('div', { class: 'exp-row' },
+        field('Op de stippen', seg([{ value: 'names', label: 'Namen' }, { value: 'degrees', label: 'Trappen' }], s.labels, v => { s.labels = v; this.save(); })),
+        field('Stuk van de hals', seg([{ value: 'low', label: 'Fret 0–12' }, { value: 'high', label: 'Fret 7–19' }], s.range, v => { s.range = v; this.save(); }))),
+      this.slots);
+  },
+  draw(hl) {
+    const s = Store.settings.explorer, [from, to] = this.range(), tones = this.tones(), marks = [];
+    for (let st = 0; st < 6; st++) for (let f = from; f <= to; f++) {
+      const t = tones.find(x => x.pc === mod12(OPEN[st] + f));
+      if (t) marks.push({ s: st, f, kind: 'ex' + (t.label === 'R' ? ' root' : '') + (hl && hl.s === st && hl.f === f ? ' hit' : ''), label: s.labels === 'names' ? t.name : t.label });
+    }
+    if (hl && !tones.find(x => x.pc === mod12(OPEN[hl.s] + hl.f))) marks.push({ s: hl.s, f: hl.f, kind: 'wrong', label: '' });
+    drawNeck(this.svg, { from, to, marks, tap: true });
+    this.slots.innerHTML = tones.map(t => `<span class="slot${t.label === 'R' ? ' on' : ''}"><small>${t.label}</small><b>${t.name}</b></span>`).join('');
+  },
+  tap(e) {
+    const c = e.target.closest && e.target.closest('.cell');
+    if (!c) return;
+    const st = Number(c.dataset.s), f = Number(c.dataset.f), midi = OPEN[st] + f, pc = mod12(midi);
+    const ctx = Engine.ensureCtx();
+    Engine.pluck(midi, ctx.currentTime + 0.01, 1.3, 0.75);
+    const t = this.tones().find(x => x.pc === pc), where = `op de ${STR_NAME[st]}${f ? `, fret ${f}` : ', los'}`;
+    this.info.textContent = t ? `${t.name}, ${degName(t.label)}, ${where}` : `${pcName(pc, Store.settings.names === 'flats' ? 'flats' : 'sharps')} ${where}: hoort niet bij ${this.label()}`;
+    this.draw({ s: st, f });
+    clearTimeout(this.hlT); this.hlT = setTimeout(() => this.draw(), 900);
+    Activity.ping();
+  },
+  // speel de toonladder op en neer (of het akkoord als arpeggio) en laat de stippen meelopen
+  playAll() {
+    (this.timers || []).forEach(clearTimeout); this.timers = [];
+    const s = Store.settings.explorer, rootPc = pcOfName(this.root()), [from, to] = this.range();
+    let root = 45 + mod12(rootPc - 9);   // vanaf A2
+    if (from >= 7) root += 12;
+    const up = this.semis().map(x => root + x).concat([root + 12]);
+    const seq = s.kind === 'scale' ? up.concat(up.slice(0, -1).reverse()) : up;
+    const step = s.kind === 'scale' ? 0.24 : 0.3;
+    Engine.playPhrase(seq.map(m => ({ midi: m, dur: step })));
+    if (s.kind === 'chord') {
+      const ctx = Engine.ctx, t0 = ctx.currentTime + 0.1 + seq.length * step + 0.25;
+      up.slice(0, -1).forEach((m, i) => Engine.pluck(m, t0 + i * 0.03, 1.4, 0.55));
+    }
+    let lastF = null;
+    seq.forEach((m, i) => this.timers.push(setTimeout(() => {
+      const opts = positionsOf(m, from, to);
+      if (!opts.length) return;
+      const p = lastF == null ? opts[opts.length - 1] : opts.reduce((a, b) => (Math.abs(b.f - lastF) < Math.abs(a.f - lastF) ? b : a));
+      lastF = p.f;
+      this.draw(p);
+    }, 80 + i * step * 1000)));
+    this.timers.push(setTimeout(() => this.draw(), 200 + seq.length * step * 1000 + 600));
+    Activity.ping();
+  },
+});
+
+// ---------- Doeltonen over akkoordwissels ----------
+const PROGS = {
+  blues: { name: '12-maten blues', keys: ['A', 'E', 'G', 'C', 'D'], bars: [[1, 'dom7'], [1, 'dom7'], [1, 'dom7'], [1, 'dom7'], [4, 'dom7'], [4, 'dom7'], [1, 'dom7'], [1, 'dom7'], [5, 'dom7'], [4, 'dom7'], [1, 'dom7'], [5, 'dom7']] },
+  rock: { name: 'I, IV, V, IV', keys: ['G', 'D', 'A', 'E', 'C'], bars: [[1, 'maj'], [4, 'maj'], [5, 'maj'], [4, 'maj']] },
+  pop: { name: 'I, V, vi, IV', keys: ['C', 'G', 'D', 'A'], bars: [[1, 'maj'], [5, 'maj'], [6, 'min'], [4, 'maj']] },
+  jazz: { name: 'ii, V, I', keys: ['C', 'F', 'B♭', 'G'], bars: [[2, 'm7'], [5, 'dom7'], [1, 'maj7'], [1, 'maj7']] },
+  mineur: { name: 'i, iv, v in mineur', keys: ['A', 'E', 'D', 'B'], minor: true, bars: [[1, 'min'], [4, 'min'], [5, 'min'], [1, 'min']] },
+};
+const TARGET_NAME = { R: 'grondtoon', 3: 'terts', 5: 'kwint', 7: 'septiem', mix: 'wisselende toon' };
+const tgKey = label => (label === 'R' ? 'R' : label.replace(/[♭♯]/g, '')[0]);
+registerMode({
+  id: 'targets', group: 'solo', title: 'Doeltonen', desc: 'Speel op elk akkoord de terts, grondtoon, kwint of septiem',
+  homeStat: st => (st.targets && st.targets.hits ? `${st.targets.hits} doeltonen geraakt` : ''),
+  prog() { const s = Store.settings.targets; return PROGS[s.prog] || PROGS.blues; },
+  key() { const s = Store.settings.targets, P = this.prog(); return P.keys.includes(s.key) ? s.key : P.keys[0]; },
+  // in je eigen tempo vallen herhalingen van hetzelfde akkoord samen
+  steps() {
+    const P = this.prog(), tempo = Store.settings.targets.tempo > 0;
+    return tempo ? P.bars.slice() : P.bars.filter((b, i, a) => i === 0 || b[0] !== a[i - 1][0] || b[1] !== a[i - 1][1]);
+  },
+  mount(view) {
+    const s = Store.settings.targets;
+    this.card = promptCard('Doeltoon');
+    this.statsEl = h('div', { class: 'card' });
+    const tempo = s.tempo > 0;
+    const L = exLayout(view, {
+      prompt: this.card,
+      caption: h('span', { class: 'neck-legend', html: 'De oranje stippen zijn je doeltoon, de witte de andere akkoordtonen.' }),
+      actions: tempo ? [{ id: 'tgGo', label: 'Speel mee', cls: 'primary', onClick: () => (this.running ? this.stopTempo() : this.startTempo()) }, { id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }]
+        : [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => this.skip() }],
+      options: [
+        field('Akkoordenreeks', selectEl('tgProg', Object.keys(PROGS).map(k => ({ value: k, label: PROGS[k].name })), s.prog, v => { s.prog = v; s.key = PROGS[v].keys[0]; Store.saveSettings(); Router.render(); }), null, 'tgProg'),
+        field('Toonsoort', seg(this.prog().keys.map(k => ({ value: k, label: k + (this.prog().minor ? 'm' : '') })), this.key(), v => { s.key = v; Store.saveSettings(); this.restart(); })),
+        field('Doeltoon', seg(['R', '3', '5', '7', 'mix'].map(k => ({ value: k, label: k === 'mix' ? 'Wisselend' : TARGET_NAME[k][0].toUpperCase() + TARGET_NAME[k].slice(1) })), s.target, v => { s.target = v; Store.saveSettings(); this.restart(); }), 'Op een akkoord zonder septiem speel je dan de terts.'),
+        field('Tempo', seg([{ value: 0, label: 'Eigen tempo' }, { value: 60, label: '60' }, { value: 80, label: '80' }, { value: 100, label: '100' }], s.tempo, v => { s.tempo = Number(v); Store.saveSettings(); Router.render(); }), 'Met tempo wisselt het akkoord elke maat van vier tellen.'),
+        field('Hulp op de hals', seg([{ value: 'all', label: 'Alle akkoordtonen' }, { value: 'roots', label: 'Grondtonen' }, { value: 'none', label: 'Niets' }], s.help || 'all', v => { s.help = v; Store.saveSettings(); this.drawNeck(); })),
+        field('Akkoord', checkEl('tgStrum', 'Laat het akkoord klinken bij elke wissel', s.strum !== false, v => { s.strum = v; Store.saveSettings(); })),
+      ],
+      optSummary: `${this.prog().name} in ${this.key()}${this.prog().minor ? ' mineur' : ''}`,
+      stats: this.statsEl,
+    });
+    this.svg = L.svg; this.keys = L.keys;
+    L.wrap.classList.toggle('mode-targets-own', !tempo);
+    this.restart();
+    this.renderStats();
+  },
+  unmount() { clearTimeout(this.timer); this.stopTempo(); },
+  restart() {
+    clearTimeout(this.timer); this.stopTempo();
+    this.idx = -1; this.last = null; this.streak = 0;
+    if (Store.settings.targets.tempo > 0) {
+      this.target = null; this.chord = null;
+      $('.pr-note', this.card).innerHTML = '<span class="deg">Klaar?</span>';
+      $('.pr-where', this.card).innerHTML = `Druk op Speel mee. Elke maat van vier tellen komt er een nieuw akkoord.`;
+      $('.pr-toast', this.card).textContent = Engine.mic ? '' : 'Zet ook de microfoon aan.';
+      this.renderProg(); this.drawNeck(); setLeds(this.card, 0);
+    } else this.next();
+  },
+  next() {
+    clearTimeout(this.timer);
+    const s = Store.settings.targets, steps = this.steps(), P = this.prog();
+    this.idx = (this.idx + 1) % steps.length;
+    const [deg, type] = steps[this.idx];
+    const root = scaleTones(P.minor ? 'minor' : 'major', this.key())[deg - 1].name;
+    const tones = chordTones(type, root);
+    let want = s.target === 'mix' ? pick(tones.map(t => tgKey(t.label)).filter(k => k !== (this.want || ''))) : s.target;
+    let tone = tones.find(t => tgKey(t.label) === want);
+    this.no7 = false;
+    if (!tone) { this.no7 = true; want = '3'; tone = tones.find(t => tgKey(t.label) === '3'); }
+    this.chord = { root, type, tones, name: chordName(root, type) };
+    this.want = want; this.target = tone; this.hit = false; this.hinted = false; this.t0 = performance.now();
+    const st = Store.stats.targets; st.tries++; st.by[want] = st.by[want] || { h: 0, t: 0 }; st.by[want].t++;
+    Store.saveStats();
+    this.card.classList.remove('hit', 'miss');
+    $('.pr-eyebrow', this.card).textContent = `${P.name} in ${this.key()}${P.minor ? ' mineur' : ''}`;
+    $('.pr-note', this.card).innerHTML = `${bigNoteHTML(root)}<span class="sym">${CHORDS[type].sym}</span>`;
+    $('.pr-note', this.card).setAttribute('aria-label', `${spoken(root)} ${CHORDS[type].name}`);
+    this.renderWhere();
+    $('.pr-toast', this.card).textContent = this.no7 ? `${this.chord.name} heeft geen septiem: speel de terts.` : Engine.mic ? '' : 'Druk op Start en sta de microfoon toe.';
+    this.renderProg(); this.drawNeck();
+    if (s.strum !== false) this.strum();
+  },
+  renderWhere() {
+    const s = Store.settings.targets, show = (s.help || 'all') !== 'none' || this.hinted || this.hit;
+    $('.pr-where', this.card).innerHTML = `Speel de <b>${TARGET_NAME[this.want]}</b>${show ? `: <b>${this.target.name}</b>` : ''}`;
+  },
+  renderProg() {
+    const P = this.prog(), steps = this.steps(), key = this.key();
+    const names = steps.map(([deg, type]) => chordName(scaleTones(P.minor ? 'minor' : 'major', key)[deg - 1].name, type));
+    $('.pr-extra', this.card).innerHTML = `<div class="prog${steps.length > 6 ? ' long' : ''}">${names.map((n, i) => `<span class="${i === this.idx ? 'now' : i < this.idx ? 'past' : ''}">${n}</span>`).join('')}</div>`;
+  },
+  drawNeck(found) {
+    if (!this.svg) return;
+    if (!this.chord) { drawNeck(this.svg, { from: 0, to: 12, marks: [] }); return; }
+    const help = Store.settings.targets.help || 'all', marks = [];
+    for (let st = 0; st < 6; st++) for (let f = 0; f <= 12; f++) {
+      const pc = mod12(OPEN[st] + f), t = this.chord.tones.find(x => x.pc === pc);
+      if (!t) continue;
+      const isT = pc === this.target.pc;
+      if (found && isT) marks.push({ s: st, f, kind: 'found', label: t.label });
+      else if (isT && (help === 'all' || this.hinted)) marks.push({ s: st, f, kind: 'next', label: t.label });
+      else if (help === 'all' || (help === 'roots' && t.label === 'R')) marks.push({ s: st, f, kind: 'todo' + (t.label === 'R' ? ' root' : ''), label: t.label });
+    }
+    drawNeck(this.svg, { from: 0, to: 12, marks });
+  },
+  strum() {
+    const ctx = Engine.ensureCtx(), root = 48 + mod12(pcOfName(this.chord.root) - 0);
+    const midis = CHORDS[this.chord.type].tones.map(d => root + d.semis);
+    midis.forEach((m, i) => Engine.pluck(m, ctx.currentTime + 0.03 + i * 0.03, 0.9, 0.42));
+    Engine.block(650);
+  },
+  hint() { if (!this.target || this.hit) return; this.hinted = true; this.renderWhere(); this.drawNeck(); },
+  skip() { if (Store.settings.targets.tempo > 0) return; this.streak = 0; this.next(); },
+  expected() { return !this.target || this.hit ? [] : [48 + this.target.pc]; },
+  onNote(n) {
+    if (!this.target || this.hit) return;
+    const pc = mod12(n.midi), toast = $('.pr-toast', this.card);
+    if (pc === this.target.pc) {
+      this.hit = true;
+      const st = Store.stats.targets, secs = (performance.now() - this.t0) / 1000, near = this.last != null && Math.abs(n.midi - this.last) <= 2;
+      this.last = n.midi; this.streak++;
+      st.hits++; st.time += secs; if (near) st.near++; st.best = Math.max(st.best || 0, this.streak); st.by[this.want].h++;
+      Store.saveStats();
+      Quests.bump('targets');
+      this.card.classList.remove('miss'); this.card.classList.add('hit');
+      toast.textContent = near ? 'Raak, en een kleine stap vanaf de vorige. Zo klinkt een solo melodisch.' : `Raak! ${fmt1(secs)} s`;
+      this.renderWhere(); this.drawNeck(true); this.renderStats();
+      Engine.ding();
+      if (!(Store.settings.targets.tempo > 0)) this.timer = setTimeout(() => this.next(), 1100);
+      return;
+    }
+    const t = this.chord.tones.find(x => x.pc === pc), heard = pcName(pc, Store.settings.names === 'flats' ? 'flats' : 'sharps');
+    toast.textContent = t ? `${t.name} is ${degName(t.label)} van ${this.chord.name}. Zoek de ${TARGET_NAME[this.want]}.` : `${heard} zit niet in ${this.chord.name}.`;
+  },
+  startTempo() {
+    const s = Store.settings.targets;
+    if (!Engine.mic) Engine.startMic();
+    this.idx = -1; this.running = true; this.started = false;
+    Metronome.bpm = s.tempo; Metronome.beats = 4; Metronome.accent = true;
+    Metronome.onBeat = i => this.beat(i);
+    Metronome.start();
+    const b = $('#tgGo'); if (b) { b.textContent = 'Pauze'; b.classList.add('stop'); }
+  },
+  stopTempo() {
+    if (!this.running) return;
+    this.running = false;
+    Metronome.stop(); Metronome.onBeat = null;
+    const b = $('#tgGo'); if (b) { b.textContent = 'Speel mee'; b.classList.remove('stop'); }
+  },
+  beat(i) {
+    if (!this.running) return;
+    if (i === 0) {
+      const missed = this.started && !this.hit;
+      const msg = missed ? `Te laat: de ${TARGET_NAME[this.want]} van ${this.chord.name} was ${this.target.name}.` : '';
+      if (missed) this.streak = 0;
+      this.started = true;
+      this.next();
+      if (missed) { this.card.classList.add('miss'); $('.pr-toast', this.card).textContent = msg; }
+    }
+    setLeds(this.card, (i + 1) / 4);
+  },
+  renderStats() {
+    const st = Store.stats.targets;
+    this.statsEl.innerHTML = '';
+    this.statsEl.append(h('h2', { class: 'card-h', text: 'Scores' }), statFigs([
+      { label: 'Geraakt', value: String(st.hits) },
+      { label: 'Raak', value: st.tries ? `${Math.round(100 * st.hits / st.tries)}<small>%</small>` : '–' },
+      { label: 'Gemiddeld', value: st.hits ? sec(st.time / st.hits) : '–' },
+      { label: 'Kleine stappen', value: String(st.near || 0) },
+    ]));
+  },
+});
+
+// ---------- Gehoortraining zonder gitaar ----------
+const IV_HINT = { 1: 'het thema van Jaws', 2: 'Vader Jacob', 3: 'de riff van Smoke on the Water', 4: 'When the Saints Go Marching In', 5: 'het begin van het Wilhelmus', 6: 'de tune van The Simpsons', 7: 'Star Wars, of Altijd is Kortjakje ziek', 9: 'My Bonnie Lies over the Ocean', 10: 'Somewhere uit West Side Story', 12: 'Somewhere over the Rainbow' };
+const CHORD_FEEL = { maj: 'helder en open', min: 'donker en weemoedig', dom7: 'bluesy: hij wil verder', maj7: 'zacht en dromerig', m7: 'zacht en soulvol', m7b5: 'donker en gespannen', dim: 'gespannen en onrustig', sus4: 'zwevend: hij wil oplossen' };
+const earName = k => (k.startsWith('iv-') ? (INTERVALS.find(i => i.semis === Number(k.slice(3))) || {}).name || k : CHORDS[k.slice(3)] ? CHORDS[k.slice(3)].name : k);
+registerMode({
+  id: 'earq', group: 'gehoor', title: 'Gehoortraining', desc: 'Intervallen en akkoorden herkennen, zonder gitaar', noMic: true,
+  homeStat: st => { const n = Object.values(st.earq.n).reduce((a, b) => a + b, 0), ok = Object.values(st.earq.ok).reduce((a, b) => a + b, 0); return n ? `${ok} van ${n} goed` : ''; },
+  mount(view) {
+    const s = Store.settings.earq;
+    this.card = h('div', { class: 'card prompt eq-card' });
+    this.statsEl = h('div', { class: 'card' });
+    const L = exLayout(view, {
+      prompt: this.card, neck: false, mic: false,
+      actions: [{ id: 'replayBtn', label: 'Nog een keer', key: 'r', onClick: () => this.play() }, { id: 'nextBtn', label: 'Volgende', key: 'n', onClick: () => this.next() }],
+      options: [
+        field('Intervallen', chips(INTERVALS.map(i => ({ value: i.semis, label: i.name })), s.ivs.map(String), v => { s.ivs = v.map(Number).sort((a, b) => a - b); Store.saveSettings(); }, 2)),
+        field('Richting', seg([{ value: 'up', label: 'Omhoog' }, { value: 'down', label: 'Omlaag' }, { value: 'both', label: 'Beide' }, { value: 'harm', label: 'Tegelijk' }], s.dir, v => { s.dir = v; Store.saveSettings(); })),
+        field('Akkoorden', chips(Object.keys(CHORDS).map(k => ({ value: k, label: CHORDS[k].name })), s.chords, v => { s.chords = v; Store.saveSettings(); }, 2)),
+      ],
+      optSummary: s.kind === 'iv' ? `${s.ivs.length} intervallen` : `${s.chords.length} akkoordsoorten`,
+      stats: this.statsEl,
+    });
+    this.keys = L.keys;
+    this.renderShell();
+    this.next();
+  },
+  unmount() { clearTimeout(this.timer); },
+  renderShell() {
+    const s = Store.settings.earq;
+    this.card.innerHTML = '';
+    this.optsEl = h('div', { class: 'ls-opts eq-opts' });
+    this.fbEl = h('div', { class: 'eq-fb', 'aria-live': 'polite' });
+    this.card.append(
+      seg([{ value: 'iv', label: 'Intervallen' }, { value: 'ch', label: 'Akkoorden' }], s.kind, v => { s.kind = v; Store.saveSettings(); this.renderShell(); this.next(); }, 'eq-kind'),
+      h('div', { class: 'eq-stage' },
+        h('div', { class: 'eq-fret', html: Mascot.svg('luister') }),
+        h('div', { class: 'eq-ask' },
+          h('button', { class: 'eq-play', type: 'button', 'aria-label': 'Speel af', html: ICONS.play, onclick: () => this.play() }),
+          this.askEl = h('p', { class: 'eq-q', text: s.kind === 'iv' ? 'Welk interval hoor je?' : 'Welk akkoord hoor je?' }))),
+      this.optsEl, this.fbEl);
+  },
+  next() {
+    clearTimeout(this.timer);
+    const s = Store.settings.earq;
+    let q;
+    for (let i = 0; i < 20; i++) {
+      if (s.kind === 'iv') {
+        const semis = pick(s.ivs), dir = s.dir === 'both' ? pick(['up', 'down']) : s.dir;
+        const base = dir === 'down' ? 55 + Math.floor(Math.random() * 10) : 47 + Math.floor(Math.random() * 12);
+        q = { kind: 'iv', key: 'iv-' + semis, semis, dir, base };
+      } else {
+        const type = pick(s.chords);
+        q = { kind: 'ch', key: 'ch-' + type, type, base: 48 + Math.floor(Math.random() * 8) };
+      }
+      if (!this.q || q.key !== this.q.key || i > 10) break;
+    }
+    this.q = q; this.answered = false;
+    const opts = s.kind === 'iv' ? s.ivs.map(n => ({ key: 'iv-' + n, label: earName('iv-' + n) })) : s.chords.map(t => ({ key: 'ch-' + t, label: `${CHORDS[t].name}${CHORDS[t].sym ? ` (${CHORDS[t].sym})` : ''}` }));
+    this.optsEl.innerHTML = '';
+    this.optsEl.classList.toggle('grid2', opts.length > 3);
+    opts.forEach(o => this.optsEl.append(h('button', { type: 'button', class: 'opt', 'data-k': o.key, text: o.label, onclick: () => this.answer(o.key) })));
+    this.fbEl.innerHTML = '';
+    this.fbEl.className = 'eq-fb';
+    this.play();
+  },
+  // speelt de vraag (of ter vergelijking een ander antwoord) op dezelfde grondtoon
+  play(key) {
+    const q = this.q;
+    if (!q) return;
+    const ctx = Engine.ensureCtx(), t = ctx.currentTime + 0.05;
+    const k = key || q.key;
+    if (k.startsWith('iv-')) {
+      const semis = Number(k.slice(3)), second = q.dir === 'down' ? q.base - semis : q.base + semis;
+      Engine.pluck(q.base, t, 1.1, 0.7);
+      Engine.pluck(second, q.dir === 'harm' ? t : t + 0.7, 1.3, 0.7);
+    } else {
+      const type = k.slice(3);
+      CHORDS[type].tones.forEach((d, i) => Engine.pluck(q.base + d.semis, t + i * 0.035, 1.6, 0.55));
+    }
+    Engine.block(1800);
+    Activity.ping();
+  },
+  answer(key) {
+    if (this.answered || !this.q) return;
+    this.answered = true;
+    const q = this.q, ok = key === q.key, st = Store.stats.earq;
+    st.n[q.key] = (st.n[q.key] || 0) + 1;
+    if (ok) st.ok[q.key] = (st.ok[q.key] || 0) + 1;
+    Store.saveStats();
+    $$('.opt', this.optsEl).forEach(b => { b.disabled = true; b.classList.toggle('right', b.dataset.k === q.key); b.classList.toggle('wrong', b.dataset.k === key && !ok); if (b.dataset.k === q.key && ok) b.classList.add('pop'); });
+    const hint = q.kind === 'iv' ? (IV_HINT[q.semis] ? `Geheugensteun: ${IV_HINT[q.semis]}.` : '') : `Klinkt ${CHORD_FEEL[q.type] || ''}.`;
+    this.fbEl.className = 'eq-fb ' + (ok ? 'ok' : 'bad');
+    this.fbEl.innerHTML = '';
+    this.fbEl.append(h('p', {}, h('b', { text: ok ? pick(PRAISE) : `Het was ${q.kind === 'iv' ? 'een ' : ''}${earName(q.key)}.` }), ' ', hint));
+    if (!ok) this.fbEl.append(h('div', { class: 'eq-cmp' },
+      h('button', { type: 'button', text: `Hoor ${earName(key)}`, onclick: () => this.play(key) }),
+      h('button', { type: 'button', class: 'primary', text: `Hoor ${earName(q.key)}`, onclick: () => this.play(q.key) })));
+    if (ok) { Quests.bump('earq'); Sfx.play('right'); this.timer = setTimeout(() => this.next(), 1700); }
+    else { Sfx.play('wrong'); this.shake(); }
+    this.renderStats();
+    Activity.ping();
+  },
+  shake() { const b = $('.opt.wrong', this.optsEl); if (b) { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); } },
+  renderStats() {
+    const s = Store.settings.earq, st = Store.stats.earq;
+    const keys = s.kind === 'iv' ? s.ivs.map(n => 'iv-' + n) : s.chords.map(t => 'ch-' + t);
+    const rows = keys.map(k => ({ k, n: st.n[k] || 0, ok: st.ok[k] || 0 })).sort((a, b) => (a.n ? a.ok / a.n : 2) - (b.n ? b.ok / b.n : 2));
+    this.statsEl.innerHTML = '';
+    this.statsEl.append(h('h2', { class: 'card-h', text: s.kind === 'iv' ? 'Hoe goed herken je ze?' : 'Hoe goed herken je ze?' }),
+      h('p', { class: 'help', text: 'Het lastigste staat bovenaan.' }),
+      h('ul', { class: 'eq-list' }, rows.map(r => h('li', {}, h('span', { text: earName(r.k) }), h('span', { class: 'eq-bar' }, h('i', { style: `width:${r.n ? (100 * r.ok / r.n).toFixed(0) : 0}%` })), h('small', { text: r.n ? `${r.ok} van ${r.n}` : 'nog niet' })))));
+  },
+});
 
 // ---------- Leerpad: vraaggeneratoren ----------
 // Itemtypes:
@@ -3787,6 +4341,63 @@ function unitNodes(unit) {
   } });
   return nodes;
 }
+// ---------- Uitlegkaartje: de kern van de les in een paar zinnen ----------
+const TOPIC_SUMMARY = {
+  'twelve-tones': [
+    'Een octaaf hoger is dezelfde noot met de dubbele frequentie (2:1).',
+    'De kwint (3:2) is na het octaaf de sterkste samenklank. Grondtoon, kwint en octaaf samen vormen een powerchord.',
+    'Twaalf kwinten op elkaar komen bijna uit op zeven octaven. Daarom delen we het octaaf in twaalf halve tonen.',
+  ],
+  'intervals': [
+    'Een interval is de afstand tussen twee tonen, geteld in halve tonen. Op de gitaar is één fret één halve toon.',
+    'Kleine terts 3, grote terts 4, reine kwart 5, reine kwint 7 en octaaf 12 halve tonen.',
+    'Elk interval heeft een vaste vorm op de hals. Alleen over de B-snaar schuift die vorm één fret op.',
+  ],
+  'major-scale': [
+    'De majeurtoonladder volgt het patroon heel, heel, half, heel, heel, heel, half.',
+    'Elke toon heeft een trapnummer: 1 is de grondtoon, 5 de dominant en 7 de leidtoon.',
+    'De leidtoon ligt een halve toon onder de grondtoon en trekt er sterk naartoe.',
+  ],
+  'keys-circle': [
+    'De voortekens van een toonsoort vertellen welke noten een ♯ of ♭ krijgen.',
+    'Op de kwintencirkel komt er bij elke stap rechtsom, een kwint omhoog, één kruis bij.',
+    'Kruisen komen in de volgorde F♯ C♯ G♯ D♯ A♯ E♯ B♯, mollen precies andersom: B♭ E♭ A♭ D♭ G♭ C♭ F♭.',
+  ],
+  'minor': [
+    'Natuurlijk mineur is majeur vanaf trap 6: A mineur heeft dezelfde tonen als C majeur.',
+    'Harmonisch mineur verhoogt de 7, zodat er weer een leidtoon naar de grondtoon is.',
+    'Melodisch mineur verhoogt de 6 en de 7 (in de klassieke muziek alleen omhoog).',
+  ],
+  'chord-building': [
+    'Een drieklank stapelt twee tertsen: grondtoon, terts en kwint.',
+    'Grote terts plus kleine terts is majeur. Kleine terts plus grote terts is mineur.',
+    'Een septiemakkoord zet er nog een terts bovenop: dominant 7 krijgt een kleine septiem, groot 7 een grote.',
+  ],
+  'diatonic-chords': [
+    'Op elke trap van de majeurtoonladder ligt een drieklank: I ii iii IV V vi vii°.',
+    'Hoofdletters zijn majeur, kleine letters mineur en ° is verminderd.',
+    'I is de tonica (rust), IV de subdominant (beweging) en V de dominant (spanning naar I).',
+  ],
+  'progressions': [
+    'I, IV en V zijn de basis van rock en blues. De 12-maten blues gebruikt alleen deze drie akkoorden.',
+    'ii, V, I is de kern van jazz: elke stap gaat een kwint omlaag, terug naar huis.',
+    'Een V7 wil oplossen naar I: de leidtoon gaat een halve toon omhoog naar de grondtoon.',
+  ],
+};
+function unitSummary(unit) {
+  if (Array.isArray(unit.summary) && unit.summary.some(x => typeof x === 'string' && x.trim())) return unit.summary.filter(x => typeof x === 'string' && x.trim()).slice(0, 4);
+  if (unit.topic === 'scale-boxes') {
+    const p = Object.assign({ scale: 'minpent', root: 'A', boxes: [1, 2] }, unit.params || {});
+    if (!SCALES[p.scale]) return [];
+    const tones = scaleTones(p.scale, p.root);
+    return [
+      `${SCALES[p.scale].name} in ${p.root}: ${tones.map(t => t.name).join(' ')} (${tones.map(t => t.label).join(' ')}).`,
+      'Een box is een vast patroon van toonladdertonen op één plek op de hals. Zoek eerst de grondtonen: dat zijn je ankers.',
+      `Box ${p.boxes.join(' en ')} sluiten op elkaar aan. Samen dekken ze een groot stuk van de hals.`,
+    ];
+  }
+  return TOPIC_SUMMARY[unit.topic] || [];
+}
 function unitMeta(unit) {
   const tp = TOPICS[unit.topic] || TOPICS.generic;
   let drill = unit.drill || tp.drill;
@@ -3984,14 +4595,18 @@ const Lesson = {
     }
     this.combo++;
     if ([3, 5, 8, 12].includes(this.combo)) this.showCombo(this.combo);
+    Track.answer(it, true, this.spec && this.spec.topic);
+    Quests.max('combo', this.combo);
+    if (fixedNow) Quests.bump('fixed');
     Sfx.play(fixedNow ? 'fixed' : 'right');
     this.feedback(true, title || (fixedNow ? pick(FIXED) : pick(PRAISE)), it.explain || '', auto, fixedNow ? 'Uit je foutenbak.' : '');
   },
   wrong(it, title, text) {
     this.combo = 0;
+    Track.answer(it, false, this.spec && this.spec.topic);
     let note = '';
     if (this.bin) { Bin.add(it); note = 'Hij blijft in je foutenbak.'; }
-    else { this.wrongKeys.add(Bin.add(it, this.spec && this.spec.title)); note = 'In je foutenbak gezet. Herstel hem later voor bonus-XP.'; }
+    else { this.wrongKeys.add(Bin.add(it, this.spec && this.spec.title, (this.spec && this.spec.topic) || it._topic)); note = 'In je foutenbak gezet. Herstel hem later voor bonus-XP.'; }
     Sfx.play('wrong');
     this.feedback(false, title, text, 0, note);
   },
@@ -4217,12 +4832,12 @@ const Bin = {
     for (const k of Object.keys(it)) if (k[0] !== '_') o[k] = it[k];
     return JSON.parse(JSON.stringify(o));
   },
-  add(it, from) {
+  add(it, from, topic) {
     const k = it._bin || this.key(it), list = this.list(), ex = list.find(x => x.k === k);
     const first = !this.list().length && !(Store.stats.binSeen);
     if (ex) { ex.n++; ex.t = Date.now(); }
     else {
-      list.push({ k, it: this.clean(it), n: 1, t: Date.now(), from: from || '' });
+      list.push({ k, it: this.clean(it), n: 1, t: Date.now(), from: from || '', topic: topic || it._topic || '' });
       while (list.length > this.MAX) list.shift();
     }
     if (first) Store.stats.binSeen = true;
@@ -4249,7 +4864,7 @@ const Bin = {
     return src.slice(0, max || 10).map(x => {
       const it = JSON.parse(JSON.stringify(x.it));
       if (it.type === 'mc') { const right = it.options[it.answer]; it.options = shuffle(it.options); it.answer = it.options.indexOf(right); }
-      it._bin = x.k;
+      it._bin = x.k; it._topic = x.topic || '';
       return it;
     });
   },
@@ -4346,6 +4961,7 @@ function recordNode(unit, i, node, res) {
   if (node.test) st.test = true;
   if (res.passed) st.done = true;
   if (res.passed && !wasDone) PathFx.justDone = k;
+  if (res.passed) Quests.bump('nodes');
   Store.saveStats();
 }
 function nodeKindIcon(node) {
@@ -4363,7 +4979,7 @@ function startNode(unit, i, nodes, after) {
   const cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
   const needMic = !cantPlay && items.some(x => x.type === 'play') && !Engine.mic;
   Loader.run({ title: node.test ? 'Unittoets' : node.title, sub: needMic ? 'Microfoon aanzetten…' : null, wait: needMic ? Engine.startMic() : null }, () => Lesson.open({
-    title: `Les ${unit.lesson}: ${node.title}`, items, test: !!node.test, xp: node.test ? 20 : 10,
+    title: `Les ${unit.lesson}: ${node.title}`, topic: unit.topic, items, test: !!node.test, xp: node.test ? 20 : 10,
     onFinish: res => recordNode(unit, i, node, res),
     onDone: after || (() => { location.hash = ''; }),
     onExit: () => { location.hash = ''; },
@@ -4374,7 +4990,9 @@ function niceDate(iso) {
   const d = new Date(iso + 'T12:00:00');
   return d.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' });
 }
-const SIDE_MOODS = ['luister', 'zwaai', 'denk', 'blij'];
+// de fret naast het pad wisselt van houding: per unit en per dag
+const SIDE_MOODS = ['gitaar', 'noot', 'hals', 'luister', 'boek'];
+const dayNo = () => Math.floor(new Date(todayKey() + 'T12:00:00') / 86400000);
 function renderPath(view) {
   const units = PathData.units();
   const intro = PathFx.intro && !reducedMotion(); PathFx.intro = false;
@@ -4384,6 +5002,7 @@ function renderPath(view) {
     const until = new Date(Store.settings.cantPlayUntil).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
     wrap.append(h('div', { class: 'note-bar' }, h('span', { text: `Speelopdrachten staan uit tot ${until}.` }), h('button', { type: 'button', text: 'Weer aanzetten', onclick: () => { Store.settings.cantPlayUntil = 0; Store.saveSettings(); Router.render(); } })));
   }
+  if (units.length) wrap.append(Quests.card());
   if (!units.length) wrap.append(h('div', { class: 'card empty' }, h('div', { class: 'empty-fret', html: Mascot.svg('slaap') }), h('h2', { text: 'Je leerpad begint na les 1' }), h('p', { class: 'help', text: 'Zodra je eerste muziektheorieles binnen is, verschijnt hier de eerste unit met oefeningen.' })));
   const nx = nextNode();
   let delay = 0;
@@ -4409,9 +5028,15 @@ function renderPath(view) {
       track.append(row);
     });
     // de fret zit naast het pad, aan de kant waar plek is
-    const mood = complete ? 'juich' : nx && nx.unit.lesson === u.lesson ? 'zwaai' : SIDE_MOODS[ui % SIDE_MOODS.length];
+    const current = nx && nx.unit.lesson === u.lesson;
+    const mood = complete ? 'juich' : current ? ['zwaai', 'gitaar', 'noot', 'hals'][dayNo() % 4] : SIDE_MOODS[(ui + dayNo()) % SIDE_MOODS.length];
     if (nodes.length >= 3) track.append(h('div', { class: 'side-fret', html: Mascot.svg(mood) }));
-    wrap.append(h('div', { class: `unit c-${color}`, id: `unit-${u.lesson}` }, head, track));
+    // uitlegkaartje: de kern van de les, open bij de unit waar je nu bent
+    const sum = unitSummary(u);
+    const card = sum.length ? h('details', { class: 'unit-sum', open: current && !doneCount ? true : null },
+      h('summary', {}, h('span', { class: 'us-ico', html: ICONS.book }), h('span', { text: 'De les in het kort' })),
+      h('div', { class: 'us-body' }, h('div', { class: 'us-fret', html: Mascot.svg('boek') }), h('ul', {}, sum.map(t => h('li', { text: t }))))) : null;
+    wrap.append(h('div', { class: `unit c-${color}`, id: `unit-${u.lesson}` }, head, card, track));
   });
   for (const up of PathData.upcoming()) {
     const tp = TOPICS[up.topic];
@@ -4454,7 +5079,7 @@ const Review = {
       const st = nodeStat(u, i);
       if (!st || !st.done) return;
       const days = (Date.now() - (st.last || 0)) / 86400000;
-      out.push({ node, w: 1 + Math.min(3, st.mistakes / Math.max(1, st.runs)) + Math.min(3, days / 2) });
+      out.push({ node, topic: u.topic, w: 1 + Math.min(3, st.mistakes / Math.max(1, st.runs)) + Math.min(3, days / 2) });
     });
     return out;
   },
@@ -4465,7 +5090,7 @@ const Review = {
     for (let k = 0; k < 40 && items.length < (n || 8); k++) {
       let r = Math.random() * cands.reduce((a, c) => a + c.w, 0), c = cands[0];
       for (const x of cands) { r -= x.w; if (r <= 0) { c = x; break; } }
-      items.push(...shuffle(c.node.gen()).slice(0, 2));
+      items.push(...shuffle(c.node.gen()).slice(0, 2).map(it => Object.assign(it, { _topic: c.topic })));
     }
     return items.slice(0, n || 8);
   },
@@ -4497,29 +5122,37 @@ const Progress = {
   },
   tick() {
     const v = document.body.dataset.view;
-    const practicing = document.visibilityState === 'visible' && Activity.active() && (v === 'lesson' || (v === 'mode' && Engine.mic));
+    const practicing = document.visibilityState === 'visible' && Activity.active() && (v === 'lesson' || (v === 'mode' && (Engine.mic || (current && current.noMic))));
     if (!practicing) return;
     const d = this.day(), before = d.secs;
     d.secs++;
     if (v === 'mode' && ++this.drillSecs >= 30) { this.drillSecs = 0; this.addXP(1); }
     if (v === 'mode' && current && current.id) { const md = Store.stats.modeDays || (Store.stats.modeDays = {}); md[current.id] = todayKey(); }
     if (before < this.goalSecs() && d.secs >= this.goalSecs()) this.goalReached();
-    if (d.secs % 5 === 0) Store.saveStats();
+    if (d.secs % 5 === 0) { Store.saveStats(); Quests.check(); }
     this.renderTop();
   },
+  // reeks: aaneengesloten dagen met je dagdoel; een bevroren dag houdt de reeks vast maar telt niet mee
   streak() {
-    const d = new Date(), today = this.met(dayKeyOf(d));
+    const fr = Store.stats.frozen || {}, d = new Date(), today = this.met(dayKeyOf(d));
+    d.setHours(12, 0, 0, 0);
     if (!today) d.setDate(d.getDate() - 1);
     let n = 0;
-    while (this.met(dayKeyOf(d))) { n++; d.setDate(d.getDate() - 1); }
+    for (let i = 0; i < 4000; i++) {
+      const k = dayKeyOf(d);
+      if (this.met(k)) n++; else if (!fr[k]) break;
+      d.setDate(d.getDate() - 1);
+    }
     return { n, today };
   },
   bestStreak() {
-    const keys = Object.keys(Store.stats.days).filter(k => this.met(k)).sort();
+    const fr = Store.stats.frozen || {};
+    const keys = Array.from(new Set(Object.keys(Store.stats.days).filter(k => this.met(k)).concat(Object.keys(fr)))).sort();
     let best = 0, run = 0, prev = null;
     for (const k of keys) {
       const d = new Date(k + 'T12:00:00');
-      run = prev && Math.round((d - prev) / 86400000) === 1 ? run + 1 : 1;
+      if (!(prev && Math.round((d - prev) / 86400000) === 1)) run = 0;
+      if (this.met(k)) run++;
       best = Math.max(best, run); prev = d;
     }
     return best;
@@ -4641,8 +5274,8 @@ function renderCalendar(infoEl) {
       const day = new Date(start); day.setDate(start.getDate() + w * 7 + d);
       if (day > today) continue;
       const k = dayKeyOf(day), secs = Progress.peek(k).secs, lv = calLevel(secs);
-      const label = `${day.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' })}: ${Math.round(secs / 60)} min`;
-      g += `<rect class="cal-c l${lv}${k === todayKey() ? ' today' : ''}" x="${L + w * (cell + gap)}" y="${T + d * (cell + gap)}" width="${cell}" height="${cell}" rx="3" tabindex="0" data-label="${label}" aria-label="${label}"></rect>`;
+      const label = `${day.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' })}: ${Math.round(secs / 60)} min${(Store.stats.frozen || {})[k] ? ', bevroren' : ''}`;
+      g += `<rect class="cal-c l${lv}${k === todayKey() ? ' today' : ''}${(Store.stats.frozen || {})[k] ? ' frozen' : ''}" x="${L + w * (cell + gap)}" y="${T + d * (cell + gap)}" width="${cell}" height="${cell}" rx="3" tabindex="0" data-label="${label}" aria-label="${label}"></rect>`;
     }
   }
   [0, 2, 4].forEach(d => { g += `<text class="cal-wd" x="0" y="${T + d * (cell + gap) + cell - 3}">${WD[d]}</text>`; });
@@ -4683,13 +5316,15 @@ function renderProgress(view) {
   Badges.check();
   const st = Store.stats, sk = Progress.streak(), goalMin = Math.round(Progress.goalSecs() / 60);
   const left = Math.max(0, Math.ceil((Progress.goalSecs() - Progress.day().secs) / 60));
-  const mood = sk.today ? 'juich' : sk.n ? 'blij' : 'slaap';
+  const fz = Store.stats.freezes || 0, yest = new Date(); yest.setDate(yest.getDate() - 1);
+  const mood = (Store.stats.frozen || {})[dayKeyOf(yest)] ? 'ijs' : sk.today ? 'juich' : sk.n ? 'blij' : 'slaap';
   const msg = sk.today ? `Vandaag gehaald. Morgen weer ${goalMin} minuten om je reeks te houden.` : sk.n ? `Nog ${left} ${left === 1 ? 'minuut' : 'minuten'} vandaag, anders begint je reeks morgen opnieuw.` : `Oefen vandaag ${goalMin} minuten om een reeks te beginnen.`;
   view.append(h('section', { class: 'streak-card' },
     h('div', { class: 'sc-fret', html: Mascot.svg(mood) }),
     h('div', { class: 'sc-text' },
       h('p', { class: 'sc-n' }, h('span', { html: ICONS.flame }), h('b', { text: String(sk.n) }), h('span', { text: sk.n === 1 ? 'dag op rij' : 'dagen op rij' })),
-      h('p', { class: 'help', text: msg }))));
+      h('p', { class: 'help', text: msg }),
+      h('p', { class: 'sc-freeze' }, h('span', { html: ICONS.ice }), fz ? `${fz} ${fz === 1 ? 'reeksbevriezer' : 'reeksbevriezers'} op voorraad` : 'Nog geen reeksbevriezer. Doe de drie opdrachten van een dag.'))));
   const tile = (label, value, sub, icon, onclick) => h(onclick ? 'button' : 'div', { class: 'tile' + (onclick ? ' tap' : ''), type: onclick ? 'button' : null, onclick },
     h('span', { class: 'tile-l' }, icon ? h('span', { class: 'tile-ico', html: icon }) : null, label), h('b', { class: 'tile-v', text: value }), sub ? h('small', { text: sub }) : null);
   const wk = Math.round(Progress.weekSecs() / 60), nb = Bin.count();
@@ -4698,6 +5333,14 @@ function renderProgress(view) {
     tile('Deze week', `${wk}`, 'minuten', ICONS.clock),
     tile('Beste reeks', String(Progress.bestStreak()), Progress.bestStreak() === 1 ? 'dag' : 'dagen', ICONS.flame),
     tile('Foutenbak', String(nb), nb ? 'tik om te herstellen' : 'leeg', ICONS.plaster, nb ? () => Bin.start() : null)));
+  const sumOut = h('pre', { class: 'cc-out', hidden: true });
+  view.append(h('div', { class: 'card course-card' },
+    h('div', { class: 'cc-fret', html: Mascot.svg('boek') }),
+    h('div', { class: 'cc-text' },
+      h('h2', { class: 'card-h', text: 'Voor je muziektheorieles' }),
+      h('p', { class: 'help', text: 'Kopieer je voortgang en plak hem als reactie op je volgende les. Dan stem ik de lessen af op wat je nog lastig vindt.' }),
+      h('button', { class: 'primary', type: 'button', id: 'copyProgress', html: `${ICONS.copy}<span>Kopieer voortgang</span>`, onclick: () => copyCourseSummary(sumOut) })),
+    sumOut));
   const calInfo = h('p', { class: 'chart-info', text: 'Tik op een dag voor de minuten' });
   view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Oefenkalender' }), h('p', { class: 'help', text: 'De laatste 16 weken. Hoe donkerder, hoe langer je oefende. De donkerste kleur is je dagdoel gehaald.' }), renderCalendar(calInfo),
     h('div', { class: 'cal-legend', html: `<span>minder</span>${[0, 1, 2, 3, 4].map(l => `<i class="l${l}"></i>`).join('')}<span>dagdoel</span>` }), calInfo));
@@ -4726,6 +5369,168 @@ function renderProgress(view) {
     h('div', { class: 'row links' }, h('a', { class: 'link', href: '#m-heatmap', text: 'Hittekaart van de hals' }), h('a', { class: 'link', href: '#instellingen', text: 'Instellingen' }))));
 }
 
+// ---------- Dagelijkse opdrachten, reeksbevriezer en voortgang voor de cursus ----------
+const qc = (d, k) => (d.c && d.c[k]) || 0;
+const QUESTS = [
+  { id: 'node', cat: 'a', icon: 'path', target: () => 1, text: () => 'Rond een stap in je leerpad af', value: d => qc(d, 'nodes'), ok: () => !!nextNode() },
+  { id: 'fix', cat: 'a', icon: 'plaster', target: () => Math.min(3, Bin.count()), text: n => (n === 1 ? 'Herstel een fout uit je foutenbak' : `Herstel ${n} fouten uit je foutenbak`), value: d => qc(d, 'fixed'), ok: () => Bin.items().length > 0 },
+  { id: 'combo', cat: 'a', icon: 'flame', target: () => 6, text: n => `Beantwoord ${n} vragen op rij goed`, value: d => qc(d, 'combo'), ok: () => PathData.units().length > 0 },
+  { id: 'notes', cat: 'b', icon: 'note', target: () => 25, text: n => `Vind ${n} noten op de hals`, value: d => qc(d, 'notes') },
+  { id: 'challenge', cat: 'b', icon: 'bolt', target: () => clamp(Math.round((Store.stats.challenge.best || 12) * 0.8), 8, 40), text: n => `Haal ${n} of meer bij 60 seconden`, value: d => qc(d, 'challenge') },
+  { id: 'scales', cat: 'b', icon: 'pick', target: () => 2, text: n => `Speel ${n} toonladderboxen helemaal`, value: d => qc(d, 'scales') },
+  { id: 'targets', cat: 'b', icon: 'target', target: () => 12, text: n => `Raak ${n} doeltonen`, value: d => qc(d, 'targets') },
+  { id: 'earq', cat: 'c', icon: 'ear', target: () => 10, text: n => `Herken ${n} intervallen of akkoorden op gehoor`, value: d => qc(d, 'earq') },
+  { id: 'pedals', cat: 'c', icon: 'pedal', target: () => 3, text: n => `Trap ${n} verschillende pedalen in`, value: () => Object.values(Store.stats.modeDays || {}).filter(k => k === todayKey()).length },
+];
+const Quests = {
+  def(id) { return QUESTS.find(q => q.id === id); },
+  // drie opdrachten per dag, één uit elke soort; vast voor die dag
+  today() {
+    const d = Progress.day();
+    if (Array.isArray(d.quests) && d.quests.length) return d.quests;
+    let seed = 7;
+    for (const ch of todayKey()) seed = (seed * 31 + ch.charCodeAt(0)) % 2147483647;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const picks = [];
+    for (const cat of ['a', 'b', 'c']) {
+      let pool = QUESTS.filter(q => q.cat === cat && (!q.ok || q.ok()));
+      if (!pool.length) pool = QUESTS.filter(q => q.cat === 'b' && !picks.includes(q));
+      const q = pool[Math.floor(rnd() * pool.length)];
+      if (q && !picks.includes(q)) picks.push(q);
+    }
+    d.quests = picks.map(q => ({ id: q.id, target: Math.max(1, q.target()) }));
+    Store.saveStats();
+    return d.quests;
+  },
+  progress(q) { const def = this.def(q.id); return def ? Math.min(q.target, def.value(Progress.day())) : 0; },
+  text(q) { const def = this.def(q.id); return def ? def.text(q.target) : ''; },
+  bump(key, n = 1) { const d = Progress.day(); d.c = d.c || {}; d.c[key] = (d.c[key] || 0) + n; this.check(); },
+  max(key, v) { const d = Progress.day(); d.c = d.c || {}; if (v > (d.c[key] || 0)) { d.c[key] = v; this.check(); } },
+  check() {
+    const d = Progress.day(), qs = this.today();
+    d.qd = d.qd || {};
+    let changed = false;
+    for (const q of qs) if (!d.qd[q.id] && this.progress(q) >= q.target) {
+      d.qd[q.id] = true; changed = true;
+      Progress.addXP(10);
+      UI.flash(Mascot.svg('juich', { crop: 'head' }), 'Opdracht gedaan!', `${this.text(q)}. +10 XP`, 'goal');
+      Sfx.play('fixed');
+    }
+    if (changed && qs.every(q => d.qd[q.id]) && !d.qdAll) {
+      d.qdAll = true;
+      if ((Store.stats.freezes || 0) < 2) {
+        Store.stats.freezes = (Store.stats.freezes || 0) + 1;
+        UI.flash(Mascot.svg('ijs', { crop: 'head' }), 'Reeksbevriezer verdiend!', 'Mis je een dag, dan houdt hij je reeks vast.', 'goal');
+      } else {
+        Progress.addXP(20);
+        UI.flash(Mascot.svg('juich', { crop: 'head' }), 'Alle opdrachten gedaan!', 'Je hebt al 2 bevriezers, dus je krijgt 20 XP extra.', 'goal');
+      }
+      setTimeout(() => Confetti.burst({ n: 70 }), 300);
+    }
+    if (changed) { Store.saveStats(); this.render(); }
+  },
+  // kaart bovenaan het leerpad
+  card() {
+    const qs = this.today(), d = Progress.day(), done = qs.filter(q => d.qd && d.qd[q.id]).length, all = done === qs.length, fz = Store.stats.freezes || 0;
+    return h('section', { class: 'quests' + (all ? ' all' : ''), id: 'questCard' },
+      h('div', { class: 'q-head' },
+        h('div', { class: 'q-title' },
+          h('h2', { text: all ? 'Alle opdrachten gedaan' : 'Opdrachten van vandaag' }),
+          h('span', { class: 'q-freeze' + (fz ? ' has' : ''), title: 'Reeksbevriezers', 'aria-label': `${fz} reeksbevriezers` }, h('span', { html: ICONS.ice }), h('b', { text: `${fz} ${fz === 1 ? 'bevriezer' : 'bevriezers'}` }))),
+        h('div', { class: 'q-fret', html: Mascot.svg(all ? 'juich' : 'noot') })),
+      all ? null : h('ul', { class: 'q-list' }, qs.map(q => {
+        const v = this.progress(q), ok = !!(d.qd && d.qd[q.id]), def = this.def(q.id);
+        return h('li', { class: ok ? 'done' : '' },
+          h('span', { class: 'q-ico', html: ok ? ICONS.check : ICONS[def ? def.icon : 'star'] }),
+          h('span', { class: 'q-text' }, h('span', { text: this.text(q) }), h('span', { class: 'q-bar', 'aria-hidden': 'true' }, h('i', { style: `width:${(100 * v / q.target).toFixed(0)}%` }))),
+          h('small', { class: 'q-n', text: ok ? '' : `${v}/${q.target}` }));
+      })),
+      h('p', { class: 'q-foot', text: all ? (fz ? `Je hebt ${fz} ${fz === 1 ? 'reeksbevriezer' : 'reeksbevriezers'}. Mis je een dag, dan blijft je reeks staan.` : 'Morgen staan er nieuwe opdrachten klaar.') : `Doe ze alle drie en verdien een reeksbevriezer${fz ? ` (je hebt er ${fz}, maximaal 2)` : ''}.` }));
+  },
+  render() {
+    const old = $('#questCard');
+    if (old) old.replaceWith(this.card());
+  },
+};
+
+// ---------- Reeksbevriezer: overbrugt gemiste dagen als je reeks liep ----------
+const Freeze = {
+  apply() {
+    const st = Store.stats, fr = st.frozen || (st.frozen = {});
+    if (!st.freezes) return [];
+    const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() - 1);
+    const gap = [];
+    for (let i = 0; i < 7; i++) {
+      const k = dayKeyOf(d);
+      if (Progress.met(k) || fr[k]) break;
+      gap.push(k); d.setDate(d.getDate() - 1);
+    }
+    const before = dayKeyOf(d);
+    if (!gap.length || !(Progress.met(before) || fr[before]) || gap.length > st.freezes) return [];
+    for (const k of gap) fr[k] = true;
+    st.freezes -= gap.length;
+    Store.saveStats();
+    return gap;
+  },
+  check() {
+    const used = this.apply();
+    if (used.length) setTimeout(() => UI.flash(Mascot.svg('ijs', { crop: 'head' }), 'Je reeks is gered!', used.length === 1 ? 'Je reeksbevriezer heeft je reeks vastgehouden voor de dag die je miste.' : `${used.length} bevriezers hebben je reeks vastgehouden.`, 'goal'), 900);
+    return used;
+  },
+};
+
+// ---------- Antwoorden bijhouden per onderwerp (voor de cursus) ----------
+const Track = {
+  answer(it, ok, topic) {
+    const st = Store.stats;
+    topic = topic || it._topic || 'overig';
+    const t = st.topics[topic] || (st.topics[topic] = { r: 0, w: 0 });
+    if (ok) t.r++; else t.w++;
+    const k = it.skill || it.type, sk = st.skills[k] || (st.skills[k] = { r: 0, w: 0, t: topic });
+    if (ok) sk.r++; else { sk.w++; sk.p = it.prompt; }
+  },
+};
+const topicName = k => (TOPICS[k] && k !== 'generic' ? TOPICS[k].title : k === 'generic' ? 'eigen vragen uit de les' : k === 'review' ? 'herhalen' : k);
+const shorten = (t, n = 70) => (t.length > n ? t.slice(0, n - 1).trim() + '…' : t);
+function courseSummary() {
+  const st = Store.stats, sk = Progress.streak(), units = PathData.units(), L = [];
+  L.push(`Fretjacht-voortgang, ${new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })}`);
+  L.push(`- Oefentijd: ${Math.round(Progress.weekSecs() / 60)} minuten deze week, reeks ${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'}, dagdoel ${Math.round(Progress.goalSecs() / 60)} minuten.`);
+  if (units.length) L.push(`- Leerpad: ${units.slice(-3).map(u => { const nodes = unitNodes(u), done = nodes.filter((n, k) => nodeDone(u, k)).length; return `${unitMeta(u).title} ${done} van ${nodes.length} stappen${nodeDone(u, nodes.length - 1) ? ', toets gehaald' : ''}`; }).join('; ')}.`);
+  const tp = Object.entries(st.topics || {}).filter(([k, v]) => k !== 'overig' && v.r + v.w >= 3).map(([k, v]) => ({ k, pct: Math.round(100 * v.r / (v.r + v.w)), n: v.r + v.w })).sort((a, b) => a.pct - b.pct);
+  if (tp.length) L.push(`- Goed per onderwerp: ${tp.map(x => `${topicName(x.k)} ${x.pct}% (${x.n} vragen)`).join(', ')}.`);
+  const weakSk = Object.values(st.skills || {}).filter(v => v.w >= 2 && v.p).sort((a, b) => b.w / (b.r + b.w) - a.w / (a.r + a.w)).slice(0, 3);
+  if (weakSk.length) L.push(`- Vaak fout: ${weakSk.map(v => `“${shorten(v.p)}” (${v.w} van ${v.r + v.w} fout)`).join(', ')}.`);
+  const bin = Bin.list();
+  if (bin.length) L.push(`- Nog in de foutenbak (${bin.length}): ${bin.slice(-4).map(x => `“${shorten(x.it.prompt)}”`).join(', ')}.`);
+  const rows = Object.entries(st.notes.items).filter(([, v]) => v.n > 0).map(([k, v]) => { const [s, pc] = k.split('-').map(Number); return { s, pc, avg: v.total / v.n }; }).sort((a, b) => b.avg - a.avg).slice(0, 3);
+  if (rows.length) L.push(`- Traagst op de hals: ${rows.map(r => `${pcLabel(r.pc, 'sharps')} op de ${STR_NAME[r.s]} (${fmt1(r.avg)} s)`).join(', ')}.`);
+  const eq = st.earq || { ok: {}, n: {} };
+  const ear = Object.keys(eq.n).filter(k => eq.n[k] >= 3).map(k => ({ k, pct: Math.round(100 * (eq.ok[k] || 0) / eq.n[k]) })).sort((a, b) => a.pct - b.pct).slice(0, 3);
+  if (ear.length) L.push(`- Op gehoor: ${ear.map(x => `${earName(x.k)} ${x.pct}%`).join(', ')}.`);
+  const tg = st.targets;
+  if (tg && tg.tries) {
+    const by = Object.entries(tg.by || {}).filter(([, v]) => v.t >= 3).map(([k, v]) => ({ k, pct: Math.round(100 * v.h / v.t) })).sort((a, b) => a.pct - b.pct);
+    L.push(`- Doeltonen: ${tg.hits} van ${tg.tries} geraakt${tg.hits ? `, gemiddeld ${fmt1(tg.time / tg.hits)} s` : ''}${by.length ? `; lastigst: de ${TARGET_NAME[by[0].k] || by[0].k} (${by[0].pct}%)` : ''}.`);
+  }
+  if (st.ear && Object.keys(st.ear.ok || {}).length) L.push(`- Op gehoor naspelen: ${Object.values(st.ear.ok).reduce((a, b) => a + b, 0)} keer goed.`);
+  L.push('Stem de volgende lessen en oefeningen hier graag op af.');
+  return L.join('\n');
+}
+async function copyCourseSummary(out) {
+  const text = courseSummary();
+  out.hidden = false;
+  out.textContent = text;
+  try {
+    await navigator.clipboard.writeText(text);
+    UI.flash(Mascot.svg('boek', { crop: 'head' }), 'Gekopieerd', 'Plak het als reactie op je volgende les.', 'goal');
+  } catch (e) {
+    const r = document.createRange(); r.selectNodeContents(out);
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    UI.flash(ICONS.book, 'Kopieer de tekst hieronder', 'Hij staat al geselecteerd.', 'badge');
+  }
+}
+
 // ---------- Oefen vandaag: een sessie die zichzelf samenstelt ----------
 const Daily = {
   active: false, steps: [], idx: 0, left: 0, timer: 0, startXP: 0, startSecs: 0,
@@ -4734,7 +5539,7 @@ const Daily = {
     const steps = [];
     let est = 0;
     const add = s => { steps.push(s); est += s.minutes; };
-    add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
+    if (!((Store.settings.cantPlayUntil || 0) > Date.now())) add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
     const nx = nextNode();
     if (nx) add({ kind: 'node', ref: nx, minutes: 4, title: 'Leerpad', sub: `Unit ${nx.unitNo}: ${nx.node.title}` });
     const nb = Bin.count();
@@ -4743,9 +5548,10 @@ const Daily = {
     const cu = nx ? nx.unit : PathData.units().slice(-1)[0];
     if (cu) {
       const d = unitMeta(cu).drill;
-      if (d && MODES[d.mode] && d.mode !== 'notes') add({ kind: 'drill', mode: d.mode, set: d.set, minutes: 3, title: 'Toepassen', sub: `${MODES[d.mode].title}, past bij les ${cu.lesson}` });
+      if (d && MODES[d.mode] && d.mode !== 'notes' && !((Store.settings.cantPlayUntil || 0) > Date.now())) add({ kind: 'drill', mode: d.mode, set: d.set, minutes: 3, title: 'Toepassen', sub: `${MODES[d.mode].title}, past bij les ${cu.lesson}` });
     }
-    const extras = shuffle([{ mode: 'challenge', minutes: 2, sub: '60 seconden' }, { mode: 'scales', minutes: 3, sub: 'Toonladders' }, { mode: 'positions', minutes: 2, sub: 'Alle posities' }, { mode: 'ear', minutes: 3, sub: 'Op gehoor naspelen' }]);
+    const cant = (Store.settings.cantPlayUntil || 0) > Date.now();
+    const extras = cant ? [{ mode: 'earq', minutes: 4, sub: 'Gehoortraining, zonder gitaar' }] : shuffle([{ mode: 'challenge', minutes: 2, sub: '60 seconden' }, { mode: 'scales', minutes: 3, sub: 'Toonladders' }, { mode: 'positions', minutes: 2, sub: 'Alle posities' }, { mode: 'ear', minutes: 3, sub: 'Op gehoor naspelen' }, { mode: 'targets', minutes: 3, sub: 'Doeltonen over akkoordwissels' }, { mode: 'earq', minutes: 3, sub: 'Gehoortraining' }]);
     for (const x of extras) { if (est >= remainMin) break; add({ kind: 'drill', mode: x.mode, minutes: x.minutes, title: 'Extra', sub: x.sub }); }
     return steps;
   },
@@ -4798,7 +5604,7 @@ const Daily = {
     const st = this.steps[this.idx];
     if (!this.active || !st || st.kind !== 'drill') return;
     const onIt = current && current.id === st.mode;
-    if (Engine.mic && onIt && document.visibilityState === 'visible') {
+    if ((Engine.mic || current.noMic) && onIt && document.visibilityState === 'visible') {
       this.left--;
       if (this.left <= 0) { if (Engine.ctx && Sfx.on()) Engine.chime(); return this.advance(); }
     }
@@ -4837,7 +5643,7 @@ const Daily = {
     bar.hidden = false;
     if (bar._k === k) return;
     bar._k = k;
-    bar.innerHTML = `<span class="sb-dots">${dots}</span><span class="sb-txt"><b>${onIt ? st.sub : 'Oefen vandaag'}</b>${onIt ? (Engine.mic ? '' : ', druk op Start') : `, stap ${this.idx + 1} van ${this.steps.length}`}</span>${onIt ? `<span class="sb-time">${mm}</span>` : ''}`;
+    bar.innerHTML = `<span class="sb-dots">${dots}</span><span class="sb-txt"><b>${onIt ? st.sub : 'Oefen vandaag'}</b>${onIt ? (Engine.mic || current.noMic ? '' : ', druk op Start') : `, stap ${this.idx + 1} van ${this.steps.length}`}</span>${onIt ? `<span class="sb-time">${mm}</span>` : ''}`;
     bar.append(onIt ? h('button', { type: 'button', text: 'Volgende', onclick: () => this.advance() }) : h('button', { type: 'button', class: 'primary', text: 'Ga verder', onclick: () => this.run() }), h('button', { type: 'button', text: 'Stop', onclick: () => this.stop() }));
   },
 };
@@ -4845,14 +5651,16 @@ const Daily = {
 // ---------- Oefenen: het pedalboard ----------
 const HUB = [
   { title: 'De hals', ids: ['notes', 'positions', 'intervals', 'degrees'] },
-  { title: 'Solo’s en gehoor', ids: ['scales', 'chords', 'bends', 'ear'] },
+  { title: 'Solo’s', ids: ['scales', 'chords', 'targets', 'bends'] },
+  { title: 'Gehoor', ids: ['earq', 'ear'] },
   { title: 'Uitdaging', ids: ['challenge', 'heatmap'] },
-  { title: 'Gereedschap', ids: ['metro', 'tuner'], tools: true },
+  { title: 'Gereedschap', ids: ['explorer', 'metro', 'tuner'], tools: true },
 ];
 const PEDAL_SUB = {
   notes: 'Vind de noot op de snaar', positions: 'Eén noot, elke snaar', intervals: 'Van toon naar toon', degrees: 'Trap 1 tot 7 in een toonsoort',
   scales: 'Boxen en patronen', chords: 'Alle tonen van een akkoord', bends: 'Zuiver omhoog buigen', ear: 'Luister en speel na',
   challenge: 'Zoveel noten in één minuut', heatmap: 'Waar zit je zwakke plek?', metro: 'Strak op de tel', tuner: 'Stem je gitaar',
+  targets: 'De terts op elk akkoord', earq: 'Zonder gitaar, alleen luisteren', explorer: 'Toonladders en akkoorden op de hals',
 };
 const PEDAL_TIP = {
   notes: 'Speel de noot op de snaar die oplicht.', positions: 'Speel dezelfde noot op elke snaar, van laag naar hoog.',
@@ -4860,8 +5668,9 @@ const PEDAL_TIP = {
   scales: 'Speel de box van laag naar hoog.', chords: 'Speel alle tonen van het akkoord, in elke volgorde.',
   bends: 'Bend tot de lijn het doel raakt, en houd hem even vast.', ear: 'Luister goed en zoek de noot op de hals.',
   challenge: 'Eén minuut, zoveel mogelijk noten.', tuner: 'Speel één snaar tegelijk en laat hem uitklinken.',
+  targets: 'Het akkoord klinkt eerst. Speel dan de doeltoon.',
 };
-const NO_MIC = ['metro', 'heatmap'];
+const NO_MIC = ['metro', 'heatmap', 'explorer', 'earq'];
 // vaste knopstand per pedaal, zodat het bord er elke keer hetzelfde uitziet
 const knobAngle = (id, k) => { let x = 7; for (const c of id + k) x = (x * 31 + c.charCodeAt(0)) % 997; return -130 + (x % 260); };
 // pedaal intrappen: lampje aan, klik, microfoon aan en dan naar de oefening
@@ -4871,6 +5680,7 @@ function stomp(e, id, before) {
   if (el.classList.contains('stomp')) return;
   el.classList.add('stomp');
   Sfx.play('tap');
+  Engine.ensureCtx();
   if (before) before();
   const mic = !NO_MIC.includes(id) && !Engine.mic ? Engine.startMic() : null;
   const go = () => { if (location.hash === href) Router.render(); else location.hash = href; };
@@ -4931,9 +5741,18 @@ function renderPractice(view) {
 
 // ---------- Opstarten ----------
 Store.load();
+Freeze.check();
 $('#backBtn').addEventListener('click', () => Router.back());
 $('#micPill').addEventListener('click', () => (Engine.mic ? Engine.stopMic() : Engine.startMic()));
 window.addEventListener('hashchange', () => Router.render());
+// terug in de app op een nieuwe dag: bevriezer toepassen en nieuwe opdrachten tonen
+let lastDay = todayKey();
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || todayKey() === lastDay) return;
+  lastDay = todayKey();
+  Freeze.check();
+  if (['path', 'progress', 'practice'].includes(document.body.dataset.view)) Router.render();
+});
 let lastNarrow = null, resizeT = 0;
 window.addEventListener('resize', () => {
   clearTimeout(resizeT);
@@ -4966,6 +5785,13 @@ window.__fj = {
   progress: () => ({ secs: Progress.day().secs, xp: Store.stats.xp, streak: Progress.streak(), nodes: Store.stats.path.nodes, badges: Store.stats.badges, bin: Bin.count(), binCleared: Store.stats.binCleared || 0 }),
   bin: () => Bin.list().map(x => ({ k: x.k, n: x.n, type: x.it.type })),
   settings: () => JSON.parse(JSON.stringify(Store.settings)),
+  quests: () => Quests.today().map(q => ({ id: q.id, target: q.target, v: Quests.progress(q), done: !!(Progress.day().qd || {})[q.id] })),
+  questBump: (k, n) => (k === 'combo' || k === 'challenge' ? Quests.max(k, n) : Quests.bump(k, n)),
+  markPlayed: ids => { const md = Store.stats.modeDays || (Store.stats.modeDays = {}); ids.forEach(i => { md[i] = todayKey(); }); Quests.check(); },
+  freezes: () => ({ n: Store.stats.freezes || 0, frozen: Store.stats.frozen || {} }),
+  targets: () => (current && current.id === 'targets' ? { want: current.want, chord: current.chord && current.chord.name, hit: current.hit, idx: current.idx } : null),
+  summary: () => courseSummary(),
+  earq: () => (current && current.id === 'earq' && current.q ? current.q.key : null),
   addSecs: n => { Progress.day().secs += n; Store.saveStats(); Progress.renderTop(); },
 };
 $('#streakChip .chip-ico').innerHTML = ICONS.flame;
