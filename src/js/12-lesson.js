@@ -1,32 +1,47 @@
 // ---------- Lesspeler (één oefening tegelijk, zoals Duolingo) ----------
 const PRAISE = ['Goed!', 'Precies!', 'Klopt!', 'Netjes!', 'Top!'];
+const FIXED = ['Hersteld!', 'Nu wel!', 'Opgelost!', 'Die zit!'];
 const sameSet = (a, b) => a.length === b.length && a.every(x => b.includes(x));
+const KIND = { play: ['pick', 'Speel op je gitaar'], tap: ['note', 'Tik op de hals'], theory: ['book', 'Theorie'] };
 const Lesson = {
   spec: null,
   open(spec) { this.spec = spec; if (location.hash === '#les') Router.render(); else location.hash = '#les'; },
   mount(view) {
     const sp = this.spec;
     if (!sp) { setTimeout(() => { location.hash = ''; }, 0); return; }
+    this.bin = sp.mode === 'bin';
     this.cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
     let items = sp.items.map((it, i) => Object.assign({ _id: i }, it));
     if (this.cantPlay && items.some(i => i.type !== 'play')) items = items.filter(i => i.type !== 'play');
     this.queue = items;
     this.total = items.length; this.doneIds = new Set(); this.mistakes = 0; this.skipped = 0; this.hints = 0;
+    this.combo = 0; this.fixed = 0; this.wrongKeys = new Set();
     this.t0 = performance.now(); this.finished = false; this.cur = null;
     this.barFill = h('span');
-    this.el = h('section', { class: 'lesson' },
+    this.sndBtn = h('button', { class: 'ls-snd', type: 'button', onclick: () => { Store.settings.sound = !Sfx.on(); Store.saveSettings(); this.renderSnd(); } });
+    this.el = h('section', { class: 'lesson' + (this.bin ? ' bin-mode' : '') },
       h('div', { class: 'ls-top' },
         h('button', { class: 'ls-close', type: 'button', 'aria-label': 'Les stoppen', html: ICONS.close, onclick: () => this.askQuit() }),
         h('div', { class: 'ls-bar', role: 'progressbar', 'aria-label': 'Voortgang in deze les' }, this.barFill),
-        this.counter = h('span', { class: 'ls-count' })),
+        this.bin ? h('span', { class: 'ls-bin', title: 'Vragen in je foutenbak', html: `${ICONS.plaster}<b class="bin-count">${Bin.count()}</b>` }) : null,
+        this.counter = h('span', { class: 'ls-count' }),
+        this.sndBtn),
+      this.comboEl = h('div', { class: 'combo', 'aria-live': 'polite' }),
       this.body = h('div', { class: 'ls-body' }),
       this.foot = h('div', { class: 'ls-foot' }));
     view.append(this.el);
+    this.renderSnd();
     this.keys = { enter: () => this.enter() };
     this.updateBar();
     this.next();
   },
-  unmount() { clearTimeout(this.autoT); this.cur = null; },
+  unmount() { clearTimeout(this.autoT); clearTimeout(this.comboT); this.cur = null; },
+  renderSnd() {
+    const on = Sfx.on();
+    this.sndBtn.innerHTML = on ? ICONS.sound : ICONS.mute;
+    this.sndBtn.setAttribute('aria-label', on ? 'Geluidjes uitzetten' : 'Geluidjes aanzetten');
+    this.sndBtn.setAttribute('aria-pressed', String(on));
+  },
   updateBar() {
     const pct = this.total ? (100 * this.doneIds.size / this.total) : 0;
     this.barFill.style.width = pct + '%';
@@ -35,9 +50,10 @@ const Lesson = {
   askQuit() {
     if (this.finished) return this.leave();
     const sheet = h('div', { class: 'sheet-wrap', onclick: e => { if (e.target === sheet) sheet.remove(); } },
-      h('div', { class: 'sheet' },
+      h('div', { class: 'sheet center' },
+        h('div', { class: 'sheet-mascot', html: Mascot.svg('oeps') }),
         h('h3', { text: 'Wil je stoppen?' }),
-        h('p', { class: 'help', text: 'Je voortgang in deze les gaat verloren. Wat je tot nu toe hebt geoefend, telt wel mee voor je dagdoel.' }),
+        h('p', { class: 'help', text: this.bin ? 'Wat je al hebt hersteld, is uit je foutenbak. De rest blijft erin staan.' : 'Je voortgang in deze les gaat verloren. Wat je tot nu toe hebt geoefend, telt wel mee voor je dagdoel.' }),
         h('button', { class: 'primary big', type: 'button', text: 'Doorgaan met oefenen', onclick: () => sheet.remove() }),
         h('button', { class: 'big ghost', type: 'button', text: 'Stoppen', onclick: () => { sheet.remove(); this.leave(); } })));
     document.body.append(sheet);
@@ -58,9 +74,11 @@ const Lesson = {
     if (it.type === 'play' && this.cantPlay) { this.doneIds.add(it._id); this.updateBar(); return this.next(); }
     this.cur = it;
     this.body.innerHTML = '';
+    this.body.classList.remove('enter'); void this.body.offsetWidth; this.body.classList.add('enter');
     this.foot.className = 'ls-foot';
     this.foot.innerHTML = '';
-    this.body.append(h('p', { class: 'ls-kind', text: it.type === 'play' ? 'Speel op je gitaar' : it.type === 'tap' ? 'Tik op de hals' : it._again ? 'Nog een keer' : 'Theorie' }));
+    const [ico, label] = KIND[it.type === 'play' ? 'play' : it.type === 'tap' ? 'tap' : 'theory'];
+    this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, uit je foutenbak` : label));
     this.body.append(h('h2', { class: 'ls-prompt', text: it.prompt }));
     if (it.sub && it.type !== 'play') this.body.append(h('p', { class: 'ls-sub', text: it.sub }));
     if (it.type === 'mc') this.renderMC(it);
@@ -106,7 +124,7 @@ const Lesson = {
     svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Gitaarhals: tik op een plek');
     const fig = h('figure', { class: 'card neck tapneck' }, svg);
     this.body.append(fig);
-    this.tapSvg = svg;
+    this.tapSvg = svg; this.tapFig = fig;
     const draw = extra => drawNeck(svg, { from: it.from, to: it.to, marks: it.marks.concat(extra || []), tap: !this.answered });
     this.drawTap = draw;
     draw();
@@ -120,43 +138,81 @@ const Lesson = {
     });
     this.checkFoot();
   },
+  shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); },
   check() {
     const it = this.cur;
     if (!it || this.answered) return;
-    let ok = false, answer = '';
+    let ok = false, answer = '', wrongEl = null;
     if (it.type === 'mc') {
       ok = this.sel === it.answer; answer = it.options[it.answer];
-      $$('.opt', this.optsEl).forEach((b, i) => { b.classList.toggle('right', i === it.answer); b.classList.toggle('wrong', i === this.sel && !ok); b.disabled = true; });
+      $$('.opt', this.optsEl).forEach((b, i) => {
+        b.classList.toggle('right', i === it.answer); b.classList.toggle('wrong', i === this.sel && !ok); b.disabled = true;
+        if (i === it.answer && ok) b.classList.add('pop');
+        if (i === this.sel && !ok) wrongEl = b;
+      });
     } else if (it.type === 'multi') {
       const sel = Array.from(this.selSet);
       ok = sameSet(sel, it.correct); answer = it.correct.join(' ');
       $$('.chip-btn', this.chipsEl).forEach(b => { const c = b.textContent; b.classList.toggle('right', it.correct.includes(c)); b.classList.toggle('wrong', this.selSet.has(c) && !it.correct.includes(c)); b.disabled = true; });
+      wrongEl = ok ? null : this.chipsEl;
+      if (ok) this.chipsEl.classList.add('pop');
     } else if (it.type === 'tap') {
       ok = it.valid.some(p => p.s === this.tapSel.s && p.f === this.tapSel.f);
       answer = it.valid.map(p => `${STR_LETTER[p.s]}-snaar fret ${p.f}`).join(' of ');
       this.answered = true;
       this.drawTap(it.valid.map(p => ({ s: p.s, f: p.f, kind: 'found', label: '' })).concat(ok ? [] : [{ s: this.tapSel.s, f: this.tapSel.f, kind: 'wrong', label: '' }]));
+      wrongEl = ok ? null : this.tapFig;
     }
     if (ok) {
       this.doneIds.add(it._id);
-      this.feedback(true, pick(PRAISE), it.explain);
+      this.right(it);
     } else {
       this.mistakes++;
+      this.shake(wrongEl);
       if (!it._again) this.queue.push(Object.assign({}, it, { _again: true }));
       else this.doneIds.add(it._id);
-      this.feedback(false, 'Niet helemaal', `Het goede antwoord: ${answer}. ${it.explain || ''}`);
+      this.wrong(it, 'Niet helemaal', `Het goede antwoord: ${answer}. ${it.explain || ''}`);
     }
     this.updateBar();
   },
-  feedback(ok, title, text, auto) {
+  // goed beantwoord: in de herstelronde gaat de vraag uit de foutenbak
+  right(it, title, auto) {
+    let fixedNow = false;
+    if (this.bin && it._bin && Bin.remove(it._bin)) {
+      fixedNow = true; this.fixed++;
+      const b = $('.ls-bin', this.el);
+      if (b) { b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
+    }
+    this.combo++;
+    if ([3, 5, 8, 12].includes(this.combo)) this.showCombo(this.combo);
+    Sfx.play(fixedNow ? 'fixed' : 'right');
+    this.feedback(true, title || (fixedNow ? pick(FIXED) : pick(PRAISE)), it.explain || '', auto, fixedNow ? 'Uit je foutenbak.' : '');
+  },
+  wrong(it, title, text) {
+    this.combo = 0;
+    let note = '';
+    if (this.bin) { Bin.add(it); note = 'Hij blijft in je foutenbak.'; }
+    else { this.wrongKeys.add(Bin.add(it, this.spec && this.spec.title)); note = 'In je foutenbak gezet. Herstel hem later voor bonus-XP.'; }
+    Sfx.play('wrong');
+    this.feedback(false, title, text, 0, note);
+  },
+  showCombo(n) {
+    clearTimeout(this.comboT);
+    this.comboEl.innerHTML = `${ICONS.flame}<b>${n} op rij!</b>`;
+    this.comboEl.classList.remove('show'); void this.comboEl.offsetWidth; this.comboEl.classList.add('show');
+    this.comboT = setTimeout(() => this.comboEl.classList.remove('show'), 1600);
+  },
+  feedback(ok, title, text, auto, note) {
     this.answered = true;
     clearTimeout(this.autoT);
     this.foot.innerHTML = '';
     this.foot.className = 'ls-foot ' + (ok ? 'ok' : 'bad');
     this.foot.append(
-      h('div', { class: 'fb' }, h('span', { class: 'fb-ico', html: ok ? ICONS.check : ICONS.close }), h('div', {}, h('b', { text: title }), text ? h('p', { text: text.trim() }) : null)),
+      h('div', { class: 'fb' },
+        h('span', { class: 'fb-fret', html: Mascot.svg(ok ? 'blij' : 'oeps', { crop: 'head' }) }),
+        h('div', {}, h('b', { text: title }), text ? h('p', { text: text.trim() }) : null,
+          note ? h('p', { class: 'fb-note' }, h('span', { html: ICONS.plaster }), note) : null)),
       h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => this.next() }));
-    if (ok && Engine.ctx) Engine.ding();
     if (auto) this.autoT = setTimeout(() => { if (this.answered) this.next(); }, auto);
     Activity.ping();
   },
@@ -231,7 +287,7 @@ const Lesson = {
     this.mistakes++; this.skipped++;
     this.doneIds.add(it._id); this.updateBar();
     const ans = it.steps.map(st => st.k === 'set' ? st.names.join(' ') : st.name).join(' → ');
-    this.feedback(false, 'Overgeslagen', `${ans ? `Het antwoord: ${ans}. ` : ''}${it.hint || ''}`);
+    this.wrong(it, 'Overgeslagen', `${ans ? `Het antwoord: ${ans}. ` : ''}${it.hint || ''}`);
   },
   cantPlayNow() {
     Store.settings.cantPlayUntil = Date.now() + 15 * 60 * 1000; Store.saveSettings();
@@ -274,40 +330,74 @@ const Lesson = {
   playDone() {
     const it = this.cur;
     this.doneIds.add(it._id); this.updateBar();
-    this.feedback(true, 'Goed gespeeld!', it.explain || '', 1400);
+    this.right(it, 'Goed gespeeld!', 1500);
   },
 
   finish() {
     if (this.finished) return;
     this.finished = true; this.cur = null;
+    clearTimeout(this.comboT); this.comboEl.classList.remove('show');
     const sp = this.spec, secs = (performance.now() - this.t0) / 1000;
     const accuracy = this.total ? Math.max(0, (this.total - this.mistakes) / this.total) : 1;
     const perfect = this.mistakes === 0 && this.skipped === 0;
     const passed = !sp.test || accuracy >= 0.8;
-    const xp = passed ? (sp.xp || 10) + (perfect ? 5 : 0) : 5;
-    Progress.addXP(xp);
-    if (sp.onFinish) sp.onFinish({ passed, accuracy, perfect, secs, xp });
+    let xp, title, sub, mood, party = false, extra = null;
+    if (this.bin) {
+      xp = 2 * this.fixed + (this.fixed && this.fixed === this.total ? 5 : 0);
+      const left = Bin.count();
+      if (this.fixed && !left) {
+        Bin.reward(); xp += 10; party = true;
+        title = 'Foutenbak leeg!'; mood = 'juich';
+        sub = 'Alles hersteld. Je krijgt 10 XP extra en 2 minuten voor je dagdoel.';
+      } else {
+        title = this.fixed ? `${this.fixed} van ${this.total} hersteld` : 'Nog niet hersteld';
+        mood = this.fixed ? 'ehbo' : 'oeps';
+        sub = left ? `Er ${left === 1 ? 'staat' : 'staan'} nog ${left} ${left === 1 ? 'vraag' : 'vragen'} in je foutenbak.` : '';
+      }
+      if (xp) Progress.addXP(xp);
+    } else {
+      xp = passed ? (sp.xp || 10) + (perfect ? 5 : 0) : 5;
+      Progress.addXP(xp);
+      if (sp.onFinish) sp.onFinish({ passed, accuracy, perfect, secs, xp });
+      title = sp.test ? (passed ? 'Unittoets gehaald!' : 'Nog niet gehaald') : perfect ? 'Foutloos!' : 'Les voltooid!';
+      mood = !passed ? 'oeps' : perfect || sp.test ? 'juich' : 'blij';
+      party = passed && (perfect || sp.test);
+      sub = sp.test && !passed ? 'Je hebt 80% goed nodig. Herhaal de lessen van deze unit en probeer het nog eens.' : sp.title || '';
+    }
     const fresh = Badges.check({ quiet: true });
     this.body.innerHTML = '';
+    this.body.classList.remove('enter');
     this.foot.className = 'ls-foot';
     this.foot.innerHTML = '';
-    const title = sp.test ? (passed ? 'Unittoets gehaald!' : 'Nog niet gehaald') : perfect ? 'Foutloos!' : 'Les voltooid!';
     const mm = `${Math.floor(secs / 60)}:${String(Math.round(secs % 60)).padStart(2, '0')}`;
+    const xpEl = h('b', { text: `+${xp}` }), pctEl = h('b', { text: `${Math.round(accuracy * 100)}%` });
     this.body.append(h('div', { class: 'ls-end' },
-      h('div', { class: 'end-ico' + (passed ? '' : ' fail'), html: passed ? (sp.test ? ICONS.trophy : ICONS.star) : ICONS.retry }),
+      h('div', { class: 'end-fret' + (party ? ' party' : ''), html: Mascot.svg(mood) }),
       h('h2', { class: 'end-title', text: title }),
-      h('p', { class: 'help', text: sp.test && !passed ? 'Je hebt 80% goed nodig. Herhaal de lessen van deze unit en probeer het nog eens.' : sp.title || '' }),
+      sub ? h('p', { class: 'help', text: sub }) : null,
       h('div', { class: 'end-stats' },
-        h('div', {}, h('small', { text: 'XP' }), h('b', { text: `+${xp}` })),
-        h('div', {}, h('small', { text: 'Goed' }), h('b', { text: `${Math.round(accuracy * 100)}%` })),
+        h('div', {}, h('small', { text: 'XP' }), xpEl),
+        this.bin ? h('div', {}, h('small', { text: 'Hersteld' }), h('b', { text: `${this.fixed}/${this.total}` })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
         h('div', {}, h('small', { text: 'Tijd' }), h('b', { text: mm }))),
       fresh.length ? h('div', { class: 'end-badges' }, fresh.map(b => h('div', { class: 'end-badge' },
-        h('span', { class: 'b-ico', html: ICONS[b.icon] }),
+        h('span', { class: 'b-pick', html: pickBadge(b, true) }),
         h('div', {}, h('small', { text: 'Nieuwe mijlpaal' }), h('b', { text: b.title }), h('span', { text: b.desc }))))) : null,
       Progress.goalLine()));
+    countUp(xpEl, xp, { prefix: '+', delay: 250 });
+    if (!this.bin) countUp(pctEl, Math.round(accuracy * 100), { suffix: '%', delay: 350 });
     this.counter.textContent = '';
     this.barFill.style.width = '100%';
-    this.foot.append(h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => { const s = this.spec; this.spec = null; if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; } }));
-    if (Engine.ctx) Engine.chime();
+    const done = () => { const s = this.spec; this.spec = null; if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; };
+    // fouten uit deze les: direct herstellen voor bonus-XP
+    const fixable = this.bin ? [] : [...this.wrongKeys].filter(k => Bin.has(k));
+    if (fixable.length && Bin.items(fixable).length) {
+      this.foot.append(h('button', { class: 'primary big fix-btn', type: 'button', html: `${ICONS.plaster}<span>Herstel je fouten (+${Bin.bonusXP(fixable.length)} XP)</span>`, onclick: () => { const s = this.spec; this.spec = null; Bin.start({ keys: fixable, after: () => { if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; } }); } }),
+        h('button', { class: 'big', type: 'button', text: 'Verder', onclick: done }));
+    } else if (this.bin && Bin.count() && Bin.items().length) {
+      this.foot.append(h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: done }),
+        h('button', { class: 'big', type: 'button', text: 'Nog een ronde', onclick: () => { const s = this.spec; this.spec = null; Bin.start({ after: s && s.onDone ? () => s.onDone({ passed: true }) : null }); } }));
+    } else this.foot.append(h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: done }));
+    Sfx.play('done');
+    if (party) setTimeout(() => Confetti.burst({ n: this.bin ? 70 : 90 }), 200);
   },
 };

@@ -22,7 +22,7 @@ const DEFAULT_STATS = () => ({
   ear: { ok: {}, tries: {} },
   bends: { recent: [] },
   rhythm: { recent: [], sessions: 0 },
-  xp: 0, days: {}, path: { nodes: {} }, badges: {},
+  xp: 0, days: {}, path: { nodes: {} }, badges: {}, bin: [], binCleared: 0, modeDays: {},
 });
 function deepMerge(base, over) {
   if (base === null) return over === undefined ? null : over;

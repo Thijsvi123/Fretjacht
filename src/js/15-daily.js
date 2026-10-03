@@ -9,11 +9,13 @@ const Daily = {
     add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
     const nx = nextNode();
     if (nx) add({ kind: 'node', ref: nx, minutes: 4, title: 'Leerpad', sub: `Unit ${nx.unitNo}: ${nx.node.title}` });
-    if (Review.available()) add({ kind: 'review', minutes: 3, title: 'Herhalen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst' });
+    const nb = Bin.count();
+    if (nb && Bin.items().length) add({ kind: 'bin', minutes: 3, title: 'Herstel je fouten', sub: `${nb} ${nb === 1 ? 'vraag' : 'vragen'} uit je foutenbak` });
+    else if (Review.available()) add({ kind: 'review', minutes: 3, title: 'Herhalen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst' });
     const cu = nx ? nx.unit : PathData.units().slice(-1)[0];
     if (cu) {
       const d = unitMeta(cu).drill;
-      if (d && MODES[d.mode] && d.mode !== 'notes') add({ kind: 'drill', mode: d.mode, set: d.set, minutes: 3, title: 'Toepassen', sub: `${MODES[d.mode].title} · past bij les ${cu.lesson}` });
+      if (d && MODES[d.mode] && d.mode !== 'notes') add({ kind: 'drill', mode: d.mode, set: d.set, minutes: 3, title: 'Toepassen', sub: `${MODES[d.mode].title}, past bij les ${cu.lesson}` });
     }
     const extras = shuffle([{ mode: 'challenge', minutes: 2, sub: '60 seconden' }, { mode: 'scales', minutes: 3, sub: 'Toonladders' }, { mode: 'positions', minutes: 2, sub: 'Alle posities' }, { mode: 'ear', minutes: 3, sub: 'Op gehoor naspelen' }]);
     for (const x of extras) { if (est >= remainMin) break; add({ kind: 'drill', mode: x.mode, minutes: x.minutes, title: 'Extra', sub: x.sub }); }
@@ -25,8 +27,8 @@ const Daily = {
     const met = Progress.met(todayKey());
     const sheet = h('div', { class: 'sheet-wrap', onclick: e => { if (e.target === sheet) sheet.remove(); } },
       h('div', { class: 'sheet' },
-        h('p', { class: 'eyebrow', text: met ? 'Dagdoel al gehaald' : 'Oefen vandaag' }),
-        h('h3', { text: `${total} minuten` }),
+        h('div', { class: 'plan-head' }, h('div', { class: 'plan-fret', html: Mascot.svg(met ? 'juich' : 'zwaai') }),
+          h('div', {}, h('h3', { text: met ? 'Extra oefenen' : 'Oefen vandaag' }), h('p', { class: 'help', text: `${total} minuten in ${steps.length} stappen${met ? '. Je dagdoel is al gehaald.' : '.'}` }))),
         h('ol', { class: 'plan' }, steps.map((s, i) => h('li', {}, h('span', { class: 'pl-n', text: String(i + 1) }), h('div', {}, h('b', { text: s.title }), h('small', { text: s.sub })), h('span', { class: 'pl-m', text: `${s.minutes} min` })))),
         h('p', { class: 'help', text: 'De oefentijd telt alleen als je echt bezig bent. Tussen de stappen ga je vanzelf door.' }),
         h('button', { class: 'primary big', type: 'button', text: 'Start', onclick: () => { sheet.remove(); this.start(steps); } })));
@@ -35,8 +37,8 @@ const Daily = {
   start(steps) {
     this.steps = steps; this.idx = 0; this.active = true;
     this.startXP = Store.stats.xp || 0; this.startSecs = Progress.day().secs;
-    if (!Engine.mic && !((Store.settings.cantPlayUntil || 0) > Date.now())) Engine.startMic();
-    this.run();
+    const needMic = !Engine.mic && !((Store.settings.cantPlayUntil || 0) > Date.now());
+    Loader.run({ title: 'Oefen vandaag', sub: needMic ? 'Microfoon aanzetten…' : `${steps.length} stappen`, mood: 'luister', wait: needMic ? Engine.startMic() : null }, () => this.run());
   },
   run() {
     const st = this.steps[this.idx];
@@ -48,13 +50,16 @@ const Daily = {
       if (nodeState(u, nodes, st.ref.index) === 'done') { const nx = nextNode(); if (nx) { st.ref = nx; st.sub = `Unit ${nx.unitNo}: ${nx.node.title}`; } }
       const nodes2 = unitNodes(st.ref.unit);
       startNode(st.ref.unit, st.ref.index, nodes2, () => this.advance());
+    } else if (st.kind === 'bin') {
+      if (!Bin.items().length) return this.advance();
+      Bin.start({ after: () => this.advance(), exit: () => { location.hash = ''; } });
     } else if (st.kind === 'review') {
       const items = Review.build(8);
       if (!items.length) return this.advance();
       Lesson.open({ title: 'Herhalen', items, xp: 10, onDone: () => this.advance(), onExit: () => { location.hash = ''; } });
     } else {
       // instellingen die bij de les horen gelden alleen tijdens deze stap
-      if (st.set && Store.settings[st.mode]) { if (!this.saved) this.saved = { mode: st.mode, prev: JSON.parse(JSON.stringify(Store.settings[st.mode])) }; Object.assign(Store.settings[st.mode], st.set); }
+      if (st.set) TempSettings.apply(st.mode, st.set);
       this.left = st.minutes * 60;
       if (location.hash === '#m-' + st.mode) Router.render(); else location.hash = '#m-' + st.mode;
       this.timer = setInterval(() => this.tick(), 1000);
@@ -67,16 +72,11 @@ const Daily = {
     const onIt = current && current.id === st.mode;
     if (Engine.mic && onIt && document.visibilityState === 'visible') {
       this.left--;
-      if (this.left <= 0) { if (Engine.ctx) Engine.chime(); return this.advance(); }
+      if (this.left <= 0) { if (Engine.ctx && Sfx.on()) Engine.chime(); return this.advance(); }
     }
     this.renderBar();
   },
-  restore() {
-    if (!this.saved) return;
-    const cur = Store.settings[this.saved.mode], prev = this.saved.prev;
-    for (const k of Object.keys(cur)) if (!(k in prev)) delete cur[k];
-    Object.assign(cur, prev); this.saved = null; Store.saveSettings();
-  },
+  restore() { TempSettings.restore(); },
   advance() { clearInterval(this.timer); this.restore(); this.idx++; if (this.idx >= this.steps.length) return this.finish(); this.run(); },
   stop() { this.active = false; clearInterval(this.timer); this.restore(); this.renderBar(); if (location.hash.startsWith('#m-')) location.hash = ''; },
   finish() {
@@ -89,9 +89,9 @@ const Daily = {
     const sk = Progress.streak();
     const sheet = h('div', { class: 'sheet-wrap', onclick: e => { if (e.target === sheet) sheet.remove(); } },
       h('div', { class: 'sheet center' },
-        h('div', { class: 'end-ico', html: ICONS.trophy }),
+        h('div', { class: 'sheet-mascot party', html: Mascot.svg(sk.today ? 'juich' : 'blij') }),
         h('h3', { text: 'Sessie klaar!' }),
-        h('p', { class: 'help', text: `${min} ${min === 1 ? 'minuut' : 'minuten'} geoefend · +${xp} XP${sk.today ? ` · reeks ${sk.n}` : ''}` }),
+        h('p', { class: 'help', text: `${min} ${min === 1 ? 'minuut' : 'minuten'} geoefend en ${xp} XP verdiend.${sk.today ? ` Je reeks staat op ${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'}.` : ''}` }),
         Progress.goalLine(),
         h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => sheet.remove() })));
     document.body.append(sheet);
@@ -109,7 +109,7 @@ const Daily = {
     bar.hidden = false;
     if (bar._k === k) return;
     bar._k = k;
-    bar.innerHTML = `<span class="sb-dots">${dots}</span><span class="sb-txt"><b>${onIt ? st.sub : 'Oefen vandaag'}</b>${onIt ? (Engine.mic ? '' : ' · druk op Start') : ` · stap ${this.idx + 1} van ${this.steps.length}`}</span>${onIt ? `<span class="sb-time">${mm}</span>` : ''}`;
+    bar.innerHTML = `<span class="sb-dots">${dots}</span><span class="sb-txt"><b>${onIt ? st.sub : 'Oefen vandaag'}</b>${onIt ? (Engine.mic ? '' : ', druk op Start') : `, stap ${this.idx + 1} van ${this.steps.length}`}</span>${onIt ? `<span class="sb-time">${mm}</span>` : ''}`;
     bar.append(onIt ? h('button', { type: 'button', text: 'Volgende', onclick: () => this.advance() }) : h('button', { type: 'button', class: 'primary', text: 'Ga verder', onclick: () => this.run() }), h('button', { type: 'button', text: 'Stop', onclick: () => this.stop() }));
   },
 };

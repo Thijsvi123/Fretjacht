@@ -189,6 +189,7 @@ const TABS = { '': 'path', 'leerpad': 'path', 'oefenen': 'practice', 'voortgang'
 const Router = {
   render() {
     const hash = location.hash.replace('#', '');
+    if (TempSettings.saved && hash !== 'm-' + TempSettings.saved.mode && !Daily.active) TempSettings.restore();
     if (current && current.unmount) current.unmount();
     Engine.sink = null; current = null; UI.tuner = null;
     $$('.sheet-wrap').forEach(x => x.remove());
@@ -218,7 +219,9 @@ const Router = {
       else renderProgress(view);
     }
     back.hidden = !!tab || document.body.dataset.view === 'lesson';
+    $('#logo').hidden = !tab;
     $('#title').textContent = title;
+    view.classList.remove('enter'); void view.offsetWidth; view.classList.add('enter');
     $$('.tabbar a').forEach(a => a.setAttribute('aria-current', a.dataset.tab === tab ? 'page' : 'false'));
     UI.micState();
     UI.updateHeard(null);
@@ -232,33 +235,6 @@ const Router = {
     location.hash = v === 'settings' ? '#voortgang' : v === 'mode' ? '#oefenen' : '';
   },
 };
-
-// ---------- Oefenen: losse oefeningen ----------
-const GROUPS = [
-  { id: 'hals', title: 'De hals leren kennen' },
-  { id: 'solo', title: "Solo's" },
-  { id: 'gehoor', title: 'Gehoor' },
-  { id: 'uitdaging', title: 'Uitdaging en inzicht' },
-  { id: 'handig', title: 'Handig' },
-];
-function renderPractice(view) {
-  const st = Store.stats;
-  view.append(h('p', { class: 'lead practice-lead', text: 'Vrij oefenen, los van je leerpad. Je oefentijd telt mee voor je dagdoel.' }));
-  for (const g of GROUPS) {
-    const ids = MODE_ORDER.filter(id => MODES[id].group === g.id);
-    if (!ids.length) continue;
-    view.append(h('h2', { class: 'eyebrow group-title', text: g.title }));
-    view.append(h('div', { class: 'mode-list' }, ids.map(id => {
-      const m = MODES[id];
-      const stat = m.homeStat ? m.homeStat(st) : '';
-      return h('a', { class: 'mode-item', href: '#m-' + id },
-        h('span', { class: 'mi-name', text: m.title }),
-        h('span', { class: 'mi-desc', text: m.desc }),
-        stat ? h('span', { class: 'mi-stat', html: stat }) : null);
-    })));
-  }
-  view.append(h('p', { class: 'foot', text: 'De app hoort welke toon klinkt, niet op welke snaar je hem speelt. Speel dus echt waar het gevraagd wordt. Leg je telefoon dicht bij je gitaar.' }));
-}
 
 // ---------- Instellingen ----------
 function renderSettings(view) {
@@ -286,7 +262,7 @@ function renderSettings(view) {
     h('div', { class: 'set-grid' },
       h('div', { class: 'field' },
         checkEl('strict', 'Octaaf moet kloppen', s.strict, v => { s.strict = v; save(); }, 'Alleen de precieze toonhoogte telt. Werkt het best met een goede microfoon of via een versterker; een telefoon hoort lage noten soms een octaaf te hoog.'),
-        checkEl('sound', 'Geluidje bij een goede noot', s.sound, v => { s.sound = v; save(); })),
+        checkEl('sound', 'Geluidjes', s.sound, v => { s.sound = v; save(); }, 'Bij goede antwoorden en noten, als je een fout herstelt en als je je dagdoel haalt. In een les zet je ze ook aan of uit met het luidsprekertje.')),
       field('Notenamen', seg([{ value: 'sharps', label: 'met ♯' }, { value: 'flats', label: 'met ♭' }, { value: 'both', label: '♯ en ♭' }], s.names, v => { s.names = v; save(); }), 'Met ♯ en ♭ wisselt het af, zodat je leert dat F♯ en G♭ dezelfde toets zijn.'),
       field('Automatische hint bij Noten zoeken', selectEl('autoHint', [{ value: 0, label: 'Uit' }, { value: 5, label: 'Na 5 seconden' }, { value: 10, label: 'Na 10 seconden' }, { value: 20, label: 'Na 20 seconden' }], s.autoHint, v => { s.autoHint = Number(v); save(); }))));
   let armed = 0;

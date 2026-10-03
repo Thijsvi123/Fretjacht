@@ -1,6 +1,8 @@
 import os, asyncio, subprocess, sys, time
 from playwright.async_api import async_playwright
 from PIL import Image
+sys.path.insert(0, os.path.dirname(__file__))
+from localfonts import use_local_fonts
 FAKE = open('tests/fake.js').read()
 SP = os.environ.get('SHOTS', '/tmp/fretjacht-shots/'); os.makedirs(SP, exist_ok=True)
 async def main():
@@ -9,8 +11,9 @@ async def main():
     try:
         async with async_playwright() as p:
             b = await p.chromium.launch(args=['--autoplay-policy=no-user-gesture-required', '--use-fake-ui-for-media-stream'])
-            for scheme, plan in [('light', ['home', 'notes', 'scales', 'chords']), ('dark', ['ear', 'bends', 'metro', 'heatmap'])]:
+            for scheme, plan in [('light', ['notes', 'scales', 'chords', 'tuner']), ('dark', ['ear', 'bends', 'metro', 'heatmap'])]:
                 ctx = await b.new_context(viewport={'width': 390, 'height': 760}, color_scheme=scheme, device_scale_factor=1, is_mobile=True, has_touch=True)
+                await use_local_fonts(ctx)
                 page = await ctx.new_page(); await page.add_init_script(FAKE)
                 await page.goto('http://localhost:8792/index.html')
                 # wat scores zodat de hittekaart iets laat zien

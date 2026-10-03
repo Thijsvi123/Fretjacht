@@ -26,19 +26,22 @@ window.__fj = {
     }
     return current && current.expected ? current.expected() : [];
   },
-  lesson: () => (current === Lesson && Lesson.cur ? { type: Lesson.cur.type, answer: Lesson.cur.answer, options: Lesson.cur.options, correct: Lesson.cur.correct, valid: Lesson.cur.valid, answered: Lesson.answered, done: Lesson.doneIds.size, total: Lesson.total, finished: Lesson.finished } : (current === Lesson ? { finished: Lesson.finished } : null)),
+  lesson: () => (current === Lesson && Lesson.cur ? { type: Lesson.cur.type, answer: Lesson.cur.answer, options: Lesson.cur.options, correct: Lesson.cur.correct, valid: Lesson.cur.valid, answered: Lesson.answered, done: Lesson.doneIds.size, total: Lesson.total, finished: Lesson.finished, bin: Lesson.bin } : (current === Lesson ? { finished: Lesson.finished, bin: Lesson.bin } : null)),
+  loading: () => !!document.querySelector('.loader'),
   onsets: () => Engine.onsetLog.slice(),
   latency: () => Engine.latency(),
   metro: () => ({ on: Metronome.on, beats: Metronome.recent.map(b => b.t), now: Engine.ctx ? Engine.ctx.currentTime : 0, bpm: Metronome.bpm }),
   daily: () => ({ active: Daily.active, idx: Daily.idx, steps: Daily.steps.map(s => s.kind + ':' + (s.mode || '')) }),
-  progress: () => ({ secs: Progress.day().secs, xp: Store.stats.xp, streak: Progress.streak(), nodes: Store.stats.path.nodes, badges: Store.stats.badges }),
+  progress: () => ({ secs: Progress.day().secs, xp: Store.stats.xp, streak: Progress.streak(), nodes: Store.stats.path.nodes, badges: Store.stats.badges, bin: Bin.count(), binCleared: Store.stats.binCleared || 0 }),
+  bin: () => Bin.list().map(x => ({ k: x.k, n: x.n, type: x.it.type })),
   settings: () => JSON.parse(JSON.stringify(Store.settings)),
   addSecs: n => { Progress.day().secs += n; Store.saveStats(); Progress.renderTop(); },
 };
 $('#streakChip .chip-ico').innerHTML = ICONS.flame;
 $('#goalChip .chip-ico').innerHTML = ICONS.ring;
 $('#micPill .chip-ico').innerHTML = ICONS.mic;
-const TAB_ICONS = { path: ICONS.path, practice: ICONS.grid, progress: ICONS.chart };
+$('#logo').innerHTML = Mascot.svg('blij', { crop: 'head' });
+const TAB_ICONS = { path: ICONS.path, practice: ICONS.pedal, progress: ICONS.chart };
 $$('.tabbar a').forEach(a => { $('.tb-ico', a).innerHTML = TAB_ICONS[a.dataset.tab]; });
 Router.render();
 PathData.load();

@@ -1,5 +1,7 @@
-import asyncio, subprocess, sys, time, json, random
+import os, asyncio, subprocess, sys, time, json, random
 from playwright.async_api import async_playwright
+sys.path.insert(0, os.path.dirname(__file__))
+from localfonts import use_local_fonts
 FAKE = open('tests/fake.js').read()
 PORT = 8790
 async def main():
@@ -9,6 +11,7 @@ async def main():
         async with async_playwright() as p:
             b = await p.chromium.launch(args=['--autoplay-policy=no-user-gesture-required', '--use-fake-ui-for-media-stream'])
             ctx = await b.new_context(viewport={'width': 390, 'height': 760}, device_scale_factor=1, is_mobile=True, has_touch=True)
+            await use_local_fonts(ctx)
             page = await ctx.new_page()
             page.on('pageerror', lambda e: errors.append('pageerror: ' + str(e)))
             page.on('console', lambda m: errors.append(f'console.{m.type}: {m.text}') if m.type in ('error', 'warning') and 'ERR_TUNNEL' not in m.text and 'fonts.g' not in m.text else None)
@@ -154,7 +157,7 @@ async def main():
 
             # --- Tabbladen ---
             await ev("location.hash = '#oefenen'"); await page.wait_for_timeout(300)
-            results['home_stats'] = await ev("Array.from(document.querySelectorAll('.mi-stat')).map(e => e.textContent)")
+            results['home_stats'] = await ev("Array.from(document.querySelectorAll('.pd-stat')).map(e => e.textContent)")
             # instellingen
             await ev("location.hash = '#instellingen'"); await page.wait_for_timeout(300)
             await ev('__fake.play(57, {dur: 1})'); await page.wait_for_timeout(400)

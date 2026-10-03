@@ -15,6 +15,13 @@ const Progress = {
   peek(k) { return Store.stats.days[k] || { secs: 0, xp: 0 }; },
   addXP(n) { Store.stats.xp = (Store.stats.xp || 0) + n; this.day().xp += n; Store.saveStats(); this.renderTop(); },
   met(k) { return this.peek(k).secs >= this.goalSecs(); },
+  // extra minuten als beloning (bijvoorbeeld een lege foutenbak)
+  addBonus(secs) {
+    const d = this.day(), before = d.secs;
+    d.secs += secs; d.bonus = (d.bonus || 0) + secs;
+    Store.saveStats(); this.renderTop();
+    if (before < this.goalSecs() && d.secs >= this.goalSecs()) this.goalReached();
+  },
   tick() {
     const v = document.body.dataset.view;
     const practicing = document.visibilityState === 'visible' && Activity.active() && (v === 'lesson' || (v === 'mode' && Engine.mic));
@@ -22,6 +29,7 @@ const Progress = {
     const d = this.day(), before = d.secs;
     d.secs++;
     if (v === 'mode' && ++this.drillSecs >= 30) { this.drillSecs = 0; this.addXP(1); }
+    if (v === 'mode' && current && current.id) { const md = Store.stats.modeDays || (Store.stats.modeDays = {}); md[current.id] = todayKey(); }
     if (before < this.goalSecs() && d.secs >= this.goalSecs()) this.goalReached();
     if (d.secs % 5 === 0) Store.saveStats();
     this.renderTop();
@@ -54,10 +62,11 @@ const Progress = {
   goalReached() {
     Store.saveStats();
     const sk = this.streak();
-    UI.flash(ICONS.flame, 'Dagdoel gehaald!', sk.n === 1 ? 'Je reeks is begonnen.' : `${sk.n} dagen op rij.`, 'goal');
-    // de mijlpaal 'Dagdoel gehaald' zegt hetzelfde als deze melding
+    UI.flash(Mascot.svg('juich', { crop: 'head' }), 'Dagdoel gehaald!', sk.n === 1 ? 'Je reeks is begonnen.' : `${sk.n} dagen op rij.`, 'goal');
+    // de mijlpaal voor je eerste dagdoel zegt hetzelfde als deze melding
     Badges.check({ skip: ['goal'] });
-    if (Engine.ctx) Engine.chime();
+    Confetti.burst({ n: 110, y: innerHeight * 0.3 });
+    Sfx.play('goal');
   },
   renderTop() {
     const sk = this.streak(), secs = this.day().secs, goal = this.goalSecs();
@@ -82,22 +91,44 @@ const Progress = {
 };
 setInterval(() => Progress.tick(), 1000);
 
-// ---------- Mijlpalen ----------
+// ---------- Mijlpalen: plectrums ----------
 const BADGES = [
-  { id: 'first', icon: 'star', title: 'Eerste stap', desc: 'Je eerste les in het leerpad', test: s => Object.values(s.path.nodes).some(n => n.done) },
-  { id: 'goal', icon: 'flame', title: 'Dagdoel gehaald', desc: 'Een dag je dagdoel gehaald', test: () => Progress.daysMet() >= 1 },
-  { id: 'streak3', icon: 'flame', title: 'Drie op rij', desc: '3 dagen op rij je dagdoel', test: () => Progress.bestStreak() >= 3 },
-  { id: 'streak7', icon: 'flame', title: 'Een week vol', desc: '7 dagen op rij je dagdoel', test: () => Progress.bestStreak() >= 7 },
-  { id: 'streak30', icon: 'flame', title: 'Een maand vol', desc: '30 dagen op rij je dagdoel', test: () => Progress.bestStreak() >= 30 },
-  { id: 'perfect', icon: 'check', title: 'Foutloos', desc: 'Een les zonder fouten', test: s => Object.values(s.path.nodes).some(n => n.perfect) },
-  { id: 'unit', icon: 'trophy', title: 'Unit voltooid', desc: 'Een unittoets gehaald', test: s => Object.values(s.path.nodes).some(n => n.test && n.done) },
-  { id: 'xp100', icon: 'bolt', title: '100 XP', desc: '100 XP verdiend', test: s => (s.xp || 0) >= 100 },
-  { id: 'xp500', icon: 'bolt', title: '500 XP', desc: '500 XP verdiend', test: s => (s.xp || 0) >= 500 },
-  { id: 'xp1000', icon: 'bolt', title: '1000 XP', desc: '1000 XP verdiend', test: s => (s.xp || 0) >= 1000 },
-  { id: 'notes100', icon: 'note', title: '100 noten', desc: '100 noten gevonden bij Noten zoeken', test: s => s.notes.found >= 100 },
-  { id: 'speed25', icon: 'bolt', title: 'Snelle vingers', desc: '25 noten in 60 seconden', test: s => s.challenge.best >= 25 },
-  { id: 'hours5', icon: 'clock', title: 'Vijf uur', desc: '5 uur geoefend in totaal', test: () => Progress.totalSecs() >= 18000 },
+  { id: 'first', icon: 'note', pick: '#F5A31A', title: 'Eerste noot', desc: 'Je eerste les in het leerpad', test: s => Object.values(s.path.nodes).some(n => n.done) },
+  { id: 'goal', icon: 'flame', pick: 'tortoise', title: 'Soundcheck', desc: 'Een keer je dagdoel gehaald', test: () => Progress.daysMet() >= 1 },
+  { id: 'streak3', icon: 'flame', pick: '#2D6BD4', title: 'Trio', desc: '3 dagen op rij je dagdoel', test: () => Progress.bestStreak() >= 3 },
+  { id: 'streak7', icon: 'flame', pick: '#7146D4', title: 'Septiem', desc: '7 dagen op rij je dagdoel', test: () => Progress.bestStreak() >= 7 },
+  { id: 'streak30', icon: 'flame', pick: '#C4336F', title: 'Op tournee', desc: '30 dagen op rij je dagdoel', test: () => Progress.bestStreak() >= 30 },
+  { id: 'perfect', icon: 'check', pick: 'pearl', title: 'Zuiver', desc: 'Een les zonder fouten', test: s => Object.values(s.path.nodes).some(n => n.perfect) },
+  { id: 'unit', icon: 'trophy', pick: '#2B1A14', title: 'Eerste plaat', desc: 'Een unittoets gehaald', test: s => Object.values(s.path.nodes).some(n => n.test && n.done) },
+  { id: 'bin', icon: 'plaster', pick: 'pearl', title: 'Pleister erop', desc: 'Je foutenbak helemaal leeggemaakt', test: s => (s.binCleared || 0) >= 1 },
+  { id: 'xp100', icon: 'bolt', pick: '#0B7D72', title: 'Demo', desc: '100 XP verdiend', test: s => (s.xp || 0) >= 100 },
+  { id: 'xp500', icon: 'bolt', pick: '#B4520E', title: 'Single', desc: '500 XP verdiend', test: s => (s.xp || 0) >= 500 },
+  { id: 'xp1000', icon: 'bolt', pick: 'gold', title: 'Album', desc: '1000 XP verdiend', test: s => (s.xp || 0) >= 1000 },
+  { id: 'notes100', icon: 'note', pick: 'tortoise', title: 'Notenjager', desc: '100 noten gevonden bij Noten zoeken', test: s => s.notes.found >= 100 },
+  { id: 'speed25', icon: 'bolt', pick: '#C4336F', title: 'Shredder', desc: '25 noten in 60 seconden', test: s => s.challenge.best >= 25 },
+  { id: 'hours5', icon: 'clock', pick: '#566170', title: 'Repetitieruimte', desc: '5 uur geoefend in totaal', test: () => Progress.totalSecs() >= 18000 },
 ];
+// plectrum als SVG; speciale kleuren: schildpad, parelmoer en goud
+let pickSeq = 0;
+function pickBadge(b, got) {
+  const id = 'pk' + (++pickSeq);
+  const shape = 'M32 3c17 0 29 6 29 17 0 16-16 33-29 41C19 53 3 36 3 20 3 9 15 3 32 3z';
+  let fill = b.pick, ink = '#FFFFFF', defs = '';
+  if (!got) { fill = 'var(--led-off)'; ink = 'var(--muted)'; }
+  else if (b.pick === 'tortoise') {
+    defs = `<pattern id="${id}" width="22" height="22" patternUnits="userSpaceOnUse"><rect width="22" height="22" fill="#8A4B22"/><path d="M2 3c5-2 8 2 6 6s-6 3-7 0zM13 11c4-1 7 3 5 6s-6 2-6-1zM14 1c2 0 3 2 2 3s-3 0-2-3z" fill="#3B1D0E" opacity=".8"/><path d="M8 14c3 0 4 3 2 5s-5 0-4-2z" fill="#D0893E" opacity=".7"/></pattern>`;
+    fill = `url(#${id})`;
+  } else if (b.pick === 'pearl') {
+    defs = `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#EDE6F2"/><stop offset=".7" stop-color="#E2F0EC"/><stop offset="1" stop-color="#F6EBDD"/></linearGradient>`;
+    fill = `url(#${id})`; ink = '#0B7D72';
+  } else if (b.pick === 'gold') {
+    defs = `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE08A"/><stop offset=".55" stop-color="#E2A92B"/><stop offset="1" stop-color="#B57A12"/></linearGradient>`;
+    fill = `url(#${id})`; ink = '#5A3500';
+  } else if (b.pick === '#F5A31A') ink = '#2B1A14';
+  if (got && b.id === 'unit') ink = '#F5A31A';
+  const icon = (ICONS[b.icon] || '').replace('class="ico"', `class="pk-ico" x="20" y="14" width="24" height="24" color="${ink}"`);
+  return `<svg viewBox="0 0 64 64" class="pickb${got ? ' got' : ''}" aria-hidden="true">${defs ? `<defs>${defs}</defs>` : ''}<path d="${shape}" fill="${fill}" ${got ? 'stroke="rgba(0,0,0,.18)" stroke-width="1.5"' : 'stroke="var(--line)" stroke-width="2" stroke-dasharray="4 4"'}/>${got ? '<path d="M17 12c6-4 18-5 26-1" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".45"/>' : ''}${icon}</svg>`;
+}
 const Badges = {
   // geeft de nieuw behaalde mijlpalen terug; quiet: geen melding (het eindscherm toont ze zelf)
   check(o = {}) {
@@ -105,7 +136,7 @@ const Badges = {
     const fresh = [];
     for (const b of BADGES) if (!s.badges[b.id] && b.test(s)) { s.badges[b.id] = todayKey(); fresh.push(b); }
     if (fresh.length) Store.saveStats();
-    if (!o.quiet) for (const b of fresh) if (!(o.skip || []).includes(b.id)) UI.flash(ICONS[b.icon], `Nieuwe mijlpaal: ${b.title}`, b.desc, 'badge');
+    if (!o.quiet) for (const b of fresh) if (!(o.skip || []).includes(b.id)) UI.flash(pickBadge(b, true), `Nieuwe mijlpaal: ${b.title}`, b.desc, 'badge');
     return fresh;
   },
 };
@@ -177,38 +208,47 @@ function renderWeekChart(infoEl) {
 }
 function renderProgress(view) {
   Badges.check();
-  const st = Store.stats, sk = Progress.streak();
-  const tile = (label, value, sub, icon) => h('div', { class: 'tile' }, h('span', { class: 'tile-l' }, icon ? h('span', { class: 'tile-ico', html: icon }) : null, label), h('b', { class: 'tile-v', text: value }), sub ? h('small', { text: sub }) : null);
-  const wk = Math.round(Progress.weekSecs() / 60);
+  const st = Store.stats, sk = Progress.streak(), goalMin = Math.round(Progress.goalSecs() / 60);
+  const left = Math.max(0, Math.ceil((Progress.goalSecs() - Progress.day().secs) / 60));
+  const mood = sk.today ? 'juich' : sk.n ? 'blij' : 'slaap';
+  const msg = sk.today ? `Vandaag gehaald. Morgen weer ${goalMin} minuten om je reeks te houden.` : sk.n ? `Nog ${left} ${left === 1 ? 'minuut' : 'minuten'} vandaag, anders begint je reeks morgen opnieuw.` : `Oefen vandaag ${goalMin} minuten om een reeks te beginnen.`;
+  view.append(h('section', { class: 'streak-card' },
+    h('div', { class: 'sc-fret', html: Mascot.svg(mood) }),
+    h('div', { class: 'sc-text' },
+      h('p', { class: 'sc-n' }, h('span', { html: ICONS.flame }), h('b', { text: String(sk.n) }), h('span', { text: sk.n === 1 ? 'dag op rij' : 'dagen op rij' })),
+      h('p', { class: 'help', text: msg }))));
+  const tile = (label, value, sub, icon, onclick) => h(onclick ? 'button' : 'div', { class: 'tile' + (onclick ? ' tap' : ''), type: onclick ? 'button' : null, onclick },
+    h('span', { class: 'tile-l' }, icon ? h('span', { class: 'tile-ico', html: icon }) : null, label), h('b', { class: 'tile-v', text: value }), sub ? h('small', { text: sub }) : null);
+  const wk = Math.round(Progress.weekSecs() / 60), nb = Bin.count();
   view.append(h('section', { class: 'kpis' },
-    tile('Reeks', String(sk.n), sk.today ? 'vandaag gehaald' : sk.n ? 'oefen vandaag om hem te houden' : 'haal je dagdoel', ICONS.flame),
-    tile('Beste reeks', String(Progress.bestStreak()), 'dagen'),
     tile('XP', String(st.xp || 0), 'totaal', ICONS.bolt),
-    tile('Deze week', `${wk}`, 'minuten', ICONS.clock)));
+    tile('Deze week', `${wk}`, 'minuten', ICONS.clock),
+    tile('Beste reeks', String(Progress.bestStreak()), Progress.bestStreak() === 1 ? 'dag' : 'dagen', ICONS.flame),
+    tile('Foutenbak', String(nb), nb ? 'tik om te herstellen' : 'leeg', ICONS.plaster, nb ? () => Bin.start() : null)));
   const calInfo = h('p', { class: 'chart-info', text: 'Tik op een dag voor de minuten' });
-  view.append(h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Oefenkalender' }), h('p', { class: 'help', text: 'De laatste 16 weken. Hoe donkerder, hoe langer je oefende; de donkerste kleur is je dagdoel gehaald.' }), renderCalendar(calInfo),
+  view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Oefenkalender' }), h('p', { class: 'help', text: 'De laatste 16 weken. Hoe donkerder, hoe langer je oefende. De donkerste kleur is je dagdoel gehaald.' }), renderCalendar(calInfo),
     h('div', { class: 'cal-legend', html: `<span>minder</span>${[0, 1, 2, 3, 4].map(l => `<i class="l${l}"></i>`).join('')}<span>dagdoel</span>` }), calInfo));
   const wkInfo = h('p', { class: 'chart-info', text: 'Tik op een dag voor de minuten' });
-  view.append(h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Deze week' }), h('p', { class: 'help', text: `Minuten per dag. De lijn is je dagdoel van ${Math.round(Progress.goalSecs() / 60)} minuten.` }), renderWeekChart(wkInfo), wkInfo));
+  view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Deze week' }), h('p', { class: 'help', text: `Minuten per dag. De lijn is je dagdoel van ${goalMin} minuten.` }), renderWeekChart(wkInfo), wkInfo));
   const units = PathData.units();
-  view.append(h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Leerpad' }),
+  view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Leerpad' }),
     units.length ? h('div', { class: 'unit-list' }, units.map((u, i) => {
       const nodes = unitNodes(u), done = nodes.filter((n, k) => nodeDone(u, k)).length, test = nodeDone(u, nodes.length - 1);
-      return h('div', { class: 'ul-row' }, h('div', { class: 'ul-t' }, h('b', { text: `Unit ${i + 1} · ${unitMeta(u).title}` }), h('span', { class: 'help', text: test ? 'unittoets gehaald' : `${done} van ${nodes.length} stappen` })), h('div', { class: 'progress' }, h('span', { style: `width:${(100 * done / nodes.length).toFixed(0)}%` })));
+      return h('div', { class: `ul-row c-${UNIT_COLORS[i % UNIT_COLORS.length]}` }, h('div', { class: 'ul-t' }, h('b', { text: `Unit ${i + 1}: ${unitMeta(u).title}` }), h('span', { class: 'help', text: test ? 'unittoets gehaald' : `${done} van ${nodes.length} stappen` })), h('div', { class: 'progress' }, h('span', { style: `width:${(100 * done / nodes.length).toFixed(0)}%` })));
     })) : h('p', { class: 'help', text: 'Na les 1 verschijnt hier je eerste unit.' })));
   const got = st.badges || {};
-  view.append(h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: `Mijlpalen · ${Object.keys(got).length} van ${BADGES.length}` }),
-    h('div', { class: 'badges' }, BADGES.map(b => h('div', { class: 'badge' + (got[b.id] ? ' got' : '') }, h('span', { class: 'b-ico', html: ICONS[b.icon] }), h('b', { text: b.title }), h('small', { text: got[b.id] ? `${niceDate(got[b.id])}` : b.desc }))))));
+  view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Mijlpalen' }), h('p', { class: 'help', text: `${Object.keys(got).length} van de ${BADGES.length} plectrums verzameld.` }),
+    h('div', { class: 'badges' }, BADGES.map(b => h('div', { class: 'badge' + (got[b.id] ? ' got' : '') }, h('span', { class: 'b-pick', html: pickBadge(b, !!got[b.id]) }), h('b', { text: b.title }), h('small', { text: got[b.id] ? `${b.desc}. ${niceDate(got[b.id])}` : b.desc }))))));
   const r = st.bends.recent, bendAvg = r.length ? Math.round(r.reduce((a, b) => a + Math.abs(b), 0) / r.length) : null;
   const earOk = Object.values(st.ear.ok).reduce((a, b) => a + b, 0);
   const rows = [
-    ['Noten zoeken', st.notes.found ? `gemiddeld ${fmt1(st.notes.totalTime / st.notes.found)} s · snelste ${st.notes.best != null ? fmt1(st.notes.best) + ' s' : '–'}` : 'nog niet geoefend'],
+    ['Noten zoeken', st.notes.found ? `gemiddeld ${fmt1(st.notes.totalTime / st.notes.found)} s, snelste ${st.notes.best != null ? fmt1(st.notes.best) + ' s' : '–'}` : 'nog niet geoefend'],
     ['60 seconden', st.challenge.best ? `record ${st.challenge.best} noten` : 'nog niet gespeeld'],
     ['Toonladders', Object.keys(st.scales.best).length ? `${Object.keys(st.scales.best).length} boxen met een record` : 'nog geen record'],
     ['Bends', bendAvg != null ? `gemiddeld ${bendAvg} cent ernaast` : 'nog niet geoefend'],
     ['Op gehoor', earOk ? `${earOk} keer goed nagespeeld` : 'nog niet geoefend'],
     ['Totaal geoefend', `${Math.round(Progress.totalSecs() / 60)} minuten`],
   ];
-  view.append(h('div', { class: 'card hard' }, h('p', { class: 'eyebrow', text: 'Records' }), h('ol', {}, rows.map(([a, b]) => h('li', {}, h('span', { text: a }), h('span', { text: b })))),
-    h('div', { class: 'row links' }, h('a', { class: 'link', href: '#m-heatmap', text: 'Hittekaart van de hals ›' }), h('a', { class: 'link', href: '#instellingen', text: 'Instellingen ›' }))));
+  view.append(h('div', { class: 'card hard' }, h('h2', { class: 'card-h', text: 'Records' }), h('ol', {}, rows.map(([a, b]) => h('li', {}, h('span', { text: a }), h('span', { text: b })))),
+    h('div', { class: 'row links' }, h('a', { class: 'link', href: '#m-heatmap', text: 'Hittekaart van de hals' }), h('a', { class: 'link', href: '#instellingen', text: 'Instellingen' }))));
 }
