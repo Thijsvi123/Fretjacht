@@ -35,7 +35,13 @@ window.__fj = {
     }
     return current && current.expected ? current.expected() : [];
   },
-  lesson: () => (current === Lesson && Lesson.cur ? { type: Lesson.cur.type, answer: Lesson.cur.answer, options: Lesson.cur.options, correct: Lesson.cur.correct, valid: Lesson.cur.valid, answered: Lesson.answered, done: Lesson.doneIds.size, total: Lesson.total, finished: Lesson.finished, bin: Lesson.bin, review: Lesson.review, box: Lesson.cur._box || 0 } : (current === Lesson ? { finished: Lesson.finished, bin: Lesson.bin, review: Lesson.review } : null)),
+  lesson: () => (current === Lesson && Lesson.cur ? { type: Lesson.cur.type, answer: Lesson.cur.answer, options: Lesson.cur.options, correct: Lesson.cur.correct, valid: Lesson.cur.valid, pc: Lesson.cur.pc, s: Lesson.cur.s, f: Lesson.cur.f, answered: Lesson.answered, done: Lesson.doneIds.size, total: Lesson.total, finished: Lesson.finished, bin: Lesson.bin, review: Lesson.review, box: Lesson.cur._box || 0 } : (current === Lesson ? { finished: Lesson.finished, bin: Lesson.bin, review: Lesson.review } : null)),
+  level: () => Object.assign(Level.of(Store.stats.xp || 0), { notes: Score.notes(), acc: Score.accuracy(), combo: Store.stats.bestCombo || 0 }),
+  hals: () => ({ done: halsDoneCount(), next: nextHals() && { level: nextHals().unitNo, step: nextHals().node.title }, levels: HALS_LEVELS.map((L, i) => halsLevelDone(i)) }),
+  noteq: () => (current && current.id === 'noteq' && current.q ? { kind: current.q.kind, s: current.q.s, f: current.q.f, pc: current.q.pc, valid: current.q.valid, answered: current.answered } : null),
+  addXP: n => Progress.addXP(n),
+  halsGen: (i, k) => halsNodes(HalsData.units()[i])[k].gen(),
+  halsLevels: () => HALS_LEVELS,
   loading: () => !!document.querySelector('.loader'),
   onsets: () => Engine.onsetLog.slice(),
   latency: () => Engine.latency(),

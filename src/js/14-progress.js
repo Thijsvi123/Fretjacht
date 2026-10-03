@@ -8,12 +8,43 @@ document.addEventListener('pointerdown', () => Activity.ping(), { passive: true 
 document.addEventListener('keydown', () => Activity.ping());
 
 const dayKeyOf = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+// ---------- Niveaus: XP brengt je van Nieuwkomer naar Halslegende ----------
+const LEVEL_TITLES = ['Nieuwkomer', 'Snarenplukker', 'Straatmuzikant', 'Akkoordjager', 'Halsspeurder', 'Riffbouwer', 'Sessiemuzikant', 'Leadgitarist', 'Fretmeester', 'Halslegende'];
+const Level = {
+  // XP die je nodig hebt voor niveau n: elke stap 30 XP groter (60, 90, 120, …)
+  need(n) { let x = 0; for (let i = 1; i < n; i++) x += 30 + 30 * i; return x; },
+  title(n) { return n <= LEVEL_TITLES.length ? LEVEL_TITLES[n - 1] : `${LEVEL_TITLES[LEVEL_TITLES.length - 1]} ${n - LEVEL_TITLES.length + 1}`; },
+  of(xp) {
+    let n = 1;
+    while (xp >= this.need(n + 1)) n++;
+    const from = this.need(n), to = this.need(n + 1);
+    return { n, title: this.title(n), next: this.title(n + 1), from, to, xp, pct: (xp - from) / (to - from), left: to - xp };
+  },
+  // feestje bij een nieuw niveau
+  up(n) {
+    UI.flash(Mascot.svg('juich', { crop: 'head' }), `Niveau ${n}: ${this.title(n)}!`, n === 2 ? 'Je eerste niveau omhoog. Zo gaat het verder.' : `Op naar ${this.title(n + 1)}.`, 'goal');
+    setTimeout(() => Confetti.burst({ n: 90, y: innerHeight * 0.28 }), 250);
+    Sfx.play('goal');
+    $$('.lv-meter').forEach(el => Fx.restart(el, 'lv-up'));
+  },
+  // segmentmeter zoals op een versterker
+  meter(lv, n = 16) {
+    const lit = Math.round(clamp(lv.pct, 0, 1) * n);
+    return h('span', { class: 'lv-meter', role: 'img', 'aria-label': `${lv.xp - lv.from} van ${lv.to - lv.from} XP naar niveau ${lv.n + 1}` }, Array.from({ length: n }, (_, i) => h('i', { class: i < lit ? 'on' : '', style: `--i:${i}` })));
+  },
+};
 const Progress = {
   drillSecs: 0,
   goalSecs() { return (Store.settings.goal || 15) * 60; },
   day(k) { const d = Store.stats.days; k = k || todayKey(); if (!d[k]) d[k] = { secs: 0, xp: 0 }; return d[k]; },
   peek(k) { return Store.stats.days[k] || { secs: 0, xp: 0 }; },
-  addXP(n) { Store.stats.xp = (Store.stats.xp || 0) + n; this.day().xp += n; Store.saveStats(); this.renderTop(); },
+  addXP(n) {
+    const before = Level.of(Store.stats.xp || 0).n;
+    Store.stats.xp = (Store.stats.xp || 0) + n; this.day().xp += n; Store.saveStats(); this.renderTop();
+    const after = Level.of(Store.stats.xp).n;
+    if (after > before) Level.up(after);
+  },
   met(k) { return this.peek(k).secs >= this.goalSecs(); },
   // extra minuten als beloning (bijvoorbeeld een lege foutenbak)
   addBonus(secs) {
@@ -113,7 +144,12 @@ const BADGES = [
   { id: 'xp100', icon: 'bolt', pick: '#0B7D72', title: 'Demo', desc: '100 XP verdiend', test: s => (s.xp || 0) >= 100 },
   { id: 'xp500', icon: 'bolt', pick: '#B4520E', title: 'Single', desc: '500 XP verdiend', test: s => (s.xp || 0) >= 500 },
   { id: 'xp1000', icon: 'bolt', pick: 'gold', title: 'Album', desc: '1000 XP verdiend', test: s => (s.xp || 0) >= 1000 },
+  { id: 'notes50', icon: 'note', pick: '#0B9C8E', title: 'Eerste 50 noten', desc: '50 noten gevonden op de hals, met of zonder gitaar', test: () => Score.notes() >= 50 },
   { id: 'notes100', icon: 'note', pick: 'tortoise', title: 'Notenjager', desc: '100 noten gevonden bij Noten zoeken', test: s => s.notes.found >= 100 },
+  { id: 'combo10', icon: 'bolt', pick: '#E0482F', title: 'Tien op rij', desc: '10 goede antwoorden achter elkaar', test: s => (s.bestCombo || 0) >= 10 },
+  { id: 'halsE', icon: 'neck', pick: '#B4520E', title: 'Lage E beheerst', desc: 'Halsjacht niveau 1: leren, herkennen en toepassen', test: () => halsLevelDone(0) },
+  { id: 'naturals', icon: 'star', pick: '#7146D4', title: 'Alle stamtonen', desc: 'De stamtonen op alle zes de snaren beheerst', test: () => [0, 1, 2, 3, 4, 5].every(i => halsLevelDone(i)) },
+  { id: 'fullneck', icon: 'trophy', pick: 'gold', title: 'Hele hals', desc: 'Alle acht niveaus van de Halsjacht beheerst', test: () => halsLevelDone(7) && halsDoneCount() === HALS_LEVELS.length },
   { id: 'speed25', icon: 'bolt', pick: '#C4336F', title: 'Shredder', desc: '25 noten in 60 seconden', test: s => s.challenge.best >= 25 },
   { id: 'hours5', icon: 'clock', pick: '#566170', title: 'Repetitieruimte', desc: '5 uur geoefend in totaal', test: () => Progress.totalSecs() >= 18000 },
 ];
@@ -227,6 +263,7 @@ function renderProgressEmpty(view) {
   const li = (icon, b, t) => h('li', {}, h('span', { class: 'pv-ico', html: icon }), h('span', {}, h('b', { text: b }), h('small', { text: t })));
   view.append(h('div', { class: 'card preview' }, h('h2', { class: 'card-h', text: 'Wat je hier straks ziet' }),
     h('ul', { class: 'pv-list' },
+      li(ICONS.level, 'Je niveau', 'van Nieuwkomer tot Halslegende, met elke XP een stapje'),
       li(ICONS.flame, 'Je reeks', `elke dag dat je ${Math.round(Progress.goalSecs() / 60)} minuten oefent`),
       li(ICONS.chart, 'Je oefenkalender', 'hoe vaak en hoe lang je speelt'),
       li(ICONS.retry, 'Herhalen', 'fouten komen terug na 1, 3 en 7 dagen'),
@@ -250,14 +287,24 @@ function renderProgress(view) {
       h('p', { class: 'sc-n' }, h('span', { html: ICONS.flame }), h('b', { text: String(sk.n) }), h('span', { text: sk.n === 1 ? 'dag op rij' : 'dagen op rij' })),
       h('p', { class: 'help', text: msg }),
       idle ? h('button', { class: 'sc-go', type: 'button', onclick: () => Daily.showPlan() }, h('span', { html: ICONS.play }), h('span', { text: 'Oefen vandaag' })) : null,
-      h('p', { class: 'sc-freeze' }, h('span', { html: ICONS.ice }), fz ? `${fz} ${fz === 1 ? 'reeksbevriezer' : 'reeksbevriezers'} op voorraad` : 'Nog geen reeksbevriezer. Doe de drie opdrachten van een dag.'))));
+      h('p', { class: 'sc-freeze' }, h('span', { html: ICONS.ice }), fz ? `${fz} ${fz === 1 ? 'reeksbevriezer' : 'reeksbevriezers'} op voorraad` : 'Nog geen reeksbevriezer. Doe de drie opdrachten van een dag.'),
+      h('p', { class: 'sc-best', text: `Beste reeks: ${Progress.bestStreak()} ${Progress.bestStreak() === 1 ? 'dag' : 'dagen'}` }))));
+  // niveau: XP-meter, en wat het volgende niveau is
+  const lv = Level.of(st.xp || 0);
+  view.append(h('section', { class: 'level-card' },
+    h('div', { class: 'lc-badge' }, h('small', { text: 'Niveau' }), h('b', { text: String(lv.n) })),
+    h('div', { class: 'lc-text' },
+      h('h2', { text: lv.title }),
+      Level.meter(lv, 20),
+      h('p', { class: 'lc-xp' }, h('b', { text: `${st.xp || 0} XP` }), ` · nog ${lv.left} XP tot niveau ${lv.n + 1}: ${lv.next}`)),
+    h('ol', { class: 'lc-ladder', 'aria-label': 'Alle niveaus' }, LEVEL_TITLES.map((t, i) => h('li', { class: i + 1 < lv.n ? 'done' : i + 1 === lv.n ? 'now' : '', title: `Niveau ${i + 1}: ${t}`, text: String(i + 1) })))));
   const tile = (label, value, sub, icon, onclick) => h(onclick ? 'button' : 'div', { class: 'tile' + (onclick ? ' tap' : ''), type: onclick ? 'button' : null, onclick },
     h('span', { class: 'tile-l' }, icon ? h('span', { class: 'tile-ico', html: icon }) : null, label), h('b', { class: 'tile-v', text: value }), sub ? h('small', { text: sub }) : null);
-  const wk = Math.round(Progress.weekSecs() / 60), todo = Srs.todoCount(), known = st.srsDone || 0, nxt = Srs.next();
+  const wk = Math.round(Progress.weekSecs() / 60), todo = Srs.todoCount(), known = st.srsDone || 0, nxt = Srs.next(), acc = Score.accuracy(), ans = Score.answers();
   view.append(h('section', { class: 'kpis' },
-    tile('XP', String(st.xp || 0), 'totaal', ICONS.bolt),
+    tile('Noten gevonden', String(Score.notes()), 'met en zonder gitaar', ICONS.note),
+    tile('Nauwkeurig', acc == null ? '–' : `${acc}%`, acc == null ? 'vanaf 10 antwoorden' : `${ans.r} van ${ans.r + ans.w} goed`, ICONS.star),
     tile('Deze week', `${wk}`, 'minuten', ICONS.clock),
-    tile('Beste reeks', String(Progress.bestStreak()), Progress.bestStreak() === 1 ? 'dag' : 'dagen', ICONS.flame),
     tile('Herhalen', String(todo), todo ? 'tik om te herhalen' : nxt ? `${Srs.when(nxt.date)} ${nxt.n} terug` : known ? `${known} onder de knie` : 'niets vandaag', ICONS.retry, todo ? () => Srs.start() : null)));
   const sumOut = h('pre', { class: 'cc-out', hidden: true });
   view.append(h('div', { class: 'card course-card' },
@@ -279,7 +326,9 @@ function renderProgress(view) {
     units.length ? h('div', { class: 'unit-list' }, units.map((u, i) => {
       const nodes = unitNodes(u), done = nodes.filter((n, k) => nodeDone(u, k)).length, test = nodeDone(u, nodes.length - 1);
       return h('div', { class: `ul-row c-${UNIT_COLORS[i % UNIT_COLORS.length]}` }, h('div', { class: 'ul-t' }, h('b', { text: `Unit ${i + 1}: ${unitMeta(u).title}` }), h('span', { class: 'help', text: test ? 'unittoets gehaald' : `${done} van ${nodes.length} stappen` })), h('div', { class: 'progress' }, h('span', { style: `width:${(100 * done / nodes.length).toFixed(0)}%` })));
-    })) : h('p', { class: 'help', text: 'Na les 1 verschijnt hier je eerste unit.' })));
+    })) : h('p', { class: 'help', text: 'Na les 1 verschijnt hier je eerste unit.' }),
+    // de Halsjacht als één regel: hoeveel niveaus beheerst
+    (() => { const n = halsDoneCount(), hx = nextHals(); return h('div', { class: 'ul-row hals-row' }, h('div', { class: 'ul-t' }, h('b', { text: 'Halsjacht' }), h('span', { class: 'help', text: `${n} van ${HALS_LEVELS.length} niveaus beheerst${hx ? `, nu: ${hx.unit.title}` : ''}` })), h('div', { class: 'progress' }, h('span', { style: `width:${(100 * n / HALS_LEVELS.length).toFixed(0)}%` }))); })()));
   view.append(badgesCard());
   const r = st.bends.recent, bendAvg = r.length ? Math.round(r.reduce((a, b) => a + Math.abs(b), 0) / r.length) : null;
   const earOk = Object.values(st.ear.ok).reduce((a, b) => a + b, 0);
@@ -289,6 +338,8 @@ function renderProgress(view) {
     ['Toonladders', Object.keys(st.scales.best).length ? `${Object.keys(st.scales.best).length} boxen met een record` : 'nog geen record'],
     ['Bends', bendAvg != null ? `gemiddeld ${bendAvg} cent ernaast` : 'nog niet geoefend'],
     ['Op gehoor', earOk ? `${earOk} keer goed nagespeeld` : 'nog niet geoefend'],
+    ['Welke noot?', st.fb && st.fb.n ? `${Math.round(100 * st.fb.ok / st.fb.n)}% goed, beste reeks ${st.fb.best || 0}` : 'nog niet geoefend'],
+    ['Op rij goed', `${st.bestCombo || 0} antwoorden`],
     ['Totaal geoefend', `${Math.round(Progress.totalSecs() / 60)} minuten`],
   ];
   view.append(h('div', { class: 'card hard' }, h('h2', { class: 'card-h', text: 'Records' }), h('ol', {}, rows.map(([a, b]) => h('li', {}, h('span', { text: a }), h('span', { text: b })))),

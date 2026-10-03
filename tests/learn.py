@@ -61,6 +61,15 @@ async def main():
                     s, f = (v['s'], v['f']) if not wrong else ((v['s'] + 3) % 6, v['f'])
                     await page.locator(f'.tapneck .cell[data-s="{s}"][data-f="{f}"]').click(force=True)
                     await page.click('.ls-foot button.primary'); await page.wait_for_timeout(120); await click_text('.ls-foot button', 'Verder')
+                elif t == 'learn':
+                    await page.click('.ls-foot button.primary'); await page.wait_for_timeout(120)
+                elif t == 'name':
+                    await page.locator(f'.keypad .key[data-pc="{st["pc"]}"]').first.click(); await page.wait_for_timeout(150)
+                    if (await ev('__fj.lesson()') or {}).get('answered'): await click_text('.ls-foot button', 'Verder')
+                elif t == 'tapall':
+                    for v in st['valid']:
+                        await page.locator(f'.tapneck .cell[data-s="{v["s"]}"][data-f="{v["f"]}"]').click(force=True); await page.wait_for_timeout(80)
+                    await page.wait_for_timeout(150); await page.locator('.ls-foot button', has_text='Verder').first.click()
                 elif t == 'play':
                     t0 = time.time()
                     while time.time() - t0 < 8:

@@ -122,6 +122,9 @@ Object.assign(ICONS, {
   ear: svgI('<path d="M7 9a5 5 0 0 1 10 0c0 3-2.6 4-3.5 6.2-.7 1.8-1.8 3.3-3.6 3.3A2.9 2.9 0 0 1 7 15.6"/><path d="M10 9.3a2 2 0 0 1 4 0c0 1.3-1.3 1.7-1.7 2.6"/>'),
   target: svgI('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>'),
   copy: svgI('<rect x="8.5" y="8.5" width="11" height="12" rx="2.5"/><path d="M15.5 8.5V6a2.5 2.5 0 0 0-2.5-2.5H7A2.5 2.5 0 0 0 4.5 6v8A2.5 2.5 0 0 0 7 16.5h1.5"/>'),
+  eye: svgI('<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/>'),
+  neck: svgI('<path d="M3 8.5h18M3 12h18M3 15.5h18" opacity=".55"/><path d="M8 6v12M14 6v12" stroke-width="2.6"/><circle cx="11" cy="12" r="2.2" fill="currentColor"/>'),
+  level: svgI('<path d="M4 20h4v-5H4zM10 20h4V10h-4zM16 20h4V4h-4z"/>'),
 });
 
 // ---------- Illustraties per oefening (48×48, lijnen in currentColor) ----------
@@ -140,13 +143,14 @@ const ART = {
   metro: artSvg('<path d="M17 6h14l8 36H9z"/><path d="M13 32h22" opacity=".55"/><path d="M24 34L33 12"/><circle cx="31" cy="17" r="3" fill="currentColor"/>'),
   targets: artSvg('<rect x="4" y="8" width="12" height="10" rx="2.5"/><rect x="18" y="8" width="12" height="10" rx="2.5"/><rect x="32" y="8" width="12" height="10" rx="2.5"/><circle cx="24" cy="33" r="10"/><circle cx="24" cy="33" r="4.5"/><circle cx="24" cy="33" r="1.6" fill="currentColor"/><path d="M24 18v5"/>'),
   earq: artSvg('<path d="M10 28v-4a14 14 0 0 1 28 0v4"/><rect x="6" y="26" width="8" height="14" rx="3.5"/><rect x="34" y="26" width="8" height="14" rx="3.5"/><path d="M20.5 18.5a3.5 3.5 0 1 1 5 3.2c-1 .5-1.5 1.3-1.5 2.3v1"/><circle cx="24" cy="29.5" r="1.6" fill="currentColor"/>'),
+  noteq: artSvg('<path d="M4 10h40M4 19h40M4 28h40M4 37h40" opacity=".5"/><path d="M14 6v35M30 6v35" opacity=".8"/><circle cx="22" cy="19" r="5.5" fill="currentColor"/><path d="M36.5 22.5a4.5 4.5 0 1 1 6 4.2c-1.3.6-1.9 1.5-1.9 2.8"/><circle cx="40.6" cy="34.5" r="1.6" fill="currentColor"/>'),
   explorer: artSvg('<path d="M4 12h26M4 20h26M4 28h26" opacity=".5"/><path d="M12 6v28M22 6v28" opacity=".8"/><circle cx="17" cy="20" r="3" fill="currentColor"/><circle cx="31" cy="27" r="9"/><path d="M37.5 33.5 44 40"/>'),
   tuner: artSvg('<path d="M6 34a18 18 0 0 1 36 0"/><path d="M24 34l7-14"/><circle cx="24" cy="34" r="3.4" fill="currentColor"/><path d="M24 12v4M10.5 19l2.8 2.8M37.5 19l-2.8 2.8" opacity=".6"/>'),
 };
 
 // ---------- Kleuren voor units en pedalen ----------
 const UNIT_COLORS = ['amber', 'blauw', 'framboos', 'violet', 'groen', 'tabak'];
-const MODE_COLOR = { notes: 'blauw', positions: 'blauw', intervals: 'blauw', degrees: 'blauw', scales: 'framboos', chords: 'framboos', targets: 'framboos', bends: 'framboos', ear: 'violet', earq: 'violet', challenge: 'groen', heatmap: 'groen', explorer: 'leisteen', metro: 'leisteen', tuner: 'leisteen' };
+const MODE_COLOR = { noteq: 'blauw', notes: 'blauw', positions: 'blauw', intervals: 'blauw', degrees: 'blauw', scales: 'framboos', chords: 'framboos', targets: 'framboos', bends: 'framboos', ear: 'violet', earq: 'violet', challenge: 'groen', heatmap: 'groen', explorer: 'leisteen', metro: 'leisteen', tuner: 'leisteen' };
 const CONFETTI_COLORS = ['#F5A31A', '#2D6BD4', '#C4336F', '#7146D4', '#0B9C8E', '#FFD27A'];
 const reducedMotion = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 

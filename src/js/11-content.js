@@ -4,6 +4,7 @@
 //  multi: { prompt, sub, choices[], correct[], explain }
 //  tap:   { prompt, sub, from, to, marks[], valid[{s,f}], explain }
 //  play:  { prompt, sub, big, steps[{k:'pc'|'rel'|'set', ...}], neck?, hint?, explain? }
+//  learn, name, tapall: zie de Halsjacht (11b-hals.js)
 function mc(skill, prompt, correct, distractors, explain, sub) {
   const c = String(correct);
   const ds = shuffle(uniq(distractors.map(String)).filter(d => d !== c)).slice(0, 3);
@@ -473,6 +474,7 @@ function authoredItems(unit) {
 }
 // alle knooppunten van een unit, inclusief eigen vragen uit de les en een unittoets
 function unitNodes(unit) {
+  if (unit.track === 'hals') return halsNodes(unit);
   const tp = TOPICS[unit.topic] || TOPICS.generic;
   const p = Object.assign({ set: ALL_SEMIS, scale: 'minpent', root: 'A', boxes: [1, 2] }, unit.params || {});
   const nodes = tp.nodes.map(n => ({ title: n.title, gen: () => n.gen(p) }));
@@ -536,6 +538,7 @@ const TOPIC_SUMMARY = {
   ],
 };
 function unitSummary(unit) {
+  if (unit.track === 'hals') return halsSummary(unit);
   if (Array.isArray(unit.summary) && unit.summary.some(x => typeof x === 'string' && x.trim())) return unit.summary.filter(x => typeof x === 'string' && x.trim()).slice(0, 4);
   if (unit.topic === 'scale-boxes') {
     const p = Object.assign({ scale: 'minpent', root: 'A', boxes: [1, 2] }, unit.params || {});
@@ -550,6 +553,7 @@ function unitSummary(unit) {
   return TOPIC_SUMMARY[unit.topic] || [];
 }
 function unitMeta(unit) {
+  if (unit.track === 'hals') { const L = HALS_LEVELS[unit.idx]; return { title: unit.title, subtitle: unit.subtitle, drill: { mode: 'noteq', set: { kind: 'name', strings: L.strings.slice(), nat: L.nat } } }; }
   const tp = TOPICS[unit.topic] || TOPICS.generic;
   let drill = unit.drill || tp.drill;
   if (!unit.drill && unit.topic === 'scale-boxes') {

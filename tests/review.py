@@ -86,7 +86,7 @@ async def main():
             await page.wait_for_timeout(400); await shot('fresh_practice')
             await go('#voortgang')
             R['fresh_progress'] = await ev("({hero: (document.querySelector('.hero-empty.fresh h2') || {}).textContent, preview: document.querySelectorAll('.pv-list li').length, streak: !!document.querySelector('.streak-card'), badges: document.querySelectorAll('.badge').length, help: Array.from(document.querySelectorAll('.card .help')).map(e => e.textContent).join(' | ')})")
-            check('Voortgang leeg: uitnodiging in plaats van lege grafieken', R['fresh_progress']['hero'] == 'Hier groeit je voortgang' and R['fresh_progress']['preview'] == 4 and not R['fresh_progress']['streak'], R['fresh_progress'])
+            check('Voortgang leeg: uitnodiging in plaats van lege grafieken', R['fresh_progress']['hero'] == 'Hier groeit je voortgang' and R['fresh_progress']['preview'] == 5 and not R['fresh_progress']['streak'], R['fresh_progress'])
             await page.wait_for_timeout(300); await shot('fresh_progress'); await shot('fresh_progress_full', full_page=True)
             await page.click('.hero-empty .he-go')
             st = await wait_lesson()

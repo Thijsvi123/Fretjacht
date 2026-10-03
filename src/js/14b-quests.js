@@ -10,6 +10,7 @@ const QUESTS = [
   { id: 'scales', cat: 'b', icon: 'pick', target: () => 2, text: n => `Speel ${n} toonladderboxen helemaal`, value: d => qc(d, 'scales') },
   { id: 'targets', cat: 'b', icon: 'target', target: () => 12, text: n => `Raak ${n} doeltonen`, value: d => qc(d, 'targets') },
   { id: 'earq', cat: 'c', icon: 'ear', target: () => 10, text: n => `Herken ${n} intervallen of akkoorden op gehoor`, value: d => qc(d, 'earq') },
+  { id: 'noteq', cat: 'c', icon: 'eye', target: () => 20, text: n => `Vind ${n} noten op de hals zonder gitaar`, value: d => qc(d, 'noteq') },
   { id: 'pedals', cat: 'c', icon: 'pedal', target: () => 3, text: n => `Trap ${n} verschillende pedalen in`, value: () => Object.values(Store.stats.modeDays || {}).filter(k => k === todayKey()).length },
 ];
 const Quests = {
@@ -117,11 +118,14 @@ const Track = {
     const t = st.topics[topic] || (st.topics[topic] = { r: 0, w: 0 });
     if (ok) t.r++; else t.w++;
     const k = it.skill || it.type, sk = st.skills[k] || (st.skills[k] = { r: 0, w: 0, t: topic });
-    if (ok) sk.r++; else { sk.w++; sk.p = it.prompt; }
+    if (ok) sk.r++; else { sk.w++; sk.p = it.type === 'name' ? 'Welke noot is dit? (noten herkennen op de hals)' : it.prompt; }
+    Score.answer(ok);
   },
 };
-const topicName = k => (TOPICS[k] && k !== 'generic' ? TOPICS[k].title : k === 'generic' ? 'eigen vragen uit de les' : k === 'review' ? 'herhalen' : k);
+const topicName = k => (TOPICS[k] && k !== 'generic' ? TOPICS[k].title : k === 'generic' ? 'eigen vragen uit de les' : k === 'review' ? 'herhalen' : k === 'hals' ? 'noten op de hals (Halsjacht)' : k);
 const shorten = (t, n = 70) => (t.length > n ? t.slice(0, n - 1).trim() + '…' : t);
+// leesbare naam van een vraag: bij de hals de noot en de plek
+const itemLabel = it => (it.type === 'name' ? `${FretQuiz.both(it.pc)} op ${FretQuiz.where(it.s, it.f)}` : it.prompt);
 function courseSummary() {
   const st = Store.stats, sk = Progress.streak(), units = PathData.units(), L = [];
   L.push(`Fretjacht-voortgang, ${new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })}`);
@@ -132,13 +136,20 @@ function courseSummary() {
   const weakSk = Object.values(st.skills || {}).filter(v => v.w >= 2 && v.p).sort((a, b) => b.w / (b.r + b.w) - a.w / (a.r + a.w)).slice(0, 3);
   if (weakSk.length) L.push(`- Vaak fout: ${weakSk.map(v => `“${shorten(v.p)}” (${v.w} van ${v.r + v.w} fout)`).join(', ')}.`);
   const bin = Bin.list();
-  if (bin.length) L.push(`- Nog in de foutenbak (${bin.length}): ${bin.slice(-4).map(x => `“${shorten(x.it.prompt)}”`).join(', ')}.`);
+  if (bin.length) L.push(`- Nog in de foutenbak (${bin.length}): ${bin.slice(-4).map(x => `“${shorten(itemLabel(x.it))}”`).join(', ')}.`);
   const sc = Srs.snapshot(), inBoxes = sc[1] + sc[2] + sc[3];
   if (inBoxes || sc[4]) L.push(`- Herhalen na 1, 3 en 7 dagen: ${inBoxes} ${inBoxes === 1 ? 'vraag' : 'vragen'} onderweg, ${sc[4]} onder de knie.`);
   const sticky = Bin.all().filter(x => x.n >= 3).sort((a, b) => b.n - a.n).slice(0, 3);
-  if (sticky.length) L.push(`- Blijft lastig: ${sticky.map(x => `“${shorten(x.it.prompt)}” (${x.n} keer fout)`).join(', ')}.`);
+  if (sticky.length) L.push(`- Blijft lastig: ${sticky.map(x => `“${shorten(itemLabel(x.it))}” (${x.n} keer fout)`).join(', ')}.`);
   const rows = Object.entries(st.notes.items).filter(([, v]) => v.n > 0).map(([k, v]) => { const [s, pc] = k.split('-').map(Number); return { s, pc, avg: v.total / v.n }; }).sort((a, b) => b.avg - a.avg).slice(0, 3);
   if (rows.length) L.push(`- Traagst op de hals: ${rows.map(r => `${pcLabel(r.pc, 'sharps')} op de ${STR_NAME[r.s]} (${fmt1(r.avg)} s)`).join(', ')}.`);
+  // Halsjacht en Welke noot?: hoe goed ken je de hals zonder gitaar
+  const fb = st.fb || { items: {}, n: 0, ok: 0 }, hn = halsDoneCount(), hx = nextHals();
+  if (hn || fb.n) {
+    const pos = Object.entries(fb.items).filter(([, v]) => v.n >= 2).map(([k, v]) => { const [s, f] = k.split('-').map(Number); return { s, f, w: FretQuiz.weight(s, f) }; }).sort((a, b) => b.w - a.w).slice(0, 3);
+    const tt = Object.values(fb.items).reduce((a, v) => a + (v.t || 0), 0);
+    L.push(`- Halsjacht: ${hn} van ${HALS_LEVELS.length} niveaus beheerst${hx ? ` (nu: ${hx.unit.title}, ${hx.node.title.toLowerCase()})` : ''}${fb.n ? `; noten herkennen ${Math.round(100 * fb.ok / fb.n)}% goed${fb.ok ? `, gemiddeld ${fmt1(tt / fb.ok)} s per noot` : ''}` : ''}${pos.length ? `; lastigst: ${pos.map(p => `${FretQuiz.nameAt(p.s, p.f)} op ${FretQuiz.where(p.s, p.f)}`).join(', ')}` : ''}.`);
+  }
   const eq = st.earq || { ok: {}, n: {} };
   const ear = Object.keys(eq.n).filter(k => eq.n[k] >= 3).map(k => ({ k, pct: Math.round(100 * (eq.ok[k] || 0) / eq.n[k]) })).sort((a, b) => a.pct - b.pct).slice(0, 3);
   if (ear.length) L.push(`- Op gehoor: ${ear.map(x => `${earName(x.k)} ${x.pct}%`).join(', ')}.`);

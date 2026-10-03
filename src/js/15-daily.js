@@ -9,6 +9,9 @@ const Daily = {
     if (!((Store.settings.cantPlayUntil || 0) > Date.now())) add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
     const nx = nextNode();
     if (nx) add({ kind: 'node', ref: nx, minutes: 4, title: 'Leerpad', sub: `Unit ${nx.unitNo}: ${nx.node.title}` });
+    // de volgende stap in de Halsjacht: zonder gitaar, dus altijd mogelijk
+    const hx = nextHals();
+    if (hx) add({ kind: 'node', ref: hx, minutes: 3, title: 'Halsjacht', sub: `Niveau ${hx.unitNo}, ${hx.unit.title}: ${hx.node.title.toLowerCase()}` });
     // herhalen wat vandaag terugkomt en de foutenbak; anders vragen uit eerdere lessen opfrissen
     const rv = Srs.items(), due = rv.filter(x => x._box).length, nb = rv.length - due;
     if (rv.length) add({ kind: 'bin', minutes: 3, title: 'Herhalen', sub: [due ? `${due} ${due === 1 ? 'vraag komt' : 'vragen komen'} terug` : '', nb ? `${nb} uit je foutenbak` : ''].filter(Boolean).join(', ') });
@@ -19,7 +22,7 @@ const Daily = {
       if (d && MODES[d.mode] && d.mode !== 'notes' && !((Store.settings.cantPlayUntil || 0) > Date.now())) add({ kind: 'drill', mode: d.mode, set: d.set, minutes: 3, title: 'Toepassen', sub: `${MODES[d.mode].title}, past bij les ${cu.lesson}` });
     }
     const cant = (Store.settings.cantPlayUntil || 0) > Date.now();
-    const extras = cant ? [{ mode: 'earq', minutes: 4, sub: 'Gehoortraining, zonder gitaar' }] : shuffle([{ mode: 'challenge', minutes: 2, sub: '60 seconden' }, { mode: 'scales', minutes: 3, sub: 'Toonladders' }, { mode: 'positions', minutes: 2, sub: 'Alle posities' }, { mode: 'ear', minutes: 3, sub: 'Op gehoor naspelen' }, { mode: 'targets', minutes: 3, sub: 'Doeltonen over akkoordwissels' }, { mode: 'earq', minutes: 3, sub: 'Gehoortraining' }]);
+    const extras = cant ? [{ mode: 'noteq', minutes: 3, sub: 'Welke noot? Zonder gitaar' }, { mode: 'earq', minutes: 4, sub: 'Gehoortraining, zonder gitaar' }] : shuffle([{ mode: 'challenge', minutes: 2, sub: '60 seconden' }, { mode: 'scales', minutes: 3, sub: 'Toonladders' }, { mode: 'positions', minutes: 2, sub: 'Alle posities' }, { mode: 'ear', minutes: 3, sub: 'Op gehoor naspelen' }, { mode: 'targets', minutes: 3, sub: 'Doeltonen over akkoordwissels' }, { mode: 'earq', minutes: 3, sub: 'Gehoortraining' }, { mode: 'noteq', minutes: 2, sub: 'Welke noot? Zonder gitaar' }]);
     for (const x of extras) { if (est >= remainMin) break; add({ kind: 'drill', mode: x.mode, minutes: x.minutes, title: 'Extra', sub: x.sub }); }
     return steps;
   },
@@ -47,9 +50,9 @@ const Daily = {
     if (!st) return this.finish();
     clearInterval(this.timer);
     if (st.kind === 'node') {
-      const units = PathData.units(), u = units.find(x => x.lesson === st.ref.unit.lesson) || st.ref.unit;
+      const hals = st.ref.unit.track === 'hals', units = PathData.units(), u = units.find(x => x.lesson === st.ref.unit.lesson) || st.ref.unit;
       const nodes = unitNodes(u);
-      if (nodeState(u, nodes, st.ref.index) === 'done') { const nx = nextNode(); if (nx) { st.ref = nx; st.sub = `Unit ${nx.unitNo}: ${nx.node.title}`; } }
+      if (nodeState(u, nodes, st.ref.index) === 'done') { const nx = hals ? nextHals() : nextNode(); if (nx) { st.ref = nx; st.sub = hals ? `Niveau ${nx.unitNo}, ${nx.unit.title}: ${nx.node.title.toLowerCase()}` : `Unit ${nx.unitNo}: ${nx.node.title}`; } }
       const nodes2 = unitNodes(st.ref.unit);
       startNode(st.ref.unit, st.ref.index, nodes2, () => this.advance());
     } else if (st.kind === 'bin') {

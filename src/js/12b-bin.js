@@ -10,6 +10,8 @@ const Bin = {
     if (it.type === 'mc') return `mc|${it.prompt}|${it.sub || ''}|${it.options[it.answer]}`;
     if (it.type === 'multi') return `multi|${it.prompt}|${it.correct.slice().sort().join(',')}`;
     if (it.type === 'tap') return `tap|${it.prompt}|${(it.marks || []).map(m => m.s + '-' + m.f).join(',')}`;
+    if (it.type === 'name') return `name|${it.s}-${it.f}|${it.all ? 12 : 7}`;
+    if (it.type === 'tapall') return `tapall|${it.name}|${it.strings.join('')}`;
     return `play|${it.prompt}|${it.big || ''}|${(it.steps || []).map(s => s.k + ':' + (s.pc != null ? s.pc : s.semis != null ? s.semis : (s.pcs || []).join('.'))).join(',')}`;
   },
   clean(it) {

@@ -13,6 +13,7 @@ const DEFAULT_SETTINGS = {
   explorer: { root: 'A', kind: 'scale', scale: 'minpent', chord: 'm7', labels: 'names', range: 'low' },
   targets: { prog: 'blues', key: 'A', target: '3', tempo: 0, show: true },
   earq: { kind: 'iv', ivs: [3, 4, 5, 7, 12], dir: 'up', chords: ['maj', 'min', 'dom7'] },
+  noteq: { kind: 'name', strings: [5, 4, 3, 2, 1, 0], nat: true, to: 12 },
 };
 const DEFAULT_STATS = () => ({
   notes: { items: {}, found: 0, totalTime: 0, best: null, streak: 0, bestStreak: 0 },
@@ -25,7 +26,8 @@ const DEFAULT_STATS = () => ({
   ear: { ok: {}, tries: {} },
   bends: { recent: [] },
   rhythm: { recent: [], sessions: 0 },
-  xp: 0, days: {}, path: { nodes: {} }, badges: {}, bin: [], binCleared: 0, srsDone: 0, modeDays: {},
+  xp: 0, days: {}, path: { nodes: {} }, badges: {}, bin: [], binCleared: 0, srsDone: 0, modeDays: {}, bestCombo: 0,
+  fb: { items: {}, found: 0, n: 0, ok: 0, best: 0 },
   topics: {}, skills: {}, freezes: 0, frozen: {},
   targets: { hits: 0, tries: 0, time: 0, near: 0, best: 0, by: {} },
   earq: { ok: {}, n: {} },
@@ -68,6 +70,10 @@ const Store = {
     if (s.earq.ivs.length < 2) s.earq.ivs = [3, 4, 5, 7, 12];
     s.earq.chords = (s.earq.chords || []).filter(t => CHORDS[t]);
     if (s.earq.chords.length < 2) s.earq.chords = ['maj', 'min', 'dom7'];
+    s.noteq.strings = (s.noteq.strings || []).filter(n => Number.isInteger(n) && n >= 0 && n <= 5);
+    if (!s.noteq.strings.length) s.noteq.strings = [5, 4, 3, 2, 1, 0];
+    if (![5, 7, 12].includes(Number(s.noteq.to))) s.noteq.to = 12;
+    if (!['name', 'find'].includes(s.noteq.kind)) s.noteq.kind = 'name';
     if (!SCALES[s.explorer.scale]) s.explorer.scale = 'minpent';
     if (!CHORDS[s.explorer.chord]) s.explorer.chord = 'm7';
     this.stats = deepMerge(DEFAULT_STATS(), this.get('stats', {}));

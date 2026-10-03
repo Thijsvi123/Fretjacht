@@ -2,7 +2,7 @@
 // o = { from, to, highlight: [snaren], marks: [{s, f, kind, label}], range: {min, max} | null }
 function drawNeck(svg, o) {
   const narrow = (svg.getBoundingClientRect().width || 1000) < 560;
-  const W = narrow ? (o.tap ? 470 : 640) : 1000, TOP = 16, GAP = 30, BOARD_H = 28 + 5 * GAP, X0 = 86;
+  const W = narrow ? (o.tap || o.big ? 470 : 640) : 1000, TOP = 16, GAP = 30, BOARD_H = 28 + 5 * GAP, X0 = 86;
   const from = Math.max(0, o.from || 0), to = Math.max(from + 3, o.to == null ? 12 : o.to);
   const d = n => 1 - Math.pow(2, -n / 12);
   const leftN = from === 0 ? 0 : from - 1;
@@ -54,8 +54,9 @@ function drawNeck(svg, o) {
   for (const m of o.marks || []) {
     if (m.f < from || m.f > to) continue;
     const x = midOf(m.f).toFixed(1), y = yOf(m.s);
-    const r = Math.max(9, Math.min(16, cellW(m.f) * 0.44));
-    const fs = Math.max(10, Math.min(15, r * 0.95));
+    // big: grotere stippen en letters, voor uitleg en vragen waar de naam ertoe doet
+    const r = o.big ? Math.max(12, Math.min(15, cellW(m.f) * 0.5)) : Math.max(9, Math.min(16, cellW(m.f) * 0.44));
+    const fs = o.big ? Math.min(17, r * 1.08) : Math.max(10, Math.min(15, r * 0.95));
     const lbl = m.label == null ? '' : String(m.label);
     h += `<g class="mk ${m.kind || ''}"><circle cx="${x}" cy="${y}" r="${r.toFixed(1)}"/>${lbl ? `<text x="${x}" y="${(y + fs * 0.34).toFixed(1)}" text-anchor="middle" font-size="${fs.toFixed(1)}">${lbl}</text>` : ''}</g>`;
   }

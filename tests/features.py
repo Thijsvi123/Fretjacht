@@ -10,7 +10,7 @@ PORT = 8797
 SP = os.environ.get('SHOTS', '/tmp/fretjacht-shots/'); os.makedirs(SP, exist_ok=True)
 SCHEME = os.environ.get('SCHEME', 'light'); PFX = 'FD_' if SCHEME == 'dark' else 'F_'
 R = {}
-COUNTER = {'node': 'nodes', 'fix': 'fixed', 'combo': 'combo', 'notes': 'notes', 'challenge': 'challenge', 'scales': 'scales', 'targets': 'targets', 'earq': 'earq', 'srs': 'srs'}
+COUNTER = {'node': 'nodes', 'fix': 'fixed', 'combo': 'combo', 'notes': 'notes', 'challenge': 'challenge', 'scales': 'scales', 'targets': 'targets', 'earq': 'earq', 'srs': 'srs', 'noteq': 'noteq'}
 async def main():
     srv = subprocess.Popen([sys.executable, '-m', 'http.server', str(PORT)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(0.8)
     errors = []

@@ -12,6 +12,7 @@ html = f'''<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fretjacht</title>
+<meta name="description" content="Fretjacht: leer de hals van je gitaar kennen. Een leerpad dat meeloopt met je muziektheorielessen, de Halsjacht om noten te leren zonder gitaar, en oefeningen die via je microfoon meeluisteren.">
 <meta name="theme-color" content="#EEF0F3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15110F" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">

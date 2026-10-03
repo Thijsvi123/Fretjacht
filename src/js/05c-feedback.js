@@ -129,11 +129,13 @@ const DrillFx = {
     if (o.via === 'tap') { Haptics.play('wrong'); if (o.sound !== false) Sfx.play('wrong'); }
   },
   reset(card) { this.n = 0; if (card) this.badge(card); },
-  badge(card) {
+  // compact: alleen het vlammetje en het getal, voor krappe plekken
+  badge(card, compact) {
     let b = $('.pr-streak', card);
     if (this.n < 3) { if (b) b.classList.remove('show'); return; }
     if (!b) { b = h('span', { class: 'pr-streak', 'aria-live': 'polite' }); card.append(b); }
-    b.innerHTML = `${ICONS.flame}<b>${this.n} op rij</b>`;
+    b.innerHTML = compact ? `${ICONS.flame}<b>${this.n}</b>` : `${ICONS.flame}<b>${this.n} op rij</b>`;
+    b.setAttribute('aria-label', `${this.n} op rij`);
     Fx.restart(b, 'show');
   },
   // hulp bij een foute noot: hoeveel frets je ernaast zat (zelfde snaar)

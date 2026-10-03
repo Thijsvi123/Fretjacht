@@ -1,6 +1,6 @@
 // ---------- Oefenen: het pedalboard ----------
 const HUB = [
-  { title: 'De hals', ids: ['notes', 'positions', 'intervals', 'degrees'] },
+  { title: 'De hals', ids: ['noteq', 'notes', 'positions', 'intervals', 'degrees'] },
   { title: 'Solo’s', ids: ['scales', 'chords', 'targets', 'bends'] },
   { title: 'Gehoor', ids: ['earq', 'ear'] },
   { title: 'Uitdaging', ids: ['challenge', 'heatmap'] },
@@ -11,6 +11,7 @@ const PEDAL_SUB = {
   scales: 'Boxen en patronen', chords: 'Alle tonen van een akkoord', bends: 'Zuiver omhoog buigen', ear: 'Luister en speel na',
   challenge: 'Zoveel noten in één minuut', heatmap: 'Waar zit je zwakke plek?', metro: 'Strak op de tel', tuner: 'Stem je gitaar',
   targets: 'De terts op elk akkoord', earq: 'Zonder gitaar, alleen luisteren', explorer: 'Toonladders en akkoorden op de hals',
+  noteq: 'Zonder gitaar: herkennen en zoeken',
 };
 const PEDAL_TIP = {
   notes: 'Speel de noot op de snaar die oplicht.', positions: 'Speel dezelfde noot op elke snaar, van laag naar hoog.',
@@ -20,7 +21,7 @@ const PEDAL_TIP = {
   challenge: 'Eén minuut, zoveel mogelijk noten.', tuner: 'Speel één snaar tegelijk en laat hem uitklinken.',
   targets: 'Het akkoord klinkt eerst. Speel dan de doeltoon.',
 };
-const NO_MIC = ['metro', 'heatmap', 'explorer', 'earq'];
+const NO_MIC = ['metro', 'heatmap', 'explorer', 'earq', 'noteq'];
 // vaste knopstand per pedaal, zodat het bord er elke keer hetzelfde uitziet
 const knobAngle = (id, k) => { let x = 7; for (const c of id + k) x = (x * 31 + c.charCodeAt(0)) % 997; return -130 + (x % 260); };
 // pedaal intrappen: lampje aan, klik, microfoon aan en dan naar de oefening
