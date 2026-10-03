@@ -64,12 +64,18 @@ async def main():
                 elif t == 'learn':
                     await page.click('.ls-foot button.primary'); await page.wait_for_timeout(120)
                 elif t == 'name':
-                    await page.locator(f'.keypad .key[data-pc="{st["pc"]}"]').first.click(); await page.wait_for_timeout(150)
+                    pc = st['pc'] if not wrong else (st['pc'] + 2) % 12
+                    if wrong and not await page.locator(f'.keypad .key[data-pc="{pc}"]').count(): pc = (st['pc'] + 5) % 12
+                    await page.locator(f'.keypad .key[data-pc="{pc}"]').first.click(); await page.wait_for_timeout(150)
                     if (await ev('__fj.lesson()') or {}).get('answered'): await click_text('.ls-foot button', 'Verder')
                 elif t == 'tapall':
                     for v in st['valid']:
                         await page.locator(f'.tapneck .cell[data-s="{v["s"]}"][data-f="{v["f"]}"]').click(force=True); await page.wait_for_timeout(80)
                     await page.wait_for_timeout(150); await page.locator('.ls-foot button', has_text='Verder').first.click()
+                elif t == 'play' and wrong:
+                    # een fout bij spelen: overslaan telt als fout en gaat naar Herhalen
+                    await click_text('.ls-foot button', 'Overslaan'); await page.wait_for_timeout(200)
+                    await click_text('.ls-foot button', 'Verder')
                 elif t == 'play':
                     t0 = time.time()
                     while time.time() - t0 < 8:
@@ -108,7 +114,18 @@ async def main():
                 await page.click('.sheet button.primary')
                 return bool(await wait_lesson())
 
-            # --- les 1 met een fout: eindscherm biedt "Herstel je fouten" ---
+            # --- eerst de les: uitleg in kaartjes, daarna pas de oefeningen ---
+            R['first_node'] = await ev("document.querySelector('.node.next').getAttribute('aria-label')")
+            await open_next_node()
+            R['les_first_card'] = await ev("document.querySelector('.ls-prompt').textContent")
+            R['les_listen'] = await ev("document.querySelectorAll('.lsn').length")
+            R['les_kinds'] = sorted(set(await run_lesson()))
+            await page.wait_for_timeout(500)
+            R['les_end'] = await ev("document.querySelector('.end-title').textContent")
+            await shot('les_end')
+            await click_text('.ls-foot button', 'Verder'); await page.wait_for_timeout(600)
+
+            # --- stap 2 met een fout: eindscherm biedt "Herstel je fouten" ---
             shots = ['mc', 'tap', 'play', 'multi']
             await open_next_node()
             R['node1_kinds'] = await run_lesson(wrong_first=True, shots=shots, wrong_shot='wrong')
@@ -143,6 +160,7 @@ async def main():
                 await click_text('.ls-foot button', 'Verder'); await page.wait_for_timeout(500)
                 done_nodes += 1
             R['done_nodes'] = done_nodes
+            R['next_lesson'] = await ev("document.querySelector('#nextLesson .uh-when') ? document.querySelector('#nextLesson .uh-when').textContent : ''")
             R['nodes_after'] = await ev("Array.from(document.querySelectorAll('.node')).map(n => n.className.replace('node ', '').replace(' just-done', '').replace(' just-next', ''))")
             R['bin_btn'] = await ev("({hidden: document.querySelector('.bin-btn').hidden, n: document.querySelector('.bin-btn .todo-count').textContent})")
             await page.wait_for_timeout(1300); await shot('path_bin')

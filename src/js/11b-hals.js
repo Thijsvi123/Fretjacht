@@ -1,4 +1,4 @@
-// ---------- Halsjacht: de hals leren kennen, zonder gitaar ----------
+// ---------- Halsjacht: de hals leren kennen, met of zonder gitaar (zie 11d-guitar.js) ----------
 // Acht niveaus. Elk niveau heeft drie stappen:
 //  Leren:     uitleg met de hals erbij ("dit is een C"), daarna drie makkelijke vragen
 //  Herkennen: welke noot is dit? (snelheid en kennis), 80% goed om te halen
@@ -22,7 +22,7 @@ const HALS_LEVELS = [
   { title: 'Hoge e-snaar', sub: 'Snaar 1: dezelfde noten als de lage E', strings: [0], nat: true, anchors: [3, 5, 7],
     anchorText: 'Precies dezelfde noten als de lage E-snaar, twee octaven hoger: G op 3, A op 5 en B op 7.',
     link: 'Wat je op de lage E kent, ken je hier al. Daarom gaat deze snaar het snelst.', ex: [[5, 5], [0, 5]] },
-  { title: 'Kruizen en mollen', sub: 'De noten tussen de stamtonen', strings: [5, 4, 3, 2, 1, 0], nat: false },
+  { title: 'Kruisen en mollen', sub: 'De noten tussen de stamtonen', strings: [5, 4, 3, 2, 1, 0], nat: false },
   { title: 'De hele hals', sub: 'Alle noten op alle snaren, tot fret 12', strings: [5, 4, 3, 2, 1, 0], nat: false, final: true },
 ];
 const HALS_DONE_WORD = ['niet', 'Leren', 'Herkennen', 'Toepassen'];
@@ -140,9 +140,9 @@ const HalsData = {
 function halsNodes(unit) {
   const L = HALS_LEVELS[unit.idx], i = unit.idx;
   return [
-    { title: 'Leren', icon: ICONS.book, info: 'Uitleg met de hals erbij, daarna drie korte vragen. Zonder gitaar, ongeveer 2 minuten.', gen: () => halsLearnItems(L, i) },
-    { title: 'Herkennen', icon: ICONS.eye, pass: 0.8, info: `${L.final ? 'Twaalf' : 'Tien'} keer: welke noot is dit? Met 80% goed haal je deze stap. Ook je snelheid telt mee.`, gen: () => halsRecognize(L, i) },
-    { title: 'Toepassen', icon: ICONS.target, pass: 0.8, info: 'Zoek de noot zelf: tik alle plekken aan op de hals. Met 80% goed heb je dit niveau beheerst.', gen: () => halsApply(L, i) },
+    { title: 'Leren', icon: ICONS.book, get info() { return `Uitleg met de hals erbij, daarna drie korte vragen${Guitar.on() ? ' die je speelt' : ''}. Ongeveer 2 minuten.`; }, gen: () => halsLearnItems(L, i) },
+    { title: 'Herkennen', icon: ICONS.eye, pass: 0.8, get info() { return Guitar.on() ? `${L.final ? 'Twaalf' : 'Tien'} keer: speel de noot die gevraagd wordt, op de goede snaar. Met 80% goed haal je deze stap.` : `${L.final ? 'Twaalf' : 'Tien'} keer: welke noot is dit? Met 80% goed haal je deze stap. Ook je snelheid telt mee.`; }, gen: () => halsRecognize(L, i) },
+    { title: 'Toepassen', icon: ICONS.target, pass: 0.8, get info() { return Guitar.on() ? 'Zoek de noot zelf op je gitaar: speel hem op elke snaar waar hij voorkomt. Met 80% goed heb je dit niveau beheerst.' : 'Zoek de noot zelf: tik alle plekken aan op de hals. Met 80% goed heb je dit niveau beheerst.'; }, gen: () => halsApply(L, i) },
   ];
 }
 function halsSummary(unit) {

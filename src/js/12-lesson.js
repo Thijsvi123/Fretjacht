@@ -23,9 +23,10 @@ const Lesson = {
     if (!sp) { setTimeout(() => { location.hash = ''; }, 0); return; }
     // bin: een herhaalronde (nieuwe fouten en vragen die vandaag terugkomen)
     this.bin = sp.mode === 'bin'; this.review = this.bin;
-    this.cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
-    let items = sp.items.map((it, i) => Object.assign({ _id: i }, it));
-    if (this.cantPlay && items.some(i => i.type !== 'play')) items = items.filter(i => i.type !== 'play');
+    // elke vraag in de stand van het schuifje: met gitaar spelen, zonder gitaar tikken
+    let items = fitMode(sp.items.map((it, i) => Object.assign({ _id: i }, it)));
+    this.allLearn = items.length > 0 && items.every(i => i.type === 'learn');
+    this.learnHist = [];
     this.queue = items;
     this.total = items.length; this.doneIds = new Set(); this.mistakes = 0; this.skipped = 0; this.hints = 0;
     this.combo = 0; this.fixed = 0; this.recalled = 0; this.mastered = 0; this.wrongKeys = new Set(); this.times = [];
@@ -85,7 +86,6 @@ const Lesson = {
     this.answered = false;
     if (!this.queue.length) return this.finish();
     const it = this.queue.shift();
-    if (it.type === 'play' && this.cantPlay) { this.doneIds.add(it._id); this.updateBar(); return this.next(); }
     this.cur = it;
     this.body.innerHTML = '';
     this.body.classList.remove('enter'); void this.body.offsetWidth; this.body.classList.add('enter');
@@ -93,7 +93,7 @@ const Lesson = {
     this.foot.innerHTML = '';
     const [ico, label] = KIND[KIND[it.type] ? it.type : 'theory'];
     const from = it._box ? `herhaling na ${SRS_DAYS[it._box]} ${SRS_DAYS[it._box] === 1 ? 'dag' : 'dagen'}` : 'eerder fout';
-    this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, ${from}` : label));
+    this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, ${from}` : it.kicker || label));
     this.body.append(h('h2', { class: 'ls-prompt', text: it.prompt }));
     if (it.sub && it.type !== 'play') this.body.append(h('p', { class: 'ls-sub', text: it.sub }));
     if (it.type === 'mc') this.renderMC(it);
@@ -209,11 +209,27 @@ const Lesson = {
       this.body.append(h('figure', { class: 'card neck learnneck' }, svg));
       drawNeck(svg, Object.assign({ big: true }, it.neck));
     }
-    this.body.append(h('div', { class: 'learn-text' }, it.text.map(t => h('p', { text: t }))));
+    if (it.circle) this.body.append(h('figure', { class: 'card circlefig', html: circleSvg() }));
+    if (it.text.length) this.body.append(h('div', { class: 'learn-text' }, it.text.map(t => h('p', { text: t }))));
+    if (it.table) this.body.append(h('div', { class: 'learn-table' }, h('table', {},
+      h('thead', {}, h('tr', {}, it.table.h.map(c => h('th', { scope: 'col', text: c })))),
+      h('tbody', {}, it.table.r.map(r => h('tr', {}, r.map((c, i) => h(i ? 'td' : 'th', i ? { text: c } : { scope: 'row', text: c }))))))));
+    if (it.list) this.body.append(h('ul', { class: 'learn-list' }, it.list.map(t => h('li', { text: t }))));
+    if (it.listen) this.body.append(h('div', { class: 'listen' + (it.listen.every(x => x.chip) ? ' chips' : '') }, it.listen.map(sp => h('button', { type: 'button', class: 'lsn', 'aria-label': `Luister: ${sp.l}`, onclick: e => { Listen.play(sp); Fx.pop(e.currentTarget); Activity.ping(); } }, sp.chip ? null : h('span', { html: ICONS.sound }), h('span', { text: sp.l })))));
+    if (it.tip) this.body.append(h('p', { class: 'learn-tip' }, h('span', { html: ICONS.ear }), h('span', { text: it.tip })));
     const last = !this.queue.some(q => q.type === 'learn');
-    this.foot.append(h('button', { class: 'primary big', type: 'button', text: last ? 'Begrepen' : 'Volgende', onclick: () => {
+    const back = this.learnHist.length ? h('button', { class: 'big ghost ls-back', type: 'button', text: 'Vorige', onclick: () => {
+      // terug naar het vorige kaartje
+      const prev = this.learnHist.pop();
+      this.doneIds.delete(prev._id);
+      this.queue.unshift(it); this.queue.unshift(prev);
+      this.updateBar(); this.next();
+    } }) : null;
+    const go = h('button', { class: 'primary big', type: 'button', text: last ? (it.course ? 'Naar de oefeningen' : 'Begrepen') : 'Volgende', onclick: () => {
+      this.learnHist.push(it);
       this.doneIds.add(it._id); this.updateBar(); Sfx.play('tap'); this.next();
-    } }));
+    } });
+    this.foot.append(back ? h('div', { class: 'ls-row learn-nav' }, back, go) : go);
   },
   renderName(it) {
     const svg = svgEl('Gitaarhals met één gemarkeerde plek');
@@ -367,6 +383,7 @@ const Lesson = {
   // --- speelopdrachten ---
   renderPlay(it) {
     this.ps = { idx: 0, last: null, found: new Set() };
+    this.t1 = performance.now();
     const big = h('div', { class: 'note ls-big', html: /^[A-G][♯♭]?$/.test(it.big || '') ? bigNoteHTML(it.big) : `<span class="deg">${it.big || ''}</span>` });
     this.body.append(big);
     if (it.sub) this.body.append(h('p', { class: 'ls-sub', text: it.sub }));
@@ -389,7 +406,7 @@ const Lesson = {
     const row = h('div', { class: 'ls-row' });
     if (!Engine.mic) row.append(h('button', { class: 'primary big', type: 'button', text: Engine.starting ? 'Toegang vragen…' : 'Start microfoon', onclick: async () => { await Engine.startMic(); if (this.cur && this.cur.type === 'play' && !this.answered) this.playFoot(); } }));
     row.append(h('button', { class: 'big', type: 'button', text: 'Hint', onclick: () => this.hint() }), h('button', { class: 'big', type: 'button', text: 'Overslaan', onclick: () => this.skip() }));
-    this.foot.append(row, h('button', { class: 'linkish', type: 'button', text: 'Ik kan nu niet spelen', onclick: () => this.cantPlayNow() }));
+    this.foot.append(row, h('button', { class: 'linkish', type: 'button', text: 'Geen gitaar bij de hand? Verder zonder gitaar', onclick: () => this.noGuitarNow() }));
   },
   onMic() { if (this.cur && this.cur.type === 'play' && !this.answered) this.playFoot(); },
   renderSteps() {
@@ -398,7 +415,7 @@ const Lesson = {
       const st = it.steps[0];
       this.stepsEl.innerHTML = st.pcs.map((pc, i) => `<span class="slot${ps.found.has(pc) ? ' on' : ''}"><small>${st.labels ? st.labels[i] : ''}</small><b>${ps.found.has(pc) ? st.names[i] : '?'}</b></span>`).join('');
     } else if (it.steps.length > 1) {
-      this.stepsEl.innerHTML = it.steps.map((st, i) => `<span class="slot${i < ps.idx ? ' on' : ''}${i === ps.idx && !this.answered ? ' now' : ''}"><small>${i + 1}</small><b>${i < ps.idx ? st.name : '?'}</b></span>`).join('');
+      this.stepsEl.innerHTML = it.steps.map((st, i) => `<span class="slot${i < ps.idx ? ' on' : ''}${i === ps.idx && !this.answered ? ' now' : ''}"><small>${st.label || i + 1}</small><b>${i < ps.idx ? st.name : '?'}</b></span>`).join('');
     } else this.stepsEl.innerHTML = '';
     if (this.playSvg) {
       if (it.neck) {
@@ -410,7 +427,10 @@ const Lesson = {
           return m;
         });
         drawNeck(this.playSvg, { from: it.neck.from, to: it.neck.to, marks, highlight: cur && cur.pos ? [cur.pos.s] : [] });
-      } else drawNeck(this.playSvg, { from: 0, to: Math.max(12, Store.settings.maxFret), highlight: it.highlight, marks: this.playMarks || [] });
+      } else {
+        const cur = it.steps[ps.idx], hl = cur && cur.string != null ? [cur.string] : it.highlight;
+        drawNeck(this.playSvg, { from: 0, to: Math.max(12, Store.settings.maxFret), highlight: hl, marks: this.playMarks || [] });
+      }
     }
   },
   hint() {
@@ -426,24 +446,33 @@ const Lesson = {
       }
       drawNeck(this.hintSvg, it.hintNeck);
     }
-    if (it.highlight && it.steps[0].frets) { this.playMarks = it.steps[0].frets.map(f => ({ s: it.steps[0].string, f, kind: 'hint', label: it.steps[0].name })); this.renderSteps(); }
+    const st = it.steps[this.ps.idx] || it.steps[0];
+    if (it.highlight && st.frets) { this.playMarks = st.frets.map(f => ({ s: st.string, f, kind: 'hint', label: st.name })); this.renderSteps(); }
   },
   skip() {
     const it = this.cur;
     if (!it || this.answered) return;
+    if (it._spot) FretQuiz.record(it._spot.s, it._spot.f, false, (performance.now() - this.t1) / 1000);
     this.mistakes++; this.skipped++;
     this.doneIds.add(it._id); this.updateBar();
     const ans = it.steps.map(st => st.k === 'set' ? st.names.join(' ') : st.name).join(' → ');
     this.fxEl = $('.ls-big', this.body); this.via = 'tap';
     this.wrong(it, 'Overgeslagen', it.hint || '', ans);
   },
-  cantPlayNow() {
-    Store.settings.cantPlayUntil = Date.now() + 15 * 60 * 1000; Store.saveSettings();
-    this.cantPlay = true;
-    for (const q of this.queue) if (q.type === 'play') this.doneIds.add(q._id);
-    this.queue = this.queue.filter(q => q.type !== 'play');
-    if (this.cur && this.cur.type === 'play') this.doneIds.add(this.cur._id);
+  // geen gitaar bij de hand: schuifje op Zonder gitaar, en de rest van de les wordt tikken
+  noGuitarNow() {
+    Guitar.set(false);
+    const cur = this.cur, before = this.queue;
+    this.queue = fitMode(before, false);
+    // vragen zonder goede vervanger vallen weg: die tellen als gedaan, zodat de balk klopt
+    const kept = new Set(this.queue.map(q => q._id));
+    for (const q of before) if (!kept.has(q._id)) this.doneIds.add(q._id);
+    if (cur && cur.type === 'play' && !this.answered) {
+      const alt = fitItem(cur, false);
+      if (alt) this.queue.unshift(alt); else this.doneIds.add(cur._id);
+    }
     this.updateBar();
+    UI.flash(ICONS.phone, 'Je oefent nu zonder gitaar', 'Speelopdrachten worden vragen op je telefoon. Zet het schuifje terug bij Leerpad of Oefenen.', 'badge', null, true);
     this.next();
   },
   onNote(n) {
@@ -480,6 +509,7 @@ const Lesson = {
   },
   playDone() {
     const it = this.cur;
+    if (it._spot) { const secs = (performance.now() - this.t1) / 1000; FretQuiz.record(it._spot.s, it._spot.f, true, secs); this.times.push(secs); }
     this.doneIds.add(it._id); this.updateBar();
     this.fxEl = $('.ls-big', this.body); this.via = 'mic';
     this.right(it, null, 1500);
@@ -511,6 +541,13 @@ const Lesson = {
       // zo werkt herhalen: uitleg op het moment dat het gebeurt
       how = this.fixed ? 'Wat je nu goed had, komt morgen terug. Weet je het dan nog, dan zie je het na 3 en daarna na 7 dagen nog één keer.' : '';
       if (xp) Progress.addXP(xp);
+    } else if (this.allLearn) {
+      // een les om te lezen: geen score, wel XP, en dan door naar de oefeningen
+      xp = sp.xp || 10;
+      Progress.addXP(xp);
+      if (sp.onFinish) sp.onFinish({ passed: true, accuracy: 1, perfect: false, secs, xp });
+      title = 'Les gelezen!'; mood = 'boek'; sub = sp.title || '';
+      how = 'De oefeningen bij deze les staan nu open. Je kunt de les altijd teruglezen met Lees de les.';
     } else {
       xp = passed ? (sp.xp || 10) + (perfect ? 5 : 0) : 5;
       Progress.addXP(xp);
@@ -536,13 +573,13 @@ const Lesson = {
       sub ? h('p', { class: 'help', text: sub }) : null,
       h('div', { class: 'end-stats' },
         h('div', {}, h('small', { text: 'XP' }), xpEl),
-        this.bin ? h('div', {}, h('small', { text: 'Goed' }), h('b', { text: `${this.fixed + this.recalled}/${this.total}` })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
+        this.bin ? h('div', {}, h('small', { text: 'Goed' }), h('b', { text: `${this.fixed + this.recalled}/${this.total}` })) : this.allLearn ? h('div', {}, h('small', { text: 'Kaartjes' }), h('b', { text: String(this.total) })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
         speed != null ? h('div', {}, h('small', { text: 'Per noot' }), h('b', { text: `${fmt1(speed)} s` })) : h('div', {}, h('small', { text: 'Tijd' }), h('b', { text: mm }))),
-      this.bin ? h('div', { class: 'end-srs' }, Srs.row({ delta: Srs.delta(this.srsBefore) }), how ? h('p', { class: 'help', text: how }) : null) : null,
+      this.bin ? h('div', { class: 'end-srs' }, Srs.row({ delta: Srs.delta(this.srsBefore) }), how ? h('p', { class: 'help', text: how }) : null) : how ? h('p', { class: 'help end-how', text: how }) : null,
       got.length ? Moments.list(got, 'Verdiend') : null,
       Progress.goalLine()));
     countUp(xpEl, xp, { prefix: '+', delay: 250 });
-    if (!this.bin) countUp(pctEl, Math.round(accuracy * 100), { suffix: '%', delay: 350 });
+    if (!this.bin && !this.allLearn) countUp(pctEl, Math.round(accuracy * 100), { suffix: '%', delay: 350 });
     this.counter.textContent = '';
     this.barFill.style.width = '100%';
     const done = () => { const s = this.spec; this.spec = null; if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; };

@@ -118,18 +118,20 @@ async def main():
 
             # ---------- startscherm ----------
             await page.goto(f'http://localhost:{PORT}/index.html'); await ev('localStorage.clear()')
+            # deze test tikt en kiest: het schuifje staat op Zonder gitaar (met gitaar: zie tests/course.py)
+            await ev("localStorage.setItem('fretjacht.settings', JSON.stringify({guitar: false}))")
             await ev(f"localStorage.setItem('fretjacht.stats', JSON.stringify({{xp: 135, days: {{'{day(-1)}': {{secs: 1000, xp: 60}}, '{day(0)}': {{secs: 260, xp: 20}}}}, notes: {{items: {{}}, found: 42, totalTime: 80, best: 1.1, streak: 0, bestStreak: 3}}, topics: {{'twelve-tones': {{r: 26, w: 4}}}}}}))")
             await page.reload(); await page.wait_for_timeout(1200)
-            R['home'] = await ev("({level: document.querySelector('.hh-eyebrow').textContent, title: document.querySelector('.hh-title').textContent, say: document.querySelector('.hh-say').textContent, stats: Array.from(document.querySelectorAll('.hh-stat')).map(e => e.textContent), goal: document.querySelector('.hh-goal-t b').textContent, meter: document.querySelectorAll('#homeHero .lv-meter i.on').length})")
-            check('Startscherm: niveau, titel en XP-meter', R['home']['level'] == 'Fretjacht niveau 2' and R['home']['title'] == 'Snarenplukker' and R['home']['meter'] > 10, R['home'])
-            check('Startscherm: reeks, noten, nauwkeurigheid', R['home']['stats'] == ['1dag op rij', '42noten gevonden', '87%goed beantwoord'], R['home']['stats'])
-            check('Startscherm: dagdoel in woorden', R['home']['goal'] == '4 van 15 minuten', R['home']['goal'])
+            R['home'] = await ev("({badge: document.querySelector('.ht-badge').textContent, title: document.querySelector('.ht-title').textContent, xp: document.querySelector('.ht-xp').textContent, meter: document.querySelectorAll('#homeTop .lv-meter i.on').length, top: Math.round(document.querySelector('#homeTop').getBoundingClientRect().height), unit: Math.round(document.querySelector('.unit').getBoundingClientRect().top), quests: document.querySelector('#questCard').open, gsw: document.querySelector('#homeTop .gsw [aria-pressed=\"true\"]').textContent})")
+            check('Bovenkant: niveau, titel en XP-meter op één regel', R['home']['badge'] == '2' and R['home']['title'] == 'Niveau 2: Snarenplukker' and R['home']['xp'] == '135 XP · nog 15' and R['home']['meter'] > 10, R['home'])
+            check('Bovenkant: kort, de eerste unit staat in beeld', R['home']['top'] < 200 and R['home']['unit'] < 520, R['home'])
+            check('Bovenkant: opdrachten dicht, schuifje op Zonder gitaar', R['home']['quests'] is False and R['home']['gsw'] == 'Zonder gitaar', R['home'])
             R['header'] = await ev("({chip: document.querySelector('#goalChip').textContent, label: document.querySelector('#goalChip').getAttribute('aria-label'), h1: document.querySelector('#title').scrollWidth <= document.querySelector('#title').clientWidth + 1})")
             check('Kop: dagdoel met "min" en past', R['header']['chip'] == '4/15min' and 'minuten' in R['header']['label'] and R['header']['h1'], R['header'])
             R['course_head'] = await ev("({text: document.querySelector('.track-head b').textContent, dots: document.querySelectorAll('.track-head .tdots i').length})")
             check('Muziektheorie: les 1 van 8 met stippen', R['course_head']['text'] == 'Cursus: les 1 van 8' and R['course_head']['dots'] == 8, R['course_head'])
             R['unit_count'] = await ev("document.querySelector('.uh-count').textContent")
-            check('Unit-teller in woorden', R['unit_count'] == '0 van 6', R['unit_count'])
+            check('Unit-teller in woorden', R['unit_count'] == '0 van 7', R['unit_count'])
             await page.wait_for_timeout(600); await shot('home')
             # niveau omhoog: melding met confetti
             await ev('__fj.addXP(20)')
@@ -219,17 +221,23 @@ async def main():
             R['plan'] = await ev("Array.from(document.querySelectorAll('.plan li b')).map(e => e.textContent)")
             check('Oefen vandaag: stap Halsjacht', 'Halsjacht' in R['plan'], R['plan'])
             await ev("document.querySelectorAll('.sheet-wrap').forEach(x => x.remove())")
-            # niveau 7 (kruizen en mollen): uitleg en 12 toetsen
+            # niveau 7 (kruisen en mollen): uitleg en 12 toetsen
             await page.locator('#unit-H7 .node').first.click(); await page.wait_for_timeout(250); await page.click('.sheet button.primary'); await wait_lesson()
             for i in range(3): await answer(True)
             st = await ev('__fj.lesson()')
             R['acc_keys'] = await ev("document.querySelectorAll('.keypad .key').length")
-            check('Kruizen en mollen: 12 toetsen', st and st['type'] == 'name' and R['acc_keys'] == 12, [st, R['acc_keys']])
+            check('Kruisen en mollen: 12 toetsen', st and st['type'] == 'name' and R['acc_keys'] == 12, [st, R['acc_keys']])
             await shot('keypad12')
             await page.click('.ls-close'); await page.wait_for_timeout(200); await page.locator('.sheet button', has_text='Stoppen').click(); await page.wait_for_timeout(400)
 
             # ---------- theorieles: pijl en "nog N" bij een fout ----------
             await page.click('.track-switch button[data-track="theory"]'); await page.wait_for_timeout(300)
+            # eerst de les: alleen kaartjes, daarna pas vragen
+            await page.locator('.node.next').first.click(); await page.wait_for_timeout(250); await page.click('.sheet button.primary'); await wait_lesson()
+            kinds = await run()
+            e = await end_info(); R['les_end'] = e
+            check('Theorie: de unit begint met de les in 9 kaartjes', kinds == ['learn'] * 9 and e['title'] == 'Les gelezen!', [kinds, e])
+            await verder(); await page.wait_for_timeout(500)
             await page.locator('.node.next').first.click(); await page.wait_for_timeout(250); await page.click('.sheet button.primary'); await wait_lesson()
             for i in range(8):
                 st = await ev('__fj.lesson()')
@@ -280,7 +288,6 @@ async def main():
             R['meter_on'] = await ev("document.querySelectorAll('.level-card .lv-meter i.on').length")
             check('Voortgang: XP-meter licht op', R['meter_on'] >= 6, R['meter_on'])
             await page.wait_for_timeout(1200); await shot('progress'); await shot('progress_full', full_page=True)
-            R['summary'] = await ev('__fj.summary()')
             await b.close()
     finally:
         srv.terminate()

@@ -237,7 +237,8 @@ async def main():
             # ======================= 4. hals om op te tikken =======================
             MEAS = """sel => { const cs = Array.from(document.querySelectorAll(sel)).map(c => c.getBoundingClientRect()); const svg = document.querySelector(sel).closest('svg');
               return { n: cs.length, minW: Math.min(...cs.map(c => c.width)), minH: Math.min(...cs.map(c => c.height)), rows: svg.classList.contains('two-rows'), svgH: Math.round(svg.getBoundingClientRect().height) }; }"""
-            await fresh({'xp': 50, 'path': {'nodes': {'LH1-0': {'done': True, 'runs': 1, 'mistakes': 0}, 'LH1-1': {'done': True, 'runs': 1, 'mistakes': 0}}}}, {'track': 'hals'})
+            # tikken op de hals hoort bij Zonder gitaar (met gitaar speel je deze vragen: zie tests/course.py)
+            await fresh({'xp': 50, 'path': {'nodes': {'LH1-0': {'done': True, 'runs': 1, 'mistakes': 0}, 'LH1-1': {'done': True, 'runs': 1, 'mistakes': 0}}}}, {'track': 'hals', 'guitar': False})
             await page.locator('.node.next').first.click(); await page.wait_for_timeout(250); await page.click('.sheet button.primary'); st = await wait_lesson()
             R['tapall'] = await ev(MEAS, '.tapneck .cell')
             check('Toepassen op de telefoon: twee rijen, vakjes minstens 30 px breed', R['tapall']['rows'] and R['tapall']['minW'] >= 30, R['tapall'])
@@ -250,7 +251,7 @@ async def main():
             check('Tik bovenin de kolom telt als de gevraagde snaar', R['tap_top']['found'] >= 1, R['tap_top'])
             await shot('tapall_rows')
             # Welke noot? Zoek de noot op alle snaren tot fret 12
-            await fresh({'xp': 50}, {'noteq': {'kind': 'find', 'strings': [5, 4, 3, 2, 1, 0], 'nat': True, 'to': 12}})
+            await fresh({'xp': 50}, {'guitar': False, 'noteq': {'kind': 'find', 'strings': [5, 4, 3, 2, 1, 0], 'nat': True, 'to': 12}})
             await go('#m-noteq')
             R['noteq'] = await ev(MEAS, '.nq-neck .cell')
             check('Zoek de noot (hele hals): twee rijen, vakjes minstens 30 × 25 px', R['noteq']['rows'] and R['noteq']['minW'] >= 30 and R['noteq']['minH'] >= 25 and R['noteq']['n'] == 78, R['noteq'])
@@ -272,7 +273,8 @@ async def main():
             await shot('tap_zoom')
             # groot scherm: gewoon de hele hals in één rij
             desk = await b.new_context(viewport={'width': 1200, 'height': 900}, color_scheme=SCHEME)
-            dp = await desk.new_page(); await dp.goto(f'http://localhost:{PORT}/index.html'); await dp.wait_for_timeout(600)
+            dp = await desk.new_page(); await dp.goto(f'http://localhost:{PORT}/index.html')
+            await dp.evaluate("localStorage.setItem('fretjacht.settings', JSON.stringify({guitar: false}))"); await dp.reload(); await dp.wait_for_timeout(600)
             await dp.evaluate("__fj.lessonWith(__fj.halsGen(0, 2).slice(0, 1), {title: 'Halsjacht'})"); await dp.wait_for_timeout(500)
             R['desk'] = await dp.evaluate(MEAS, '.tapneck .cell')
             check('Groot scherm: één rij met de hele hals', not R['desk']['rows'] and R['desk']['n'] == 13, R['desk'])

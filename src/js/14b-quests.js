@@ -60,15 +60,15 @@ const Quests = {
     }
     if (changed) { Store.saveStats(); this.render(); }
   },
-  // kaart bovenaan het leerpad
+  // één regel bovenaan het leerpad; tik erop voor de drie opdrachten
+  open: false,
   card() {
     const qs = this.today(), d = Progress.day(), done = qs.filter(q => d.qd && d.qd[q.id]).length, all = done === qs.length, fz = Store.stats.freezes || 0;
-    return h('section', { class: 'quests' + (all ? ' all' : ''), id: 'questCard' },
-      h('div', { class: 'q-head' },
-        h('div', { class: 'q-title' },
-          h('h2', { text: all ? 'Alle opdrachten gedaan' : 'Opdrachten van vandaag' }),
-          h('span', { class: 'q-freeze' + (fz ? ' has' : ''), title: 'Reeksbevriezers', 'aria-label': `${fz} reeksbevriezers` }, h('span', { html: ICONS.ice }), h('b', { text: `${fz} ${fz === 1 ? 'bevriezer' : 'bevriezers'}` }))),
-        h('div', { class: 'q-fret', html: Mascot.svg(all ? 'juich' : 'noot') })),
+    return h('details', { class: 'quests' + (all ? ' all' : ''), id: 'questCard', open: this.open ? true : null, ontoggle: e => { this.open = e.currentTarget.open; } },
+      h('summary', {},
+        h('span', { class: 'q-sico', html: all ? ICONS.check : ICONS.target }),
+        h('span', { class: 'q-sum' }, h('b', { text: all ? 'Opdrachten gedaan' : 'Opdrachten' }), all ? null : h('span', { class: 'q-dots', 'aria-label': `${done} van ${qs.length} gedaan` }, qs.map(q => h('i', { class: d.qd && d.qd[q.id] ? 'on' : '' })))),
+        h('span', { class: 'q-freeze' + (fz ? ' has' : ''), title: 'Reeksbevriezers', 'aria-label': `${fz} reeksbevriezers` }, h('span', { html: ICONS.ice }), h('b', { text: String(fz) }))),
       all ? null : h('ul', { class: 'q-list' }, qs.map(q => {
         const v = this.progress(q), ok = !!(d.qd && d.qd[q.id]), def = this.def(q.id);
         return h('li', { class: ok ? 'done' : '' },
@@ -122,56 +122,3 @@ const Track = {
     Score.answer(ok);
   },
 };
-const topicName = k => (TOPICS[k] && k !== 'generic' ? TOPICS[k].title : k === 'generic' ? 'eigen vragen uit de les' : k === 'review' ? 'herhalen' : k === 'hals' ? 'noten op de hals (Halsjacht)' : k);
-const shorten = (t, n = 70) => (t.length > n ? t.slice(0, n - 1).trim() + '…' : t);
-// leesbare naam van een vraag: bij de hals de noot en de plek
-const itemLabel = it => (it.type === 'name' ? `${FretQuiz.both(it.pc)} op ${FretQuiz.where(it.s, it.f)}` : it.prompt);
-function courseSummary() {
-  const st = Store.stats, sk = Progress.streak(), units = PathData.units(), L = [];
-  L.push(`Fretjacht-voortgang, ${new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })}`);
-  L.push(`- Oefentijd: ${Math.round(Progress.weekSecs() / 60)} minuten deze week, reeks ${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'}, dagdoel ${Math.round(Progress.goalSecs() / 60)} minuten.`);
-  if (units.length) L.push(`- Leerpad: ${units.slice(-3).map(u => { const nodes = unitNodes(u), done = nodes.filter((n, k) => nodeDone(u, k)).length; return `${unitMeta(u).title} ${done} van ${nodes.length} stappen${nodeDone(u, nodes.length - 1) ? ', toets gehaald' : ''}`; }).join('; ')}.`);
-  const tp = Object.entries(st.topics || {}).filter(([k, v]) => k !== 'overig' && v.r + v.w >= 3).map(([k, v]) => ({ k, pct: Math.round(100 * v.r / (v.r + v.w)), n: v.r + v.w })).sort((a, b) => a.pct - b.pct);
-  if (tp.length) L.push(`- Goed per onderwerp: ${tp.map(x => `${topicName(x.k)} ${x.pct}% (${x.n} vragen)`).join(', ')}.`);
-  const weakSk = Object.values(st.skills || {}).filter(v => v.w >= 2 && v.p).sort((a, b) => b.w / (b.r + b.w) - a.w / (a.r + a.w)).slice(0, 3);
-  if (weakSk.length) L.push(`- Vaak fout: ${weakSk.map(v => `“${shorten(v.p)}” (${v.w} van ${v.r + v.w} fout)`).join(', ')}.`);
-  const bin = Bin.list();
-  if (bin.length) L.push(`- Net fout, nog te herhalen (${bin.length}): ${bin.slice(-4).map(x => `“${shorten(itemLabel(x.it))}”`).join(', ')}.`);
-  const sc = Srs.snapshot(), inBoxes = sc[1] + sc[2] + sc[3];
-  if (inBoxes || sc[4]) L.push(`- Herhalen na 1, 3 en 7 dagen: ${inBoxes} ${inBoxes === 1 ? 'vraag' : 'vragen'} onderweg, ${sc[4]} onder de knie.`);
-  const sticky = Bin.all().filter(x => x.n >= 3).sort((a, b) => b.n - a.n).slice(0, 3);
-  if (sticky.length) L.push(`- Blijft lastig: ${sticky.map(x => `“${shorten(itemLabel(x.it))}” (${x.n} keer fout)`).join(', ')}.`);
-  const rows = Object.entries(st.notes.items).filter(([, v]) => v.n > 0).map(([k, v]) => { const [s, pc] = k.split('-').map(Number); return { s, pc, avg: v.total / v.n }; }).sort((a, b) => b.avg - a.avg).slice(0, 3);
-  if (rows.length) L.push(`- Traagst op de hals: ${rows.map(r => `${pcLabel(r.pc, 'sharps')} op de ${STR_NAME[r.s]} (${fmt1(r.avg)} s)`).join(', ')}.`);
-  // Halsjacht en Welke noot?: hoe goed ken je de hals zonder gitaar
-  const fb = st.fb || { items: {}, n: 0, ok: 0 }, hn = halsDoneCount(), hx = nextHals();
-  if (hn || fb.n) {
-    const pos = Object.entries(fb.items).filter(([, v]) => v.n >= 2).map(([k, v]) => { const [s, f] = k.split('-').map(Number); return { s, f, w: FretQuiz.weight(s, f) }; }).sort((a, b) => b.w - a.w).slice(0, 3);
-    const tt = Object.values(fb.items).reduce((a, v) => a + (v.t || 0), 0);
-    L.push(`- Halsjacht: ${hn} van ${HALS_LEVELS.length} niveaus beheerst${hx ? ` (nu: ${hx.unit.title}, ${hx.node.title.toLowerCase()})` : ''}${fb.n ? `; noten herkennen ${Math.round(100 * fb.ok / fb.n)}% goed${fb.ok ? `, gemiddeld ${fmt1(tt / fb.ok)} s per noot` : ''}` : ''}${pos.length ? `; lastigst: ${pos.map(p => `${FretQuiz.nameAt(p.s, p.f)} op ${FretQuiz.where(p.s, p.f)}`).join(', ')}` : ''}.`);
-  }
-  const eq = st.earq || { ok: {}, n: {} };
-  const ear = Object.keys(eq.n).filter(k => eq.n[k] >= 3).map(k => ({ k, pct: Math.round(100 * (eq.ok[k] || 0) / eq.n[k]) })).sort((a, b) => a.pct - b.pct).slice(0, 3);
-  if (ear.length) L.push(`- Op gehoor: ${ear.map(x => `${earName(x.k)} ${x.pct}%`).join(', ')}.`);
-  const tg = st.targets;
-  if (tg && tg.tries) {
-    const by = Object.entries(tg.by || {}).filter(([, v]) => v.t >= 3).map(([k, v]) => ({ k, pct: Math.round(100 * v.h / v.t) })).sort((a, b) => a.pct - b.pct);
-    L.push(`- Doeltonen: ${tg.hits} van ${tg.tries} geraakt${tg.hits ? `, gemiddeld ${fmt1(tg.time / tg.hits)} s` : ''}${by.length ? `; lastigst: de ${TARGET_NAME[by[0].k] || by[0].k} (${by[0].pct}%)` : ''}.`);
-  }
-  if (st.ear && Object.keys(st.ear.ok || {}).length) L.push(`- Op gehoor naspelen: ${Object.values(st.ear.ok).reduce((a, b) => a + b, 0)} keer goed.`);
-  L.push('Stem de volgende lessen en oefeningen hier graag op af.');
-  return L.join('\n');
-}
-async function copyCourseSummary(out) {
-  const text = courseSummary();
-  out.hidden = false;
-  out.textContent = text;
-  try {
-    await navigator.clipboard.writeText(text);
-    UI.flash(Mascot.svg('boek', { crop: 'head' }), 'Gekopieerd', 'Plak het als reactie op je volgende les.', 'goal', null, true);
-  } catch (e) {
-    const r = document.createRange(); r.selectNodeContents(out);
-    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
-    UI.flash(ICONS.book, 'Kopieer de tekst hieronder', 'Hij staat al geselecteerd.', 'badge', null, true);
-  }
-}

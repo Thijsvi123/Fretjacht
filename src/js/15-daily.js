@@ -6,7 +6,9 @@ const Daily = {
     const steps = [];
     let est = 0;
     const add = s => { steps.push(s); est += s.minutes; };
-    if (!((Store.settings.cantPlayUntil || 0) > Date.now())) add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
+    // met gitaar alles met de microfoon, zonder gitaar alles op je telefoon
+    const g = Guitar.on();
+    if (g) add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
     const nx = nextNode();
     if (nx) add({ kind: 'node', ref: nx, minutes: 4, title: 'Leerpad', sub: `Unit ${nx.unitNo}: ${nx.node.title}` });
     // de volgende stap in de Halsjacht: zonder gitaar, dus altijd mogelijk
@@ -19,11 +21,11 @@ const Daily = {
     const cu = nx ? nx.unit : PathData.units().slice(-1)[0];
     if (cu) {
       const d = unitMeta(cu).drill;
-      if (d && MODES[d.mode] && d.mode !== 'notes' && !((Store.settings.cantPlayUntil || 0) > Date.now())) add({ kind: 'drill', mode: d.mode, set: d.set, minutes: 3, title: 'Toepassen', sub: `${MODES[d.mode].title}, past bij les ${cu.lesson}` });
+      if (d && MODES[d.mode] && d.mode !== 'notes' && g === !NO_MIC.includes(d.mode)) add({ kind: 'drill', mode: d.mode, set: d.set, minutes: 3, title: 'Toepassen', sub: `${MODES[d.mode].title}, past bij les ${cu.lesson}` });
     }
-    const cant = (Store.settings.cantPlayUntil || 0) > Date.now();
-    const extras = cant ? [{ mode: 'noteq', minutes: 3, sub: 'Welke noot? Zonder gitaar' }, { mode: 'earq', minutes: 4, sub: 'Gehoortraining, zonder gitaar' }] : shuffle([{ mode: 'challenge', minutes: 2, sub: '60 seconden' }, { mode: 'scales', minutes: 3, sub: 'Toonladders' }, { mode: 'positions', minutes: 2, sub: 'Alle posities' }, { mode: 'ear', minutes: 3, sub: 'Op gehoor naspelen' }, { mode: 'targets', minutes: 3, sub: 'Doeltonen over akkoordwissels' }, { mode: 'earq', minutes: 3, sub: 'Gehoortraining' }, { mode: 'noteq', minutes: 2, sub: 'Welke noot? Zonder gitaar' }]);
-    for (const x of extras) { if (est >= remainMin) break; add({ kind: 'drill', mode: x.mode, minutes: x.minutes, title: 'Extra', sub: x.sub }); }
+    const extras = g ? shuffle([{ mode: 'challenge', minutes: 2, sub: '60 seconden' }, { mode: 'scales', minutes: 3, sub: 'Toonladders' }, { mode: 'positions', minutes: 2, sub: 'Alle posities' }, { mode: 'ear', minutes: 3, sub: 'Op gehoor naspelen' }, { mode: 'targets', minutes: 3, sub: 'Doeltonen over akkoordwissels' }])
+      : [{ mode: 'noteq', minutes: 3, sub: 'Welke noot?' }, { mode: 'earq', minutes: 4, sub: 'Gehoortraining' }, { mode: 'noteq', minutes: 3, sub: 'Welke noot?, zoek de noot', set: { kind: 'find' } }];
+    for (const x of extras) { if (est >= remainMin) break; add({ kind: 'drill', mode: x.mode, set: x.set, minutes: x.minutes, title: 'Extra', sub: x.sub }); }
     return steps;
   },
   showPlan() {
@@ -33,7 +35,7 @@ const Daily = {
     const sheet = h('div', { class: 'sheet-wrap', onclick: e => { if (e.target === sheet) sheet.remove(); } },
       h('div', { class: 'sheet' },
         h('div', { class: 'plan-head' }, h('div', { class: 'plan-fret', html: Mascot.svg(met ? 'juich' : 'zwaai') }),
-          h('div', {}, h('h3', { text: met ? 'Extra oefenen' : 'Oefen vandaag' }), h('p', { class: 'help', text: `${total} minuten in ${steps.length} stappen${met ? '. Je dagdoel is al gehaald.' : '.'}` }))),
+          h('div', {}, h('h3', { text: met ? 'Extra oefenen' : 'Oefen vandaag' }), h('p', { class: 'help', text: `${total} minuten in ${steps.length} stappen, ${Guitar.on() ? 'met' : 'zonder'} gitaar${met ? '. Je dagdoel is al gehaald.' : '.'}` }))),
         h('ol', { class: 'plan' }, steps.map((s, i) => h('li', {}, h('span', { class: 'pl-n', text: String(i + 1) }), h('div', {}, h('b', { text: s.title }), h('small', { text: s.sub })), h('span', { class: 'pl-m', text: `${s.minutes} min` })))),
         h('p', { class: 'help', text: 'De oefentijd telt alleen als je echt bezig bent. Tussen de stappen ga je vanzelf door.' }),
         h('button', { class: 'primary big', type: 'button', text: 'Start', onclick: () => { sheet.remove(); this.start(steps); } })));
@@ -44,7 +46,7 @@ const Daily = {
     this.startXP = Store.stats.xp || 0; this.startSecs = Progress.day().secs;
     // alles wat je in deze sessie verdient, komt aan het eind in één overzicht
     Moments.session = [];
-    const needMic = !Engine.mic && !((Store.settings.cantPlayUntil || 0) > Date.now());
+    const needMic = !Engine.mic && Guitar.on();
     Loader.run({ title: 'Oefen vandaag', sub: needMic ? 'Microfoon aanzetten…' : `${steps.length} stappen`, mood: 'luister', wait: needMic ? Engine.startMic() : null }, () => this.run());
   },
   run() {

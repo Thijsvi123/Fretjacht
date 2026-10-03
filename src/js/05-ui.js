@@ -290,10 +290,11 @@ function renderSettings(view) {
     h('p', { class: 'bk-status' + (bk.old ? ' old' : ''), text: bk.text }),
     backupButtons(),
     h('div', { class: 'row' }, reset));
-  const goalCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Dagdoel en lessen' }),
+  const goalCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Oefenen en lessen' }),
     h('div', { class: 'set-grid' },
       field('Dagdoel', seg([10, 15, 20, 30].map(n => ({ value: n, label: `${n} min` })), s.goal, v => { s.goal = Number(v); save(); Progress.renderTop(); }), 'Je reeks telt de dagen waarop je dit aantal minuten echt geoefend hebt.'),
-      h('div', { class: 'field' }, h('span', { class: 'lbl', text: 'Muziektheoriecursus' }), h('a', { class: 'link', href: COURSE_DOC, target: '_blank', rel: 'noopener', text: 'Open het cursusboek ›' }), h('span', { class: 'help', text: 'Na elke les van maandag en donderdag komt er een unit bij in je leerpad.' }))));
+      field('Oefenen', guitarSwitch(), 'Met gitaar speel je de noten en luistert de app mee. Zonder gitaar wordt elke speelopdracht een vraag op je telefoon. Je wisselt ook bovenaan Leerpad en Oefenen.'),
+      h('div', { class: 'field' }, h('span', { class: 'lbl', text: 'Muziektheoriecursus' }), h('span', { class: 'help', text: 'Elke zondag komt er een les bij in je leerpad, als je de unittoets van de vorige hebt gehaald. Elke les begint met uitleg.' }))));
   view.append(h('section', { class: 'settings-view' }, goalCard, micCard, rangeCard, ctlCard, scoreCard));
   UI.updateLevel(-120);
 }

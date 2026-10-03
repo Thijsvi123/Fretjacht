@@ -719,15 +719,6 @@ button.tile.tap .tile-ico .ico { color: var(--bad); }
 
 /* ===================== Opdrachten, uitleg, cursus, halsverkenner, doeltonen, gehoortraining ===================== */
 /* dagelijkse opdrachten */
-.quests { position: relative; display: grid; gap: 10px; padding: 12px 16px 12px; border-radius: 18px; background: var(--surface); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
-.q-head { display: grid; grid-template-columns: minmax(0, 1fr) 76px; gap: 8px; align-items: end; margin: -4px -6px -4px 0; }
-.q-title { display: grid; gap: 6px; justify-items: start; padding-bottom: 6px; }
-.q-fret { width: 76px; height: 76px; pointer-events: none; }
-.q-fret svg { width: 100%; height: 100%; display: block; }
-.q-head h2 { margin: 0; font: 800 semi-condensed 22px/1.05 var(--display); letter-spacing: -.01em; }
-.q-freeze { display: inline-flex; align-items: center; gap: 3px; padding: 4px 8px 4px 6px; border-radius: 999px; background: var(--surface-2); color: var(--muted); font: 700 13px/1 var(--body); }
-.q-freeze .ico { width: 16px; height: 16px; }
-.q-freeze.has { background: #E3F2FC; color: #1F6FA8; }
 .q-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; position: relative; }
 .q-list li { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
 .q-ico { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text); }
@@ -739,9 +730,6 @@ button.tile.tap .tile-ico .ico { color: var(--bad); }
 .q-list li.done .q-ico { background: var(--ok); color: var(--ok-ink); }
 .q-list li.done .q-text > span:first-child { color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1.5px; }
 .q-list li.done .q-bar i { background: var(--ok); }
-.q-foot { margin: 0; font-size: 13px; color: var(--muted); }
-.quests.all { padding-bottom: 14px; border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); box-shadow: 0 4px 0 color-mix(in srgb, var(--ok) 35%, var(--line)); }
-.quests.all .q-head h2 { color: var(--ok); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .q-freeze.has { background: #15324A; color: #9BD0F5; } }
 
 /* uitlegkaartje per unit */
@@ -948,41 +936,6 @@ svg .fx-pop { transform-box: fill-box; transform-origin: center; }
 .boot .boot-load { font-weight: 600; color: var(--accent-text); }
 .chip small { font: 600 11.5px/1 var(--body); margin-left: -2px; opacity: .8; }
 
-/* het podium: niveau, XP, statistieken en dagdoel */
-.home-hero { position: relative; display: grid; gap: 12px; padding: 16px; border-radius: 22px; overflow: hidden; isolation: isolate; color: #F4E3C9;
-  background: radial-gradient(85% 75% at 92% 0%, rgba(245, 163, 26, .34), transparent 62%), linear-gradient(168deg, #3D2619, #20130D 72%);
-  box-shadow: 0 5px 0 #120A07, inset 0 1px 0 rgba(255, 255, 255, .08); }
-.home-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; opacity: .5; pointer-events: none;
-  background: radial-gradient(circle at 12% 110%, rgba(196, 51, 111, .22), transparent 40%); }
-.hh-top { display: grid; grid-template-columns: minmax(0, 1fr) 100px; gap: 6px; align-items: center; }
-.hh-eyebrow { margin: 0; font: 700 12.5px/1.2 var(--body); color: #F5A31A; }
-.hh-title { margin: 3px 0 9px; font: 800 semi-condensed 30px/1 var(--display); letter-spacing: -.01em; color: #FFF4E3; }
-.hh-xp { margin: 7px 0 0; font-size: 12.5px; line-height: 1.3; color: #CDB59A; }
-.hh-xp b { color: #FFF4E3; }
-.hh-fret { width: 100px; height: 100px; align-self: end; margin: -8px -4px -6px 0; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .4)); }
-.hh-fret svg { width: 100%; height: 100%; display: block; }
-.hh-say { position: relative; margin: 0; padding: 10px 14px; border-radius: 14px; background: #FFF4E3; color: #2B1A14; font: 600 14.5px/1.35 var(--body); }
-.hh-say::after { content: ""; position: absolute; right: 42px; top: -8px; border: 8px solid transparent; border-top: 0; border-bottom-color: #FFF4E3; }
-.hh-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.hh-stat { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 7px; align-items: center; padding: 9px 9px 9px 10px; border-radius: 12px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .09); }
-.hh-ico { grid-row: 1 / 3; color: #F5A31A; }
-.hh-ico .ico { width: 18px; height: 18px; }
-.hh-stat b { font: 800 semi-condensed 21px/1.05 var(--display); color: #FFF4E3; }
-.hh-stat small { font: 600 11px/1.2 var(--body); color: #CDB59A; }
-.hh-stat.lit .hh-ico { color: #FF7A3D; }
-.hh-goal { display: grid; gap: 6px; }
-.hh-goal-t { display: flex; justify-content: space-between; gap: 8px; font: 600 13px/1.2 var(--body); color: #CDB59A; }
-.hh-goal-t b { color: #FFF4E3; }
-.hh-bar { height: 10px; border-radius: 5px; background: rgba(255, 255, 255, .13); overflow: hidden; }
-.hh-bar span { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg, #F5A31A, #FFD27A); transition: width .6s cubic-bezier(.2, .8, .2, 1); }
-.home-hero.met .hh-bar span { background: linear-gradient(90deg, #2FB36A, #6FE09D); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .home-hero { box-shadow: 0 5px 0 #000, inset 0 0 0 1px rgba(245, 163, 26, .22); } }
-:root[data-theme="dark"] .home-hero { box-shadow: 0 5px 0 #000, inset 0 0 0 1px rgba(245, 163, 26, .22); }
-.path.intro .home-hero { animation: rise .45s cubic-bezier(.2, .8, .2, 1) both; }
-.home-hero .m-zwaai .m-wave { transform-box: fill-box; transform-origin: 18% 92%; animation: wave 2.6s ease-in-out infinite; }
-.home-hero .m-gitaar .m-strum { transform-box: fill-box; transform-origin: 20% 20%; animation: strum 3.2s ease-in-out infinite; }
-.home-hero .m-eyes { transform-box: fill-box; transform-origin: center; animation: blink 5.5s infinite; }
-
 /* XP-meter: segmenten zoals op een versterker */
 .lv-meter { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 3px; height: 12px; }
 .lv-meter i { border-radius: 2px; background: rgba(255, 255, 255, .13); }
@@ -1148,6 +1101,87 @@ button.uh-link { border: 0; cursor: pointer; }
 @media (max-width: 420px) { .top { gap: 6px; } .brand h1 { font-size: 26px; } .logo { width: 36px; height: 36px; } body:not([data-view="path"]) .logo { display: none; } .chip { padding: 6px 8px 6px 7px; gap: 4px; } }
 @media (max-width: 380px) { .brand h1 { font-size: 24px; } }
 
+
+/* ===================== Bovenkant leerpad, gitaarschuifje, lessen in de app ===================== */
+/* bovenkant van het leerpad: niveau, opdrachten en het schuifje in één kaart */
+.home-top { display: grid; border-radius: 18px; background: var(--surface); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); overflow: hidden; }
+.path.intro .home-top { animation: rise .45s cubic-bezier(.2, .8, .2, 1) both; }
+.ht-level { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 14px 12px; }
+.ht-badge { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #FFD27A, #F5A31A 60%, #C26A0A); color: #2B1A14; font: 800 semi-condensed 21px/1 var(--display); box-shadow: 0 3px 0 #A8600E, inset 0 2px 0 rgba(255, 255, 255, .45); }
+.ht-main { display: grid; gap: 7px; min-width: 0; }
+.ht-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.ht-title { font: 800 semi-condensed 18px/1.1 var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ht-xp { font: 600 12px/1 var(--body); color: var(--muted); white-space: nowrap; flex: none; }
+.home-top .lv-meter { height: 8px; gap: 2px; flex: 1; min-width: 0; }
+.home-top .lv-meter i:not(.on) { background: var(--led-off); }
+/* opdrachten: één regel, tik voor de lijst */
+.quests { display: grid; border-top: 1px solid var(--line); }
+.quests > summary { list-style: none; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto 14px; gap: 10px; align-items: center; padding: 10px 14px; cursor: pointer; }
+.quests > summary::-webkit-details-marker { display: none; }
+.quests > summary::after { content: ""; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); justify-self: center; margin-top: -4px; transition: transform .2s; }
+.quests[open] > summary::after { transform: rotate(-135deg); margin-top: 4px; }
+.q-sico { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text); }
+.q-sico .ico { width: 15px; height: 15px; }
+.q-sum { display: flex; align-items: center; gap: 10px; min-width: 0; font: 700 14.5px/1.2 var(--body); }
+.q-sum b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-dots { display: inline-flex; gap: 4px; flex: none; }
+.q-dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--led-off); border: 1.5px solid var(--line); }
+.q-dots i.on { background: var(--ok); border-color: var(--ok); }
+.q-freeze { display: inline-flex; align-items: center; gap: 3px; padding: 4px 8px 4px 6px; border-radius: 999px; background: var(--surface-2); color: var(--muted); font: 700 13px/1 var(--body); }
+.q-freeze .ico { width: 16px; height: 16px; }
+.q-freeze.has { background: #E3F2FC; color: #1F6FA8; }
+.quests .q-list { padding: 2px 14px 10px; }
+.q-foot { margin: 0; padding: 0 14px 12px; font-size: 13px; color: var(--muted); }
+.quests.all .q-sico { background: var(--ok); color: var(--ok-ink); }
+.quests.all .q-sum b { color: var(--ok); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .q-freeze.has { background: #15324A; color: #8CC8F2; } }
+:root[data-theme="dark"] .q-freeze.has { background: #15324A; color: #8CC8F2; }
+
+/* met of zonder gitaar */
+.gsw { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.gsw button { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 6px; border-radius: 12px; font: 700 14px/1 var(--body); background: var(--surface-2); color: var(--muted); border: 1.5px solid var(--line); }
+.gsw button .ico { width: 20px; height: 20px; }
+.gsw button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent-deep); color: var(--accent-ink); box-shadow: 0 3px 0 var(--accent-deep); }
+.home-top .gsw { border-top: 1px solid var(--line); padding: 10px 12px 12px; }
+.hub > .gsw { padding: 5px; border-radius: 16px; background: var(--surface); border: 2px solid var(--line); }
+.settings-view .gsw { max-width: 420px; }
+
+/* de les: tabellen, lijstjes, geluid, tips en de kwintencirkel */
+.learn-table { overflow-x: auto; }
+.learn-table table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.learn-table th, .learn-table td { padding: 7px 7px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.learn-table thead th { font: 700 12px/1.2 var(--body); color: var(--muted); }
+.learn-table tbody th { font-weight: 700; }
+.learn-list { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15.5px; line-height: 1.45; }
+.listen { display: flex; flex-wrap: wrap; gap: 8px; }
+.lsn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 14px; border-radius: 999px; font: 700 14px/1.1 var(--body); background: var(--accent-soft); border: 1.5px solid color-mix(in srgb, var(--accent) 45%, var(--line)); color: var(--accent-text); text-align: left; }
+.lsn .ico { width: 18px; height: 18px; flex: none; }
+.listen.chips { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.listen.chips .lsn { justify-content: center; padding: 11px 0; }
+.learn-tip { margin: 0; display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; padding: 12px 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line); font-size: 14.5px; line-height: 1.45; }
+.learn-tip .ico { width: 20px; height: 20px; color: var(--accent-text); }
+.circlefig { margin: 0; padding: 8px; }
+.circle5 { display: block; width: 100%; max-width: 340px; margin: 0 auto; }
+.circle5 .cf-out { fill: var(--surface-2); stroke: var(--line); stroke-width: 1.5; }
+.circle5 .cf-in { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.circle5 .cf-div { stroke: var(--line); stroke-width: 1; }
+.circle5 .cf-maj { font: 800 17px var(--display); fill: var(--ink); }
+.circle5 .cf-min { font: 600 12px var(--body); fill: var(--muted); }
+.circle5 .cf-sig { font: 700 10px var(--body); fill: var(--accent-text); }
+.circle5 .home { fill: var(--accent-text); }
+.circle5 .cf-arrow { font: 600 10.5px var(--body); fill: var(--muted); }
+.learn-nav { grid-auto-flow: column; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+.end-how { margin: 0; max-width: 420px; }
+.uh-when { margin: 6px 0 0; font: 600 13px/1.3 var(--body); }
+
+/* pedalboard: de oefeningen van de andere stand */
+.hub-other { border-radius: 16px; border: 1.5px dashed var(--line); }
+.hub-other > summary { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; font: 700 15px/1.2 var(--body); list-style: none; }
+.hub-other > summary::-webkit-details-marker { display: none; }
+.hub-other > summary .ico { width: 20px; height: 20px; color: var(--muted); }
+.hub-other > summary small { margin-left: auto; font: 600 12.5px/1 var(--body); color: var(--muted); }
+.hub-other .pedals { padding: 0 12px 12px; }
+
 </style>
 </head>
 <body data-view="path">
@@ -1304,7 +1338,7 @@ const CHORDS = {
   dom7: { sym: '7', name: 'dominant 7', tones: [DG(0, 0, 'R'), DG(2, 4, '3'), DG(4, 7, '5'), DG(6, 10, '♭7')] },
   maj7: { sym: 'maj7', name: 'groot 7', tones: [DG(0, 0, 'R'), DG(2, 4, '3'), DG(4, 7, '5'), DG(6, 11, '7')] },
   m7: { sym: 'm7', name: 'mineur 7', tones: [DG(0, 0, 'R'), DG(2, 3, '♭3'), DG(4, 7, '5'), DG(6, 10, '♭7')] },
-  m7b5: { sym: 'm7♭5', name: 'half-verminderd', tones: [DG(0, 0, 'R'), DG(2, 3, '♭3'), DG(4, 6, '♭5'), DG(6, 10, '♭7')] },
+  m7b5: { sym: 'm7♭5', name: 'halfverminderd', tones: [DG(0, 0, 'R'), DG(2, 3, '♭3'), DG(4, 6, '♭5'), DG(6, 10, '♭7')] },
   dim: { sym: '°', name: 'verminderd', tones: [DG(0, 0, 'R'), DG(2, 3, '♭3'), DG(4, 6, '♭5')] },
   sus4: { sym: 'sus4', name: 'sus4', tones: [DG(0, 0, 'R'), DG(3, 5, '4'), DG(4, 7, '5')] },
 };
@@ -1854,7 +1888,7 @@ function drawNeck(svg, o) {
 
 // ---------- Opslag ----------
 const DEFAULT_SETTINGS = {
-  gateDb: -48, strict: false, sound: true, haptics: true, names: 'sharps', goal: 15, cantPlayUntil: 0,
+  gateDb: -48, strict: false, sound: true, haptics: true, names: 'sharps', goal: 15, guitar: true,
   strings: [0, 1, 2, 3, 4, 5], minFret: 0, maxFret: 12, naturalsOnly: false, autoHint: 0,
   positions: { order: 'up' },
   intervals: { set: [3, 4, 5, 7, 10, 12], dir: 'up', naturalRoots: true },
@@ -2228,10 +2262,11 @@ function renderSettings(view) {
     h('p', { class: 'bk-status' + (bk.old ? ' old' : ''), text: bk.text }),
     backupButtons(),
     h('div', { class: 'row' }, reset));
-  const goalCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Dagdoel en lessen' }),
+  const goalCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Oefenen en lessen' }),
     h('div', { class: 'set-grid' },
       field('Dagdoel', seg([10, 15, 20, 30].map(n => ({ value: n, label: `${n} min` })), s.goal, v => { s.goal = Number(v); save(); Progress.renderTop(); }), 'Je reeks telt de dagen waarop je dit aantal minuten echt geoefend hebt.'),
-      h('div', { class: 'field' }, h('span', { class: 'lbl', text: 'Muziektheoriecursus' }), h('a', { class: 'link', href: COURSE_DOC, target: '_blank', rel: 'noopener', text: 'Open het cursusboek ›' }), h('span', { class: 'help', text: 'Na elke les van maandag en donderdag komt er een unit bij in je leerpad.' }))));
+      field('Oefenen', guitarSwitch(), 'Met gitaar speel je de noten en luistert de app mee. Zonder gitaar wordt elke speelopdracht een vraag op je telefoon. Je wisselt ook bovenaan Leerpad en Oefenen.'),
+      h('div', { class: 'field' }, h('span', { class: 'lbl', text: 'Muziektheoriecursus' }), h('span', { class: 'help', text: 'Elke zondag komt er een les bij in je leerpad, als je de unittoets van de vorige hebt gehaald. Elke les begint met uitleg.' }))));
   view.append(h('section', { class: 'settings-view' }, goalCard, micCard, rangeCard, ctlCard, scoreCard));
   UI.updateLevel(-120);
 }
@@ -2373,6 +2408,8 @@ Object.assign(ICONS, {
   eye: svgI('<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/>'),
   neck: svgI('<path d="M3 8.5h18M3 12h18M3 15.5h18" opacity=".55"/><path d="M8 6v12M14 6v12" stroke-width="2.6"/><circle cx="11" cy="12" r="2.2" fill="currentColor"/>'),
   level: svgI('<path d="M4 20h4v-5H4zM10 20h4V10h-4zM16 20h4V4h-4z"/>'),
+  guitar: svgI('<path d="M8.5 11A3.4 3.4 0 1 1 13 15.5A5 5 0 1 1 8.5 11Z"/><circle cx="9.2" cy="14.8" r="1.4"/><path d="M11.4 12.6 19.4 4.6"/><path d="M18.2 2.8l3 3"/>'),
+  phone: svgI('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>'),
 });
 
 // ---------- Illustraties per oefening (48×48, lijnen in currentColor) ----------
@@ -2483,7 +2520,7 @@ const LOADER_LINES = [
   'Leg je telefoon dicht bij je gitaar.',
   'Een blije fret springt alle kanten op. In het Engels heet dat de weasel war dance.',
   'Fretten slapen 14 tot 18 uur per dag. Jouw dagdoel is een stuk korter.',
-  'Geen gitaar bij de hand? Tik op “Ik kan nu niet spelen”.',
+  'Geen gitaar bij de hand? Zet het schuifje op Zonder gitaar.',
   'Wat je fout hebt, komt terug bij Herhalen: meteen, en daarna na 1, 3 en 7 dagen.',
   'Bewaar af en toe een reservekopie van je voortgang. Dat doe je bij Voortgang.',
 ];
@@ -2526,16 +2563,28 @@ function countUp(el, to, o = {}) {
 // ---------- Tijdelijke instellingen voor een oefening (bij een les of sessie) ----------
 const TempSettings = {
   saved: null,
+  // set geldt tijdelijk voor deze oefening; heeft de oefening geen eigen instellingen (Noten zoeken),
+  // dan gaat het om de algemene instellingen
   apply(mode, set) {
-    if (!set || !Store.settings[mode]) return;
-    if (!this.saved || this.saved.mode !== mode) { this.restore(); this.saved = { mode, prev: JSON.parse(JSON.stringify(Store.settings[mode])) }; }
-    Object.assign(Store.settings[mode], set);
+    if (!set) return;
+    const root = !Store.settings[mode] || typeof Store.settings[mode] !== 'object';
+    const obj = root ? Store.settings : Store.settings[mode];
+    if (!this.saved || this.saved.mode !== mode) {
+      this.restore();
+      const prev = root ? Object.fromEntries(Object.keys(set).map(k => [k, JSON.parse(JSON.stringify(obj[k]))])) : JSON.parse(JSON.stringify(obj));
+      this.saved = { mode, root, prev };
+    }
+    Object.assign(obj, set);
   },
   restore() {
     if (!this.saved) return;
-    const cur = Store.settings[this.saved.mode], prev = this.saved.prev;
-    for (const k of Object.keys(cur)) if (!(k in prev)) delete cur[k];
-    Object.assign(cur, prev);
+    const prev = this.saved.prev;
+    if (this.saved.root) Object.assign(Store.settings, prev);
+    else {
+      const cur = Store.settings[this.saved.mode];
+      for (const k of Object.keys(cur)) if (!(k in prev)) delete cur[k];
+      Object.assign(cur, prev);
+    }
     this.saved = null;
     Store.saveSettings();
   },
@@ -2715,7 +2764,7 @@ const FretQuiz = {
     for (let g = Math.max(0, f - 3); g <= Math.min(15, f + 3); g++) if (g !== f && NATURAL.has(this.pcAt(s, g))) out.push(g === 0 ? `${this.nameAt(s, g)} los` : `${this.nameAt(s, g)} op ${g}`);
     return out.slice(0, 3).join(', ');
   },
-  // toetsenbord als een stukje piano: stamtonen onder, kruizen en mollen erboven, alleen waar ze bestaan
+  // toetsenbord als een stukje piano: stamtonen onder, kruisen en mollen erboven, alleen waar ze bestaan
   keypad(all, onPick) {
     const el = h('div', { class: 'keypad' + (all ? ' k12' : ' k7'), role: 'group', 'aria-label': 'Kies de noot' });
     LETTERS.forEach((n, i) => el.append(h('button', { type: 'button', class: 'key nat', style: `--c:${2 * i + 1}`, 'data-pc': String(LETTER_PC[i]), 'aria-label': n, onclick: e => onPick(LETTER_PC[i], e.currentTarget) }, h('b', { text: n }))));
@@ -2749,7 +2798,7 @@ const FretQuiz = {
     const miss = 1 - it.ok / it.n, slow = it.ok ? Math.min(2, it.t / it.ok / 3) : 1.5;
     return 0.6 + 2.5 * miss + slow;
   },
-  // only: true of 'nat' = alleen stamtonen, 'acc' = alleen kruizen en mollen
+  // only: true of 'nat' = alleen stamtonen, 'acc' = alleen kruisen en mollen
   pickSpot(strings, from, to, only, prev) {
     const cands = [];
     for (const s of strings) for (let f = from; f <= to; f++) {
@@ -4368,7 +4417,7 @@ registerMode({
 });
 
 // ---------- Gehoortraining zonder gitaar ----------
-const IV_HINT = { 1: 'het thema van Jaws', 2: 'Vader Jacob', 3: 'de riff van Smoke on the Water', 4: 'When the Saints Go Marching In', 5: 'het begin van het Wilhelmus', 6: 'de tune van The Simpsons', 7: 'Star Wars, of Altijd is Kortjakje ziek', 9: 'My Bonnie Lies over the Ocean', 10: 'Somewhere uit West Side Story', 12: 'Somewhere over the Rainbow' };
+const IV_HINT = { 1: 'het thema van Jaws', 2: 'Vader Jacob', 3: 'de riff van Smoke on the Water', 4: 'When the Saints Go Marching In', 5: 'het begin van het Wilhelmus', 6: 'de tune van The Simpsons', 7: 'de lange tonen van Star Wars, of Altijd is Kortjakje ziek', 9: 'My Bonnie Lies over the Ocean', 10: 'Somewhere uit West Side Story', 12: 'Somewhere over the Rainbow' };
 const CHORD_FEEL = { maj: 'helder en open', min: 'donker en weemoedig', dom7: 'bluesy: hij wil verder', maj7: 'zacht en dromerig', m7: 'zacht en soulvol', m7b5: 'donker en gespannen', dim: 'gespannen en onrustig', sus4: 'zwevend: hij wil oplossen' };
 const earName = k => (k.startsWith('iv-') ? (INTERVALS.find(i => i.semis === Number(k.slice(3))) || {}).name || k : CHORDS[k.slice(3)] ? CHORDS[k.slice(3)].name : k);
 registerMode({
@@ -4742,7 +4791,7 @@ const G = {
   },
   fretShorter: () => mc('fret-shorter', 'Hoeveel korter maakt elke fret de trillende snaar ongeveer?', '6%', ['1%', '12%', '25%'], 'Elke halve toon is een verhouding van ongeveer 1,06. Daarom maakt elke fret de snaar ongeveer 6% korter, en liggen de frets richting de body steeds dichter bij elkaar.'),
   equalTemp: () => mc('equal-temp', 'Wat doet de gelijkzwevende stemming?', 'Het foutje van de kwintencirkel over alle 12 stappen verdelen', ['Alle kwinten precies zuiver maken', 'De kwint weglaten uit de toonladder', 'Alleen de open snaren stemmen'], 'Twaalf zuivere kwinten zijn iets meer dan 7 octaven. Door dat verschil over alle 12 stappen te verdelen kun je in elke toonsoort spelen.'),
-  comma: () => mc('comma', 'Twaalf zuivere kwinten op elkaar zijn…', 'iets meer dan 7 octaven', ['precies 7 octaven', 'precies 12 octaven', 'iets minder dan 6 octaven'], '1,5¹² ≈ 129,7 en 2⁷ = 128. Dat kleine verschil heet het Pythagoreïsch komma.'),
+  comma: () => mc('comma', 'Twaalf zuivere kwinten op elkaar zijn…', 'iets meer dan 7 octaven', ['precies 7 octaven', 'precies 12 octaven', 'iets minder dan 6 octaven'], '1,5¹² ≈ 129,7 en 2⁷ = 128. Dat kleine verschil heet de komma van Pythagoras.'),
   tapOctave: () => {
     const r = rootSpot(12);
     return tapItem('tap-octave', 'Tik dezelfde noot een octaaf hoger', { sub: `De ${r.name} is gemarkeerd.`, marks: [{ s: r.s, f: r.f, kind: 'todo root', label: r.name }], valid: r.valid, explain: 'Een octaaf hoger ligt twee snaren hoger en twee frets verder (over de B-snaar heen: drie), of 12 frets verder op dezelfde snaar.' });
@@ -4843,9 +4892,9 @@ const G = {
   keyFromSig: side => {
     const keys = Object.keys(MAJOR_SIG).filter(k => k !== 'G♭' && k !== 'C' && (side === 'sharp' ? MAJOR_SIG[k] > 0 : side === 'flat' ? MAJOR_SIG[k] < 0 : true));
     const key = pick(keys), n = MAJOR_SIG[key];
-    return mc('key-from-sig', `Welke majeurtoonsoort heeft ${sigText(n)}?`, key, Object.keys(MAJOR_SIG).filter(k => k !== key && Math.abs(MAJOR_SIG[k] - n) <= 2 && k !== 'G♭'), `${sigText(n)[0].toUpperCase() + sigText(n).slice(1)}: ${key} majeur. ${n > 0 ? 'De laatste kruis ligt een halve toon onder de grondtoon.' : 'De voorlaatste mol is de grondtoon (behalve bij F).'}`);
+    return mc('key-from-sig', `Welke majeurtoonsoort heeft ${sigText(n)}?`, key, Object.keys(MAJOR_SIG).filter(k => k !== key && Math.abs(MAJOR_SIG[k] - n) <= 2 && k !== 'G♭'), `${sigText(n)[0].toUpperCase() + sigText(n).slice(1)}: ${key} majeur. ${n > 0 ? 'Het laatste kruis ligt een halve toon onder de grondtoon.' : 'De voorlaatste mol is de grondtoon (behalve bij F).'}`);
   },
-  sharpOrder: () => mc('sharp-order', 'In welke volgorde komen de kruisen erbij?', 'F C G D A E B', ['C G D A E B F', 'B E A D G C F', 'F G A B C D E'], 'Elke volgende kruis-toonsoort ligt een kwint hoger en krijgt er één kruis bij: F♯, C♯, G♯, D♯, A♯, E♯, B♯.'),
+  sharpOrder: () => mc('sharp-order', 'In welke volgorde komen de kruisen erbij?', 'F C G D A E B', ['C G D A E B F', 'B E A D G C F', 'F G A B C D E'], 'Elke volgende toonsoort met kruisen ligt een kwint hoger en krijgt er één kruis bij: F♯, C♯, G♯, D♯, A♯, E♯, B♯.'),
   flatOrder: () => mc('flat-order', 'In welke volgorde komen de mollen erbij?', 'B E A D G C F', ['F C G D A E B', 'E A D G C F B', 'B A G F E D C'], 'De mollen komen er in omgekeerde volgorde bij: B♭, E♭, A♭, D♭, G♭, C♭, F♭.'),
   relMinor: () => {
     const key = pick(['C', 'G', 'D', 'A', 'F', 'B♭', 'E♭', 'E']), m = relMinorOf(key);
@@ -5104,17 +5153,28 @@ const TOPICS = {
     ],
   },
 };
-// Fase 1 zoals in het cursusboek (terugval als path.json niet bereikbaar is)
-const FASE1 = [
-  { lesson: 1, date: '2026-10-02', topic: 'twelve-tones' },
-  { lesson: 2, date: '2026-10-05', topic: 'intervals' },
-  { lesson: 3, date: '2026-10-08', topic: 'major-scale' },
-  { lesson: 4, date: '2026-10-12', topic: 'keys-circle' },
-  { lesson: 5, date: '2026-10-15', topic: 'minor' },
-  { lesson: 6, date: '2026-10-19', topic: 'chord-building' },
-  { lesson: 7, date: '2026-10-22', topic: 'diatonic-chords' },
-  { lesson: 8, date: '2026-10-26', topic: 'progressions' },
-];
+// ---------- Wanneer een les opengaat ----------
+// Les 1 opende op 2 oktober. Daarna opent elke les op zondag: de eerste zondag nadat je de unittoets van de
+// vorige les haalde, en minstens een dag na de opening van die vorige. Zo komt er hooguit één les per week bij,
+// en nooit een stapel lessen als je even niet oefent.
+const COURSE_START = '2026-10-02';
+const dayKey = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const plusDays = (key, n) => { const d = new Date(key + 'T12:00:00'); d.setDate(d.getDate() + n); return dayKey(d); };
+const sundayOnOrAfter = key => { const d = new Date(key + 'T12:00:00'); d.setDate(d.getDate() + (7 - d.getDay()) % 7); return dayKey(d); };
+// passed[k] = dag waarop de unittoets van les k+1 voor het eerst gehaald is (of null).
+// Geeft per les de openingsdatum: alle open lessen, plus hooguit één volgende (een datum in de toekomst,
+// of null zolang de toets van de vorige les nog niet gehaald is).
+function courseDates(passed, today, n) {
+  const out = [];
+  for (let k = 0; k < n; k++) {
+    if (k === 0) { out.push(COURSE_START); if (COURSE_START > today) break; continue; }
+    if (!passed[k - 1]) { out.push(null); break; }
+    const prev = out[k - 1], next = sundayOnOrAfter(passed[k - 1] > plusDays(prev, 1) ? passed[k - 1] : plusDays(prev, 1));
+    out.push(next);
+    if (next > today) break;
+  }
+  return out;
+}
 function authoredItems(unit) {
   return (unit.quiz || []).filter(q => q && q.q && Array.isArray(q.options) && q.options.length >= 2 && q.options[q.answer] != null).map(q => {
     const options = shuffle(q.options.map(String));
@@ -5136,11 +5196,16 @@ function unitNodes(unit) {
   }
   nodes.push({ title: 'Unittoets', test: true, gen: () => {
     let all = [];
-    for (const n of nodes.slice(0, -1)) all = all.concat(n.gen());
+    for (const n of nodes.slice(0, -1)) if (!n.lesson) all = all.concat(n.gen());
     all = shuffle(all);
     const plays = all.filter(x => x.type === 'play').slice(0, 3), rest = all.filter(x => x.type !== 'play').slice(0, 10 - plays.length);
     return shuffle(rest.concat(plays));
   } });
+  // eerst de les: uitleg in kaartjes, pas daarna de oefeningen
+  if (unit.cards && unit.cards.length) {
+    const n = unit.cards.length;
+    nodes.unshift({ title: 'Les', lesson: true, icon: ICONS.book, info: `De uitleg in ${n} kaartjes, met geluid en de hals erbij. Ongeveer ${Math.max(5, Math.round(n * 0.9))} minuten, zonder gitaar.`, gen: () => unit.cards.map((c, i) => cardItem(c, unit, i, n)) });
+  }
   return nodes;
 }
 // ---------- Uitlegkaartje: de kern van de les in een paar zinnen ----------
@@ -5162,7 +5227,7 @@ const TOPIC_SUMMARY = {
   ],
   'keys-circle': [
     'De voortekens van een toonsoort vertellen welke noten een ♯ of ♭ krijgen.',
-    'Op de kwintencirkel komt er bij elke stap rechtsom, een kwint omhoog, één kruis bij.',
+    'Op de kwintencirkel ga je rechtsom telkens een kwint omhoog. Bij elke stap komt er één kruis bij.',
     'Kruisen komen in de volgorde F♯ C♯ G♯ D♯ A♯ E♯ B♯, mollen precies andersom: B♭ E♭ A♭ D♭ G♭ C♭ F♭.',
   ],
   'minor': [
@@ -5182,7 +5247,7 @@ const TOPIC_SUMMARY = {
   ],
   'progressions': [
     'I, IV en V zijn de basis van rock en blues. De 12-maten blues gebruikt alleen deze drie akkoorden.',
-    'ii, V, I is de kern van jazz: elke stap gaat een kwint omlaag, terug naar huis.',
+    'ii–V–I is de kern van jazz: elke stap gaat een kwint omlaag, terug naar huis.',
     'Een V7 wil oplossen naar I: de leidtoon gaat een halve toon omhoog naar de grondtoon.',
   ],
 };
@@ -5212,7 +5277,7 @@ function unitMeta(unit) {
   return { title: unit.title || tp.title, subtitle: unit.subtitle != null ? unit.subtitle : tp.subtitle, drill };
 }
 
-// ---------- Halsjacht: de hals leren kennen, zonder gitaar ----------
+// ---------- Halsjacht: de hals leren kennen, met of zonder gitaar (zie 11d-guitar.js) ----------
 // Acht niveaus. Elk niveau heeft drie stappen:
 //  Leren:     uitleg met de hals erbij ("dit is een C"), daarna drie makkelijke vragen
 //  Herkennen: welke noot is dit? (snelheid en kennis), 80% goed om te halen
@@ -5236,7 +5301,7 @@ const HALS_LEVELS = [
   { title: 'Hoge e-snaar', sub: 'Snaar 1: dezelfde noten als de lage E', strings: [0], nat: true, anchors: [3, 5, 7],
     anchorText: 'Precies dezelfde noten als de lage E-snaar, twee octaven hoger: G op 3, A op 5 en B op 7.',
     link: 'Wat je op de lage E kent, ken je hier al. Daarom gaat deze snaar het snelst.', ex: [[5, 5], [0, 5]] },
-  { title: 'Kruizen en mollen', sub: 'De noten tussen de stamtonen', strings: [5, 4, 3, 2, 1, 0], nat: false },
+  { title: 'Kruisen en mollen', sub: 'De noten tussen de stamtonen', strings: [5, 4, 3, 2, 1, 0], nat: false },
   { title: 'De hele hals', sub: 'Alle noten op alle snaren, tot fret 12', strings: [5, 4, 3, 2, 1, 0], nat: false, final: true },
 ];
 const HALS_DONE_WORD = ['niet', 'Leren', 'Herkennen', 'Toepassen'];
@@ -5354,9 +5419,9 @@ const HalsData = {
 function halsNodes(unit) {
   const L = HALS_LEVELS[unit.idx], i = unit.idx;
   return [
-    { title: 'Leren', icon: ICONS.book, info: 'Uitleg met de hals erbij, daarna drie korte vragen. Zonder gitaar, ongeveer 2 minuten.', gen: () => halsLearnItems(L, i) },
-    { title: 'Herkennen', icon: ICONS.eye, pass: 0.8, info: `${L.final ? 'Twaalf' : 'Tien'} keer: welke noot is dit? Met 80% goed haal je deze stap. Ook je snelheid telt mee.`, gen: () => halsRecognize(L, i) },
-    { title: 'Toepassen', icon: ICONS.target, pass: 0.8, info: 'Zoek de noot zelf: tik alle plekken aan op de hals. Met 80% goed heb je dit niveau beheerst.', gen: () => halsApply(L, i) },
+    { title: 'Leren', icon: ICONS.book, get info() { return `Uitleg met de hals erbij, daarna drie korte vragen${Guitar.on() ? ' die je speelt' : ''}. Ongeveer 2 minuten.`; }, gen: () => halsLearnItems(L, i) },
+    { title: 'Herkennen', icon: ICONS.eye, pass: 0.8, get info() { return Guitar.on() ? `${L.final ? 'Twaalf' : 'Tien'} keer: speel de noot die gevraagd wordt, op de goede snaar. Met 80% goed haal je deze stap.` : `${L.final ? 'Twaalf' : 'Tien'} keer: welke noot is dit? Met 80% goed haal je deze stap. Ook je snelheid telt mee.`; }, gen: () => halsRecognize(L, i) },
+    { title: 'Toepassen', icon: ICONS.target, pass: 0.8, get info() { return Guitar.on() ? 'Zoek de noot zelf op je gitaar: speel hem op elke snaar waar hij voorkomt. Met 80% goed heb je dit niveau beheerst.' : 'Zoek de noot zelf: tik alle plekken aan op de hals. Met 80% goed heb je dit niveau beheerst.'; }, gen: () => halsApply(L, i) },
   ];
 }
 function halsSummary(unit) {
@@ -5375,6 +5440,414 @@ function nextHals() {
   }
   return null;
 }
+
+// ---------- Cursus muziektheorie, fase 1: eerst de les, dan de oefeningen ----------
+// Elke unit begint met een les in kaartjes. Een kaartje: { t: titel, p: [alinea's], neck, play, table, list, tip, circle }
+//  play: [{ l: label, n: 'C3 E3' }]            noten na elkaar
+//        [{ l: label, n: 'C3 E3 G3', c: true }] samen, als akkoord
+//        [{ l: label, ch: ['C3 E3 G3', ...] }]  akkoorden na elkaar
+// Een nieuwe les opent op zondag, als je de unittoets van de vorige hebt gehaald (zie courseDates).
+const noteMidi = s => {
+  const m = /^([A-G])([#b♯♭]?)(-?\d)$/.exec(s);
+  if (!m) return null;
+  return 12 * (Number(m[3]) + 1) + { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] === '#' || m[2] === '♯' ? 1 : m[2] === 'b' || m[2] === '♭' ? -1 : 0);
+};
+const LES_DONE = 'Hieronder staat de kern van de les. Daarna volgen de oefeningen. Je kunt de les altijd teruglezen met Lees de les.';
+const COURSE = [
+  // ---------------------------------------------------------------- les 1
+  { lesson: 1, topic: 'twelve-tones', title: 'Waarom 12 tonen', subtitle: 'Octaaf, kwint en de kwintencirkel',
+    quiz: [
+      { q: 'Waarom blijft een powerchord strak klinken, ook met veel distortion?', options: ['Kwint en octaaf zitten al in de boventonen van de grondtoon', 'Er zit een grote terts in die alles bij elkaar houdt', 'Powerchords worden altijd op de lage snaren gespeeld', 'Distortion haalt de kwint weg'], answer: 0, explain: 'De kwint (3:2) en het octaaf (2:1) zitten al in de boventoonreeks van de grondtoon. Een terts geeft met distortion juist snel een modderige klank.' },
+      { q: 'De riff van Smells Like Teen Spirit bestaat uit powerchords. Waarom is geen van die akkoorden majeur of mineur?', options: ['De terts ontbreekt', 'De kwint ontbreekt', 'Hij staat in een rare maatsoort', 'Er zit te veel distortion op'], answer: 0, explain: 'De terts bepaalt majeur of mineur. Zonder terts klinkt een akkoord neutraal en krachtig.' },
+      { q: 'Welke sprong hoor je tussen “Altijd” en “is” in Altijd is Kortjakje ziek?', options: ['Een kwint omhoog', 'Een octaaf omhoog', 'Een grote terts omhoog', 'Een kwart omlaag'], answer: 0, explain: 'Na de eerste twee gelijke noten springt de melodie een kwint omhoog: een handig geheugensteuntje voor dat interval.' },
+      { q: 'De A-snaar trilt op 110 Hz. Welke boventoon ligt bijna op een C♯?', options: ['550 Hz (×5)', '330 Hz (×3)', '440 Hz (×4)', '660 Hz (×6)'], answer: 0, explain: '110 × 5 = 550 Hz: twee octaven plus een grote terts boven de A, net iets lager dan een gestemde C♯.' },
+    ],
+    cards: [
+      { t: 'Waarom twaalf tonen?',
+        p: ['Van een A naar de volgende A zijn het op je gitaar twaalf frets, dus twaalf halve tonen. Waarom precies twaalf? Omdat twaalf kwinten op elkaar bijna precies zeven octaven zijn.', 'In deze les zie je hoe dat zit, en wat het met powerchords te maken heeft.'],
+        neck: { from: 0, to: 12, highlight: [4], marks: [lmk(4, 0, 'hi', 'A'), lmk(4, 12, 'hi', 'A')] } },
+      { t: 'Eén snaar, veel tonen tegelijk',
+        p: ['Tokkel je de A-snaar, dan trilt hij als geheel 110 keer per seconde: 110 hertz. Tegelijk trilt hij in twee gelijke stukken, in drie, in vier, enzovoort.', 'Die extra tonen heten boventonen. Je hoort ze meestal niet apart, maar samen bepalen ze de klankkleur van je gitaar.'],
+        table: { h: ['Deel van de snaar', 'Hz', 'Toon', 'Boven de A'], r: [['hele snaar', '110', 'A', 'grondtoon'], ['½', '220', 'A', 'octaaf'], ['⅓', '330', 'E', 'octaaf + kwint'], ['¼', '440', 'A', 'twee octaven'], ['⅕', '550', 'C♯ (bijna)', 'twee octaven + grote terts'], ['⅙', '660', 'E', 'twee octaven + kwint']] },
+        play: [{ l: 'De A-snaar', n: 'A2' }, { l: 'Grondtoon en vijf boventonen', n: 'A2 A3 E4 A4 C#5 E5' }],
+        tip: 'Heb je je gitaar bij de hand? Leg een vinger heel licht op de A-snaar, precies boven fret 12, 7 of 5, en tokkel. Dat heet een flageolet: je hoort dan één boventoon los, 220, 330 of 440 hertz.' },
+      { t: 'Het octaaf: 2 staat tot 1',
+        p: ['Twee keer zo snel trillen klinkt als dezelfde noot, alleen hoger. Daarom heten 110 en 220 hertz allebei A. Die verhouding, 2:1, heet het octaaf.', 'Op de gitaar vind je het octaaf twaalf frets verder op dezelfde snaar, of twee snaren hoger en twee frets verder. Begin je op de D- of G-snaar, dan zijn het drie frets, omdat je over de B-snaar gaat. Daarover meer in les 2.'],
+        neck: { from: 0, to: 12, marks: [lmk(4, 0, 'hi', 'A'), lmk(2, 2, 'pair', 'A'), lmk(4, 12, 'pair', 'A')] },
+        play: [{ l: 'A en het octaaf', n: 'A2 A3' }, { l: 'Samen', n: 'A2 A3', c: true }] },
+      { t: 'De kwint: 3 staat tot 2',
+        p: ['De derden trillen drie keer zo snel: een E, een octaaf plus een kwint boven de A. Haal je dat octaaf eraf, dan hou je de verhouding 3:2 over: de kwint.', 'Na het octaaf is de kwint de stabielste samenklank die er is. Op de hals ligt hij één snaar hoger en twee frets verder. Vanaf de G-snaar is dat drie frets, daarover meer in les 2.'],
+        neck: { from: 0, to: 7, marks: [lmk(4, 0, 'hi', 'A'), lmk(3, 2, 'pair', 'E')] },
+        play: [{ l: 'A en de kwint', n: 'A2 E3' }, { l: 'Samen', n: 'A2 E3', c: true }] },
+      { t: 'Powerchords',
+        p: ['Een powerchord zoals A5 is grondtoon, kwint en octaaf: A, E en A. Die tonen zitten allemaal al in de boventonen van de lage A. Daarom blijft een powerchord strak klinken, ook met veel distortion.', 'Wat ontbreekt, is de terts: de toon die een akkoord blij (majeur) of verdrietig (mineur) maakt. Je leert hem in les 2. Met distortion wordt een terts snel modderig, en zonder terts klinkt een powerchord neutraal en stevig.'],
+        neck: { from: 3, to: 9, marks: [lmk(5, 5, 'hi', 'A'), lmk(4, 7, 'pair', 'E'), lmk(3, 7, '', 'A')] },
+        play: [{ l: 'A5', n: 'A2 E3 A3', c: true }],
+        tip: 'Luister naar het begin van Smells Like Teen Spirit van Nirvana: de riff bestaat uit powerchords. Elk akkoord apart is niet blij en niet verdrietig. De donkere sfeer komt uit de volgorde van de akkoorden.' },
+      { t: 'Twaalf kwinten',
+        p: ['Begin op C en ga telkens een kwint omhoog: C, G, D, A, E, B, F♯, C♯, G♯, D♯, A♯, E♯ en dan B♯. E♯ klinkt als F en B♯ als C.', 'Na twaalf stappen ben je terug bij C, zeven octaven hoger, en je bent elke toon precies één keer tegengekomen. Zo ontstaan de twaalf tonen. Dit rondje heet de kwintencirkel; in les 4 kom je hem weer tegen.', 'Elke toon kan twee namen hebben. Een ♭ (mol) maakt een toon een halve toon lager: F♯ is ook G♭, en F♭ is gewoon E. Twee namen voor dezelfde toon heten enharmonisch.'],
+        play: [{ l: 'Kwinten stapelen vanaf C', n: 'C3 G3 D4 A4 E5' }] },
+      { t: 'Het foutje en de oplossing',
+        p: ['Helemaal precies klopt het niet. Twaalf zuivere kwinten (1,5¹² ≈ 129,7) zijn iets meer dan zeven octaven (2⁷ = 128). Het verschil is ongeveer een vierde van een halve toon en heet de komma van Pythagoras.', 'Moderne instrumenten verdelen dat foutje over alle twaalf stappen: elke halve toon is dezelfde verhouding van ongeveer 1,06. Dat heet de gelijkzwevende stemming. Elke kwint is daardoor een fractie te klein, maar dat hoor je niet. Zo kun je in elke toonsoort spelen.', 'Je frets zijn er precies op geplaatst: elke fret maakt de snaar ongeveer 6% korter. Daarom liggen ze richting de body steeds dichter bij elkaar.'] },
+      { t: 'Wat heb je hieraan?',
+        p: ['De kwint is het skelet van bijna alles wat nog komt: toonsoorten, de kwintencirkel, en waarom het akkoord op de vijfde trap zo graag terug wil naar het eerste. Wie de kwint leert horen, hoort de bouw van een nummer.'],
+        tip: 'Neurie het begin van Altijd is Kortjakje ziek. De sprong van “Altijd” naar “is” is een kwint omhoog. Neurie daarna een willekeurige toon en zing de kwint erboven.' },
+      { t: 'Onthoud', sum: true, p: [LES_DONE] },
+    ] },
+  // ---------------------------------------------------------------- les 2
+  { lesson: 2, topic: 'intervals', title: 'Intervallen', subtitle: 'Namen, halve tonen en hoe ze klinken',
+    cards: [
+      { t: 'Terugblik',
+        p: ['Vorige keer: het octaaf is 2:1 en de kwint 3:2. Op de hals ligt het octaaf twee snaren hoger en twee frets verder, de kwint één snaar hoger en twee frets verder.', 'Deze week geef je elke afstand tussen twee tonen een naam, en leer je hoe hij klinkt.'] },
+      { t: 'Afstand in halve tonen',
+        p: ['Een interval is de afstand tussen twee tonen. Op de gitaar tel je die in frets: één fret is een halve toon, twee frets een hele toon.', 'Van C naar E op de A-snaar is fret 3 naar fret 7: vier halve tonen. Dat interval heet een grote terts.'],
+        neck: { from: 0, to: 9, highlight: [4], marks: [lmk(4, 3, 'hi', 'C'), lmk(4, 4, '', '1'), lmk(4, 5, '', '2'), lmk(4, 6, '', '3'), lmk(4, 7, 'pair', 'E')] },
+        play: [{ l: 'C naar E', n: 'C3 E3' }] },
+      { t: 'De namen',
+        p: ['Elk aantal halve tonen heeft een naam. Die naam telt letters, in het Latijn: secunde is 2, terts 3, kwart 4, kwint 5, sext 6, septiem 7 en octaaf 8. Van C naar E is C, D, E: drie letters, dus een terts.', 'Bij de meeste intervallen hoort een liedje dat ermee begint. Tik op een getal om het interval vanaf C te horen.'],
+        table: { h: ['Halve tonen', 'Interval', 'Begin van'], r: [['1', 'kleine secunde', 'Jaws'], ['2', 'grote secunde', 'Vader Jacob'], ['3', 'kleine terts', 'Smoke on the Water'], ['4', 'grote terts', 'When the Saints'], ['5', 'reine kwart', 'het Wilhelmus'], ['6', 'tritonus', 'The Simpsons'], ['7', 'reine kwint', 'Star Wars (de lange tonen)'], ['8', 'kleine sext', '–'], ['9', 'grote sext', 'My Bonnie'], ['10', 'kleine septiem', 'Somewhere (West Side Story)'], ['11', 'grote septiem', '–'], ['12', 'octaaf', 'Somewhere over the Rainbow']] },
+        play: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(k => ({ l: String(k), n: `C3 ${['C#3', 'D3', 'Eb3', 'E3', 'F3', 'F#3', 'G3', 'Ab3', 'A3', 'Bb3', 'B3', 'C4'][k - 1]}`, chip: true })) },
+      { t: 'Klein of groot',
+        p: ['Secunden, tertsen, sexten en septiemen bestaan in twee maten: klein en groot. Ze schelen één fret.', 'De terts is de belangrijkste: hij beslist of iets blij of donker klinkt. C met E (grote terts) klinkt open en helder, C met E♭ (kleine terts) donker. Dat verschil hoor je terug in majeur- en mineurakkoorden.'],
+        play: [{ l: 'Grote terts', n: 'C3 E3' }, { l: 'Kleine terts', n: 'C3 Eb3' }, { l: 'C majeur', n: 'C3 E3 G3', c: true }, { l: 'C mineur', n: 'C3 Eb3 G3', c: true }] },
+      { t: 'Rein: kwart, kwint en octaaf',
+        p: ['Kwart, kwint en octaaf heten rein. Ze klinken zo stabiel dat er maar één goede maat van bestaat.', 'Precies tussen de kwart en de kwint ligt de tritonus: zes halve tonen, drie hele tonen. Hij klinkt onrustig en wil ergens heen. In blues en metal wordt hij juist opgezocht.'],
+        play: [{ l: 'Kwart', n: 'C3 F3' }, { l: 'Tritonus', n: 'C3 F#3' }, { l: 'Kwint', n: 'C3 G3' }, { l: 'Octaaf', n: 'C3 C4' }],
+        tip: 'Het nummer Black Sabbath, van de gelijknamige band, is opgebouwd rond een tritonus. Luister hoe dreigend dat klinkt.' },
+      { t: 'Omkeren',
+        p: ['Een kwart omhoog en een kwint omlaag komen op dezelfde noot uit, een octaaf uit elkaar: 5 + 7 = 12. Zulke paren heten elkaars omkering.', 'Een terts omkeren geeft een sext (3 + 9 en 4 + 8), een secunde geeft een septiem (2 + 10 en 1 + 11). Klein wordt groot en groot wordt klein.', 'Handig op de hals: zoek je een grote sext omhoog, dan kun je ook een kleine terts omlaag spelen.'] },
+      { t: 'Vormen op de hals',
+        p: ['Elk interval heeft een vaste vorm. Op de hals staat k3 voor kleine terts, g3 voor grote terts en 8 voor het octaaf. Vanaf de C op de A-snaar, fret 3:'],
+        list: ['kleine terts: één snaar hoger, twee frets terug', 'grote terts: één snaar hoger, één fret terug', 'kwart: één snaar hoger, zelfde fret', 'kwint: één snaar hoger, twee frets verder', 'octaaf: twee snaren hoger, twee frets verder', 'over de B-snaar heen: één fret verder, want van de G- naar de B-snaar zijn het maar vier halve tonen in plaats van vijf'],
+        neck: { from: 0, to: 7, marks: [lmk(4, 3, 'hi', 'C'), lmk(3, 1, '', 'k3'), lmk(3, 2, '', 'g3'), lmk(3, 3, '', '4'), lmk(3, 5, 'pair', '5'), lmk(2, 5, 'pair', '8')] },
+        play: [{ l: 'C, k3, g3, kwart, kwint, octaaf', n: 'C3 Eb3 E3 F3 G3 C4' }] },
+      { t: 'Intervallen horen',
+        p: ['Onthoud bij elk interval één liedje. Zing het begin in je hoofd, dan weet je hoe groot de sprong is.', 'Oefen het met de Gehoortraining bij Oefenen: de app speelt twee tonen en jij kiest het interval. Begin met de twee tertsen, de kwart en de kwint.'],
+        tip: 'Neurie een toon. Zing daarna de grote terts erboven, zoals in When the Saints, en dan de kwint, zoals in de lange tonen van Star Wars.' },
+      { t: 'Onthoud', sum: true, p: [LES_DONE] },
+    ] },
+  // ---------------------------------------------------------------- les 3
+  { lesson: 3, topic: 'major-scale', title: 'De majeurtoonladder', subtitle: 'De trappen, en waarom 7 naar 1 trekt',
+    cards: [
+      { t: 'Terugblik',
+        p: ['Vorige keer: een interval is een afstand in halve tonen. Een grote terts is 4, een kwint 7.', 'Deze week kies je zeven tonen uit de twaalf: de majeurtoonladder. Je ziet hoe hij in elkaar zit en waarom de ene toon rust geeft en de andere spanning.'] },
+      { t: 'Zeven uit twaalf',
+        p: ['Een toonladder is een keuze uit de twaalf tonen. De majeurtoonladder kiest er zeven, altijd met hetzelfde patroon van hele (H) en halve (h) stappen: H H h H H H h.', 'Vanaf C geeft dat C D E F G A B C: alleen de witte toetsen van een piano. Op één snaar zie je het patroon meteen, zoals hierboven op de B-snaar: twee frets, twee frets, één fret, enzovoort.'],
+        neck: { from: 0, to: 13, highlight: [1], marks: [lmk(1, 1, 'hi', 'C'), lmk(1, 3, '', 'D'), lmk(1, 5, '', 'E'), lmk(1, 6, '', 'F'), lmk(1, 8, '', 'G'), lmk(1, 10, '', 'A'), lmk(1, 12, '', 'B'), lmk(1, 13, 'hi', 'C')] },
+        play: [{ l: 'C majeur', n: 'C4 D4 E4 F4 G4 A4 B4 C5' }] },
+      { t: 'Trappen in plaats van namen',
+        p: ['Elke toon krijgt een nummer: de trap. Trap 1 is de grondtoon, waar de muziek thuiskomt, en trap 8 is weer de grondtoon, een octaaf hoger. Het handige van trappen is dat ze in elke toonsoort werken: trap 5 is in C een G en in A een E.', 'Muzikanten praten vaak in trappen, omdat een melodie of akkoordenschema dan in elke toonsoort hetzelfde blijft.'],
+        table: { h: ['Trap', 'C majeur', 'G majeur', 'A majeur'], r: [['1', 'C', 'G', 'A'], ['2', 'D', 'A', 'B'], ['3', 'E', 'B', 'C♯'], ['4', 'F', 'C', 'D'], ['5', 'G', 'D', 'E'], ['6', 'A', 'E', 'F♯'], ['7', 'B', 'F♯', 'G♯']] } },
+      { t: 'De twee halve stappen',
+        p: ['De halve stappen zitten tussen trap 3 en 4 en tussen trap 7 en 8. In C majeur zijn dat E naar F en B naar C: precies de plekken waar op de piano geen zwarte toets tussen zit.', 'Die twee halve stappen geven de majeurtoonladder zijn karakter. Liggen ze ergens anders, dan krijg je een andere toonladder, zoals mineur in les 5.'],
+        table: { h: ['Trap', 'In C', 'Stap naar de volgende'], r: [['1', 'C', 'heel'], ['2', 'D', 'heel'], ['3', 'E', 'half'], ['4', 'F', 'heel'], ['5', 'G', 'heel'], ['6', 'A', 'heel'], ['7', 'B', 'half']] } },
+      { t: 'Rust en spanning',
+        p: ['Niet elke trap voelt hetzelfde. Trap 1 is rust. Trap 3 en 5 passen er stevig bij: samen met 1 vormen ze het majeurakkoord. Trap 5 heet ook de dominant: na de grondtoon de belangrijkste toon. Trap 2, 4, 6 en 7 willen ergens naartoe.', 'De sterkste trek heeft trap 7. Hij ligt maar een halve toon onder de grondtoon, en je oor wil hem daar laten landen. Daarom heet hij de leidtoon. Ook trap 4 leunt naar de 3 eronder.'],
+        play: [{ l: 'Tot trap 7…', n: 'C3 D3 E3 F3 G3 A3 B3' }, { l: '…en dan 8', n: 'B3 C4' }],
+        tip: 'Zing de toonladder omhoog en stop op trap 7. Voel je hoe hij door wil naar de grondtoon?' },
+      { t: 'Elke toonsoort hetzelfde patroon',
+        p: ['Begin je de majeurtoonladder op G, dan moet je één toon aanpassen om het patroon te houden: F wordt F♯. Anders klopt de laatste halve stap niet.', 'Zo krijgt elke majeurtoonsoort zijn eigen kruisen of mollen. In les 4 zie je hoe dat precies werkt. Hierboven staat G majeur in één octaaf, vanaf de lage E-snaar.'],
+        neck: { from: 0, to: 7, marks: [lmk(5, 3, 'hi', 'G'), lmk(5, 5, '', 'A'), lmk(4, 2, '', 'B'), lmk(4, 3, '', 'C'), lmk(4, 5, '', 'D'), lmk(3, 2, '', 'E'), lmk(3, 4, 'pair', 'F♯'), lmk(3, 5, 'hi', 'G')] },
+        play: [{ l: 'G majeur', n: 'G2 A2 B2 C3 D3 E3 F#3 G3' }] },
+      { t: 'Luisteren',
+        p: ['Do-Re-Mi uit The Sound of Music zingt de trappen van de majeurtoonladder één voor één. Joy to the World begint met de hele toonladder omlaag, van 8 naar 1.', 'Zing een nummer dat je goed kent en let op de laatste toon van het refrein. Vaak is dat de grondtoon, trap 1: daar komt het nummer thuis.'] },
+      { t: 'Onthoud', sum: true, p: [LES_DONE] },
+    ] },
+  // ---------------------------------------------------------------- les 4
+  { lesson: 4, topic: 'keys-circle', title: 'Toonsoorten', subtitle: 'Voortekens en de kwintencirkel',
+    cards: [
+      { t: 'Terugblik',
+        p: ['Vorige keer: de majeurtoonladder volgt H H h H H H h. In G majeur wordt F een F♯ om dat patroon te houden.', 'Deze week zie je welke toonsoort welke kruisen of mollen krijgt, en waarom dat zo logisch is.'] },
+      { t: 'Wat is een toonsoort?',
+        p: ['Een toonsoort zegt twee dingen: welke toon thuis is, de grondtoon, en welke zeven tonen je gebruikt. Een nummer in G majeur gebruikt de tonen van de G-majeurtoonladder en komt thuis op G.', 'De kruisen of mollen van een toonsoort heten de voortekens. Ze staan aan het begin van elke notenbalk, zodat je ze niet bij elke noot hoeft te schrijven. Samen heten ze de voortekening.'] },
+      { t: 'Een kwint omhoog, één kruis erbij',
+        p: ['Ga vanaf C een kwint omhoog en je komt bij G: één kruis. Nog een kwint omhoog: D, twee kruisen. Zo gaat het door: elke stap een kwint hoger geeft één kruis erbij.', 'Het nieuwe kruis is steeds trap 7, de leidtoon. In G is dat F♯; in D komt C♯ erbij.'],
+        table: { h: ['Toonsoort', 'Kruisen', 'Welke'], r: [['C', '0', '–'], ['G', '1', 'F♯'], ['D', '2', 'F♯ C♯'], ['A', '3', 'F♯ C♯ G♯'], ['E', '4', 'F♯ C♯ G♯ D♯'], ['B', '5', 'F♯ C♯ G♯ D♯ A♯']] } },
+      { t: 'Een kwint omlaag, één mol erbij',
+        p: ['De andere kant op werkt het net zo. Een kwint omlaag vanaf C is F: één mol, B♭. Daarna B♭ met twee mollen, E♭ met drie en A♭ met vier.', 'De nieuwe mol is steeds trap 4 van de nieuwe toonsoort. Trucje: vanaf twee mollen is de voorlaatste mol de naam van de toonsoort. B♭ E♭ A♭ is dus E♭ majeur.'],
+        table: { h: ['Toonsoort', 'Mollen', 'Welke'], r: [['F', '1', 'B♭'], ['B♭', '2', 'B♭ E♭'], ['E♭', '3', 'B♭ E♭ A♭'], ['A♭', '4', 'B♭ E♭ A♭ D♭']] } },
+      { t: 'De volgorde onthouden',
+        p: ['Kruisen komen er altijd in dezelfde volgorde bij: F C G D A E B. Mollen in precies de omgekeerde volgorde: B E A D G C F.', 'De mollenrij begint met het woord BEAD. Onthoud BEAD-GCF, en lees hem achterstevoren voor de kruisen.'] },
+      { t: 'De kwintencirkel', circle: true,
+        p: ['Zet alle toonsoorten in een kring, telkens een kwint verder, en je hebt de kwintencirkel. Rechtsom komt er steeds een kruis bij, linksom een mol. Onderaan ontmoeten ze elkaar: F♯ en G♭ klinken hetzelfde.', 'In de binnenring staan de mineurtoonsoorten met dezelfde voortekens. Daarover gaat les 5.'] },
+      { t: 'Buren zijn familie',
+        p: ['Toonsoorten die naast elkaar liggen, verschillen maar één toon. Daarom klinkt een overgang tussen buren zo natuurlijk.', 'Kijk naar C: links ligt F, rechts G. Dat zijn precies trap 4 en 5 van C, de belangrijkste akkoorden naast C zelf. Een blues in A gebruikt A, D en E: ook buren in de cirkel.'] },
+      { t: 'Gitaartoonsoorten',
+        p: ['De open snaren van je gitaar zijn E, A, D, G, B en E. Daarom liggen toonsoorten met kruisen, zoals E, A, D en G, zo lekker op de gitaar. Veel rock en blues staat in E of A.', 'Blazers spelen liever in toonsoorten met mollen, zoals F, B♭ en E♭. Speel je met blazers, zoals in soul en jazz, dan kom je die toonsoorten vaker tegen.'] },
+      { t: 'Onthoud', sum: true, p: [LES_DONE] },
+    ] },
+  // ---------------------------------------------------------------- les 5
+  { lesson: 5, topic: 'minor', title: 'Mineur', subtitle: 'Natuurlijk, harmonisch en melodisch',
+    cards: [
+      { t: 'Terugblik',
+        p: ['Vorige keer: elke majeurtoonsoort heeft zijn eigen voortekens, en buren in de kwintencirkel schelen één toon. In de binnenring stonden de mineurtoonsoorten.', 'Daar gaat deze les over: mineur, in drie smaken.'] },
+      { t: 'Zelfde tonen, ander thuis',
+        p: ['Speel de tonen van C majeur, maar begin en eindig op A: A B C D E F G A. Dat is A natuurlijk mineur. Er komt geen enkele nieuwe toon bij, en toch klinkt het opeens donker.', 'Het verschil zit in waar thuis is. A mineur is de relatieve mineur van C majeur: zelfde tonen, zelfde voortekens, ander middelpunt. Je vindt hem op trap 6 van majeur, of een kleine terts onder de grondtoon.'],
+        neck: { from: 2, to: 9, marks: [lmk(5, 5, 'hi', 'A'), lmk(5, 7, '', 'B'), lmk(4, 3, '', 'C'), lmk(4, 5, '', 'D'), lmk(4, 7, '', 'E'), lmk(3, 3, '', 'F'), lmk(3, 5, '', 'G'), lmk(3, 7, 'hi', 'A')] },
+        play: [{ l: 'C majeur', n: 'C3 D3 E3 F3 G3 A3 B3 C4' }, { l: 'A mineur', n: 'A2 B2 C3 D3 E3 F3 G3 A3' }] },
+      { t: 'Het patroon van mineur',
+        p: ['Natuurlijk mineur volgt H h H H h H H. Vergeleken met majeur op dezelfde grondtoon liggen drie trappen een halve toon lager: de 3, de 6 en de 7.', 'Die kleine terts is het belangrijkst: hij maakt een toonladder of akkoord mineur. Je schrijft hem als ♭3: trap 3, een halve toon lager.'],
+        table: { h: ['Trap', '1', '2', '3', '4', '5', '6', '7'], r: [['A majeur', 'A', 'B', 'C♯', 'D', 'E', 'F♯', 'G♯'], ['A mineur', 'A', 'B', 'C', 'D', 'E', 'F', 'G']] },
+        play: [{ l: 'A majeur', n: 'A2 B2 C#3 D3 E3 F#3 G#3 A3' }, { l: 'A mineur', n: 'A2 B2 C3 D3 E3 F3 G3 A3' }] },
+      { t: 'Mineur in de muziek',
+        p: ['Losing My Religion van R.E.M. staat in A mineur, Nothing Else Matters van Metallica in E mineur. Ook de bekende intro van Stairway to Heaven staat in A mineur.', 'De mineurpentatoniek, de toonladder van heel veel rock- en bluessolo’s, is natuurlijk mineur zonder de 2 en de 6. Je kunt hem al proberen bij Toonladders onder Oefenen.'] },
+      { t: 'Harmonisch mineur',
+        p: ['Natuurlijk mineur heeft geen leidtoon: G ligt een hele toon onder A en trekt dus minder. Harmonisch mineur verhoogt daarom trap 7: G wordt G♯.', 'Nu wordt het akkoord op trap 5 E majeur in plaats van Em, en dat trekt heel sterk naar A mineur. Vaak hoor je er E7 van, die leer je in les 6. Bijwerking: tussen F en G♯ zit een sprong van drie halve tonen. Die geeft harmonisch mineur zijn oosterse, wat dramatische klank.'],
+        play: [{ l: 'A harmonisch mineur', n: 'A2 B2 C3 D3 E3 F3 G#3 A3' }, { l: 'E naar Am', ch: ['E2 B2 E3 G#3', 'A2 E3 A3 C4'] }],
+        tip: 'In Hotel California van de Eagles, in B mineur, is het akkoord op trap 5 F♯ majeur in plaats van F♯ mineur. De A♯ in dat akkoord is de verhoogde 7.' },
+      { t: 'Melodisch mineur',
+        p: ['Melodisch mineur lost die rare sprong op door ook trap 6 te verhogen: F wordt F♯. Omhoog speel je dan A B C D E F♯ G♯ A: mineur onderin, majeur bovenin.', 'In de klassieke muziek speel je hem omlaag weer als natuurlijk mineur. In de jazz gebruik je hem beide kanten op.'],
+        play: [{ l: 'A melodisch mineur', n: 'A2 B2 C3 D3 E3 F#3 G#3 A3' }] },
+      { t: 'Welke wanneer?',
+        list: ['Natuurlijk mineur: het meeste in rock, pop en folk, en de basis van de mineurpentatoniek.', 'Harmonisch mineur: voor het majeurakkoord op trap 5, en voor een dramatische of oosterse kleur, ook in metal.', 'Melodisch mineur: vooral jazz, en melodieën die soepel omhoog lopen.'],
+        p: [],
+        tip: 'Luister naar een nummer in mineur en let op het akkoord vlak voor het slot. Is dat een majeurakkoord op trap 5, dan hoor je harmonisch mineur.' },
+      { t: 'Onthoud', sum: true, p: [LES_DONE] },
+    ] },
+  // ---------------------------------------------------------------- les 6
+  { lesson: 6, topic: 'chord-building', title: 'Akkoorden bouwen', subtitle: 'Drieklanken en septiemakkoorden',
+    cards: [
+      { t: 'Terugblik',
+        p: ['Vorige keer: mineur heeft een kleine terts, en harmonisch mineur verhoogt de 7 voor een leidtoon.', 'Deze week bouw je zelf akkoorden. En dan blijkt die terts weer alles te beslissen.'] },
+      { t: 'Tertsen stapelen',
+        p: ['Een akkoord is een stapel tertsen. Neem een toon uit de toonladder, sla de volgende over en neem die daarna: C, (D), E, (F), G. Dat is een drieklank met grondtoon (1), terts (3) en kwint (5).', 'Op de gitaar speel je vaak meer dan drie snaren. Dan verdubbel je gewoon tonen: een open C-akkoord is C, E, G, C, E.'],
+        play: [{ l: 'C, E, G', n: 'C3 E3 G3' }, { l: 'Samen', n: 'C3 E3 G3', c: true }] },
+      { t: 'Vier soorten drieklanken',
+        p: ['Er zijn twee soorten tertsen: klein (3 halve tonen) en groot (4). Twee tertsen stapelen kan dus op vier manieren.'],
+        table: { h: ['Soort', 'Tertsen', 'Trappen', 'Vanaf C'], r: [['majeur', 'groot + klein', '1 3 5', 'C E G'], ['mineur', 'klein + groot', '1 ♭3 5', 'C E♭ G'], ['verminderd', 'klein + klein', '1 ♭3 ♭5', 'C E♭ G♭'], ['overmatig', 'groot + groot', '1 3 ♯5', 'C E G♯']] },
+        play: [{ l: 'Majeur', n: 'C3 E3 G3', c: true }, { l: 'Mineur', n: 'C3 Eb3 G3', c: true }, { l: 'Verminderd', n: 'C3 Eb3 Gb3', c: true }, { l: 'Overmatig', n: 'C3 E3 G#3', c: true }] },
+      { t: 'De terts beslist',
+        p: ['Majeur en mineur verschillen maar in één toon: de terts. De kwint is het stevige fundament, de terts geeft de kleur. Een powerchord heeft geen terts en is daarom neutraal.', 'Kijk naar open A en open Am: alleen de B-snaar verschilt. Fret 2 is C♯, de grote terts. Fret 1 is C, de kleine terts.', 'Vervang je de terts door een kwart, dan krijg je sus4: zwevend, alsof het akkoord nog moet kiezen.'],
+        neck: { from: 0, to: 5, marks: [lmk(4, 0, 'hi', 'A'), lmk(3, 2, '', 'E'), lmk(2, 2, '', 'A'), lmk(1, 1, 'pair', 'C'), lmk(1, 2, 'acc', 'C♯'), lmk(0, 0, '', 'E')] },
+        play: [{ l: 'A', n: 'A2 E3 A3 C#4 E4', c: true }, { l: 'Am', n: 'A2 E3 A3 C4 E4', c: true }, { l: 'Asus4 naar A', ch: ['A2 E3 A3 D4 E4', 'A2 E3 A3 C#4 E4'] }] },
+      { t: 'Septiemakkoorden',
+        p: ['Zet er nog een terts bovenop en je hebt een septiemakkoord: vier tonen. De septiem maakt een akkoord rijker, en vaak ook onrustiger.', 'Groot 7 heeft een grote septiem, de andere drie een kleine. Halfverminderd is een verminderd akkoord met een kleine septiem erbij.'],
+        table: { h: ['Naam', 'Symbool', 'Trappen', 'Vanaf C'], r: [['groot 7', 'Cmaj7', '1 3 5 7', 'C E G B'], ['dominant 7', 'C7', '1 3 5 ♭7', 'C E G B♭'], ['mineur 7', 'Cm7', '1 ♭3 5 ♭7', 'C E♭ G B♭'], ['halfverminderd', 'Cm7♭5', '1 ♭3 ♭5 ♭7', 'C E♭ G♭ B♭']] },
+        play: [{ l: 'Cmaj7', n: 'C3 E3 G3 B3', c: true }, { l: 'C7', n: 'C3 E3 G3 Bb3', c: true }, { l: 'Cm7', n: 'C3 Eb3 G3 Bb3', c: true }, { l: 'Cm7♭5', n: 'C3 Eb3 Gb3 Bb3', c: true }] },
+      { t: 'Hoe ze klinken',
+        p: ['Elk septiemakkoord heeft zijn eigen kleur:'],
+        list: ['maj7: zacht en dromerig, veel in soul en ballads', '7: bluesy en onaf, hij wil verder. In de blues is vaak elk akkoord een 7, zoals A7, D7 en E7', 'm7: warm en soulvol, veel in funk', 'm7♭5: donker en gespannen, vooral in jazz'],
+        play: [{ l: 'C, Cmaj7, C7', ch: ['C3 E3 G3 C4', 'C3 E3 G3 B3', 'C3 E3 G3 Bb3'] }],
+        tip: 'Het couplet van Something van The Beatles begint met C, Cmaj7 en C7, net als dit voorbeeld: één toon in het akkoord zakt telkens een halve toon, van C via B naar B♭.' },
+      { t: 'Akkoordnamen lezen',
+        p: ['Een 7 zonder “maj” betekent een kleine septiem. C7 heeft dus een B♭, Cmaj7 een B.'],
+        list: ['C: C majeur', 'Cm: C mineur', 'C° of Cdim: C verminderd', 'C+ of Caug: C overmatig', 'Cmaj7: groot 7', 'C7: dominant 7', 'Cm7: mineur 7', 'Cm7♭5 of Cø: halfverminderd', 'Csus4: kwart in plaats van terts'] },
+      { t: 'Onthoud', sum: true, p: [LES_DONE] },
+    ] },
+  // ---------------------------------------------------------------- les 7
+  { lesson: 7, topic: 'diatonic-chords', title: 'Akkoorden in een toonsoort', subtitle: 'Trappen, Romeinse cijfers en functies',
+    cards: [
+      { t: 'Terugblik',
+        p: ['Vorige keer: een akkoord is een stapel tertsen. Grote plus kleine terts is majeur, kleine plus grote is mineur.', 'Deze week stapel je tertsen met alleen de tonen van één toonladder. Zo krijg je de akkoorden die bij een toonsoort horen.'] },
+      { t: 'Een akkoord op elke trap',
+        p: ['Neem C majeur en stapel op elke trap twee tertsen, met alleen tonen uit C majeur. Je krijgt zeven akkoorden die bij elkaar horen.'],
+        table: { h: ['Trap', 'Tonen', 'Akkoord'], r: [['1', 'C E G', 'C'], ['2', 'D F A', 'Dm'], ['3', 'E G B', 'Em'], ['4', 'F A C', 'F'], ['5', 'G B D', 'G'], ['6', 'A C E', 'Am'], ['7', 'B D F', 'B°']] },
+        play: [{ l: 'Alle zeven', ch: ['C3 E3 G3', 'D3 F3 A3', 'E3 G3 B3', 'F3 A3 C4', 'G3 B3 D4', 'A3 C4 E4', 'B3 D4 F4'] }] },
+      { t: 'Romeinse cijfers',
+        p: ['Muzikanten schrijven die akkoorden met Romeinse cijfers. Een hoofdletter is majeur, een kleine letter mineur en ° verminderd.', 'Het patroon is in elke majeurtoonsoort hetzelfde: I ii iii IV V vi vii°.'],
+        table: { h: ['', 'I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°'], r: [['C', 'C', 'Dm', 'Em', 'F', 'G', 'Am', 'B°'], ['G', 'G', 'Am', 'Bm', 'C', 'D', 'Em', 'F♯°'], ['A', 'A', 'Bm', 'C♯m', 'D', 'E', 'F♯m', 'G♯°']] } },
+      { t: 'Waarom cijfers handig zijn',
+        p: ['Met cijfers speel je een nummer in elke toonsoort. I–IV–V is in A: A, D en E. In E is het E, A en B.', 'Zegt een bandlid “naar de vier”, dan weet je meteen welk akkoord. En wil de zanger het lager, dan blijven de cijfers gewoon hetzelfde.'] },
+      { t: 'Thuis, weg en spanning',
+        p: ['Elk akkoord heeft een rol. I is de tonica: thuis, rust. IV is de subdominant: weg van huis, beweging. V is de dominant: spanning die terug wil naar I.', 'Veel nummers zijn een reisje: je vertrekt van huis, gaat op pad, de spanning loopt op en je komt weer thuis.'],
+        play: [{ l: 'I – IV – V – I', ch: ['C3 E3 G3', 'C3 F3 A3', 'B2 D3 G3', 'C3 E3 G3'] }] },
+      { t: 'De vervangers',
+        p: ['De mineurakkoorden lijken op de grote drie. Am deelt twee tonen met C (C en E) en klinkt als een donkere versie van thuis. Dm deelt twee tonen met F en doet hetzelfde werk als IV.', 'Daarom kun je ze vaak verwisselen. I–vi–IV–V (in C: C, Am, F, G) is een beroemd voorbeeld. Stand By Me van Ben E. King gebruikt het in A: A, F♯m, D, E.'],
+        play: [{ l: 'C – Am – F – G', ch: ['C3 E3 G3', 'C3 E3 A3', 'C3 F3 A3', 'B2 D3 G3'] }] },
+      { t: 'Het V7-akkoord',
+        p: ['Zet een kleine septiem op het V-akkoord en je krijgt G7: G, B, D en F. Daarin zitten twee tonen die naar het C-akkoord willen. B, de leidtoon, gaat een halve toon omhoog naar C. F zakt een halve toon naar E. Samen vormen B en F een tritonus: daar zit de spanning.', 'Die dubbele trek maakt V7 naar I het sterkste slot dat er is.'],
+        play: [{ l: 'G7 naar C', ch: ['G2 B2 D3 F3', 'C3 E3 G3'] }] },
+      { t: 'In mineur',
+        p: ['In A mineur geeft het stapelen: Am, B°, C, Dm, Em, F en G (i ii° III iv v VI VII). Vaak wordt v een majeurakkoord, E of E7, dankzij harmonisch mineur.', 'Rock gebruikt graag i–VII–VI: in A mineur is dat Am, G, F. Luister maar naar All Along the Watchtower, van Bob Dylan of in de versie van Jimi Hendrix: het hele nummer draait om dat rondje.'],
+        play: [{ l: 'Am – G – F', ch: ['A2 E3 A3 C4', 'G2 D3 G3 B3', 'F2 C3 F3 A3'] }] },
+      { t: 'Onthoud', sum: true, p: [LES_DONE] },
+    ] },
+  // ---------------------------------------------------------------- les 8
+  { lesson: 8, topic: 'progressions', title: 'Progressies', subtitle: 'I–IV–V, ii–V–I en de 12-maten blues',
+    cards: [
+      { t: 'Terugblik',
+        p: ['Vorige keer: elke trap heeft een akkoord, met een Romeins cijfer. I is thuis, IV weg van huis en V de spanning.', 'Deze week zie je de akkoordenschema’s die je in duizenden nummers hoort.'] },
+      { t: 'I – IV – V',
+        p: ['Met alleen I, IV en V speel je al eindeloos veel nummers. Twist and Shout, La Bamba en Three Little Birds van Bob Marley zijn er voorbeelden van.', 'In A is dat A, D en E. In E is het E, A en B. Voor gitaar zijn dat ideale toonsoorten.'],
+        play: [{ l: 'A – D – E – A', ch: ['A2 C#3 E3 A3', 'A2 D3 F#3 A3', 'B2 E3 G#3 B3', 'A2 C#3 E3 A3'] }] },
+      { t: 'De 12-maten blues',
+        p: ['De blues gebruikt ook alleen I, IV en V, in een vaste vorm van twaalf maten. Elk akkoord is meestal een dominant 7.', 'Vaak speel je in maat 12 al V, als opstapje terug naar het begin.'],
+        table: { h: ['Maten', '1e', '2e', '3e', '4e'], r: [['1 t/m 4', 'I', 'I', 'I', 'I'], ['5 t/m 8', 'IV', 'IV', 'I', 'I'], ['9 t/m 12', 'V', 'IV', 'I', 'I']] },
+        tip: 'In A wordt dat A7, D7 en E7. Hoor het in Pride and Joy van Stevie Ray Vaughan of in Johnny B. Goode van Chuck Berry.' },
+      { t: 'Het popschema: I – V – vi – IV',
+        p: ['Dit schema hoor je in honderden popnummers. In C is het C, G, Am, F. Let It Be van The Beatles gebruikt het, With or Without You van U2 (D, A, Bm, G) en Someone Like You van Adele (A, E, F♯m, D).', 'Begin je op vi, dan klinkt hetzelfde rondje donkerder: vi–IV–I–V. Zombie van The Cranberries is daar een voorbeeld van.'],
+        play: [{ l: 'C – G – Am – F', ch: ['C3 E3 G3', 'B2 D3 G3', 'C3 E3 A3', 'C3 F3 A3'] }] },
+      { t: 'ii – V – I: de kern van jazz',
+        p: ['In jazz hoor je steeds ii–V–I, meestal met septiemakkoorden: Dm7, G7, Cmaj7. De grondtonen zakken telkens een kwint: D, G, C. Zo loop je de kwintencirkel af, terug naar huis.', 'In het voorbeeld gaat de laatste stap een kwart omhoog. Dat komt op dezelfde noot uit als een kwint omlaag (les 2).', 'Autumn Leaves en Fly Me to the Moon zitten er vol mee.'],
+        play: [{ l: 'Dm7 – G7 – Cmaj7', ch: ['D3 F3 A3 C4', 'G2 B2 D3 F3', 'C3 E3 G3 B3'] }] },
+      { t: 'Waarom dit werkt',
+        p: ['Het geheim zit in drie dingen die je al kent. De grondtonen springen vaak een kwint (les 1). De akkoorden delen tonen, zodat elke toon maar een klein stapje hoeft te zetten naar het volgende akkoord (les 7). En V7 bouwt spanning op die in I oplost.', 'Spanning en ontspanning: dat is eigenlijk het hele verhaal van harmonie.'] },
+      { t: 'Zelf herkennen',
+        p: ['Drie vragen helpen je om de akkoorden van een nummer te herkennen:'],
+        list: ['Zoek thuis: op welk akkoord eindigt het refrein? Meestal is dat I, of i als het nummer in mineur staat.', 'Gaat het weg van huis, maar zonder veel spanning? Grote kans dat het IV is.', 'Voelt het alsof het nummer naar huis wil? Grote kans dat het V is.'],
+        tip: 'Zing de grondtoon mee onder een nummer en volg hem als het akkoord wisselt. Met Doeltonen bij Oefenen speel je met je gitaar over een blues of I–IV–V de terts van elk akkoord.' },
+      { t: 'Onthoud', sum: true, p: ['Hiermee is de basis van fase 1 rond.', LES_DONE] },
+    ] },
+];
+
+// ---------- Kwintencirkel als plaatje (les 4) ----------
+function circleSvg() {
+  const maj = ['C', 'G', 'D', 'A', 'E', 'B', 'F♯/G♭', 'D♭', 'A♭', 'E♭', 'B♭', 'F'];
+  const min = ['Am', 'Em', 'Bm', 'F♯m', 'C♯m', 'G♯m', 'E♭m', 'B♭m', 'Fm', 'Cm', 'Gm', 'Dm'];
+  const sig = ['', '1♯', '2♯', '3♯', '4♯', '5♯', '6♯ / 6♭', '5♭', '4♭', '3♭', '2♭', '1♭'];
+  const at = (i, r) => { const a = (i * 30 - 90) * Math.PI / 180; return [(160 + r * Math.cos(a)).toFixed(1), (160 + r * Math.sin(a)).toFixed(1)]; };
+  let g = '<circle class="cf-out" cx="160" cy="160" r="152"/><circle class="cf-in" cx="160" cy="160" r="86"/>';
+  for (let i = 0; i < 12; i++) {
+    const [x1, y1] = at(i + 0.5, 86), [x2, y2] = at(i + 0.5, 152);
+    g += `<line class="cf-div" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+  }
+  for (let i = 0; i < 12; i++) {
+    const [mx, my] = at(i, 126), [sx, sy] = at(i, 100), [nx, ny] = at(i, 62);
+    g += `<text class="cf-maj${i === 0 ? ' home' : ''}" x="${mx}" y="${(Number(my) + 6).toFixed(1)}" text-anchor="middle">${maj[i]}</text>`;
+    if (sig[i]) g += `<text class="cf-sig" x="${sx}" y="${(Number(sy) + 4).toFixed(1)}" text-anchor="middle">${sig[i]}</text>`;
+    g += `<text class="cf-min${i === 0 ? ' home' : ''}" x="${nx}" y="${(Number(ny) + 5).toFixed(1)}" text-anchor="middle">${min[i]}</text>`;
+  }
+  g += '<text class="cf-arrow" x="160" y="156" text-anchor="middle">rechtsom ♯</text><text class="cf-arrow" x="160" y="172" text-anchor="middle">linksom ♭</text>';
+  return `<svg class="circle5" viewBox="0 0 320 320" role="img" aria-label="Kwintencirkel: majeurtoonsoorten buiten, mineur binnen">${g}</svg>`;
+}
+
+// ---------- Geluid bij de les: noten, intervallen en akkoorden ----------
+const Listen = {
+  notes: s => s.trim().split(/\s+/).map(noteMidi).filter(m => m != null),
+  play(sp) {
+    let ctx;
+    try { ctx = Engine.ensureCtx(); } catch (e) { return; }
+    let t = ctx.currentTime + 0.06;
+    if (sp.ch) {
+      for (const c of sp.ch) { this.notes(c).forEach((m, i) => Engine.pluck(m, t + i * 0.03, 1.4, 0.5)); t += 1.05; }
+      t += 0.5;
+    } else if (sp.c) {
+      this.notes(sp.n).forEach((m, i) => Engine.pluck(m, t + i * 0.035, 1.5, 0.55));
+      t += 1.7;
+    } else {
+      const ns = this.notes(sp.n);
+      ns.forEach((m, i) => Engine.pluck(m, t + i * 0.45, i === ns.length - 1 ? 1.3 : 0.6, 0.7));
+      t += ns.length * 0.45 + 1;
+    }
+    Engine.block((t - ctx.currentTime) * 1000 + 150);
+  },
+};
+
+// ---------- Kaartje naar een vraag in de lesspeler ----------
+function cardItem(c, unit, i, n) {
+  const sum = c.sum ? unitSummary(unit) : null;
+  return { type: 'learn', prompt: c.t, text: c.p || [], neck: c.neck, big: c.big, circle: !!c.circle, table: c.table, list: sum || c.list, tip: c.tip, listen: c.play, kicker: `Les ${unit.lesson} · ${i + 1} van ${n}`, course: true };
+}
+
+// ---------- Met of zonder gitaar ----------
+// Eén schuifje bepaalt hoe je oefent. Met gitaar speel je alles wat over noten op de hals gaat (de app luistert);
+// theorievragen beantwoord je met één tik. Zonder gitaar wordt elke speelopdracht een vraag op je telefoon.
+// Zo hoef je nooit je gitaar weg te leggen om iets aan te tikken, of hem te pakken voor één noot.
+const Guitar = {
+  on() { return Store.settings.guitar !== false; },
+  set(v) {
+    Store.settings.guitar = !!v; Store.saveSettings();
+    $$('.gsw').forEach(el => el._paint && el._paint());
+  },
+};
+// de schakelaar; onChange(met) na een wissel
+function guitarSwitch(onChange) {
+  const el = h('div', { class: 'gsw', role: 'group', 'aria-label': 'Oefenen met of zonder gitaar' });
+  const btn = (met, icon, label) => h('button', { type: 'button', 'data-v': met ? 'met' : 'zonder', onclick: () => {
+    if (Guitar.on() === met) return;
+    Guitar.set(met); Sfx.play('tap');
+    if (onChange) onChange(met);
+  } }, h('span', { html: icon }), h('span', { text: label }));
+  el.append(btn(true, ICONS.guitar, 'Met gitaar'), btn(false, ICONS.phone, 'Zonder gitaar'));
+  el._paint = () => $$('button', el).forEach(b => b.setAttribute('aria-pressed', String((b.dataset.v === 'met') === Guitar.on())));
+  el._paint();
+  return el;
+}
+// moet de microfoon aan voor deze vragen?
+const needsMic = items => Guitar.on() && items.some(x => ['play', 'tap', 'name', 'tapall'].includes(x.type));
+
+// de naam van een interval van n halve tonen, met lidwoord: "de kwint", "het octaaf"
+function ivWord(semis) {
+  if (semis === 12) return 'het octaaf';
+  const iv = INTERVALS.find(x => x.semis === semis);
+  return iv ? `de ${iv.name.replace('reine ', '')}` : `${semis} halve tonen hoger`;
+}
+// neem eigenschappen van het origineel mee: id in de les, plek in Herhalen, onderwerp
+function carry(from, to) {
+  for (const k of Object.keys(from)) if (k[0] === '_' && k !== '_orig') to[k] = from[k];
+  to._orig = from._orig || from;
+  to.skill = to.skill || from.skill;
+  return to;
+}
+// ---- met gitaar: tikken op de hals wordt spelen ----
+function playFromTap(it) {
+  const r = (it.marks || [])[0], v = (it.valid || [])[0];
+  if (!r || !v) return null;
+  const m0 = OPEN[r.s] + r.f, semis = OPEN[v.s] + v.f - m0;
+  let target = pcName(m0 + semis, 'sharps');
+  try { const iv = INTERVALS.find(x => x.semis === semis); if (iv) target = spName(spellFrom(parseName(r.label), iv.steps, iv.semis)); } catch (e) {}
+  return carry(it, { type: 'play', skill: it.skill, prompt: `Speel ${r.label}, en daarna ${ivWord(semis)} erboven`, big: r.label, sub: `${r.label} ligt op de ${STR_NAME[r.s]}, ${r.f ? 'fret ' + r.f : 'los'}`,
+    steps: [{ k: 'pc', pc: mod12(m0), name: r.label, pos: { s: r.s, f: r.f } }, { k: 'rel', semis, name: target }],
+    neck: { from: Math.max(0, r.f - 3), to: Math.min(15, r.f + 6), marks: [{ s: r.s, f: r.f, kind: 'todo root', label: r.label }] },
+    hint: it.explain || '', explain: it.explain });
+}
+// Halsjacht, Herkennen: in plaats van "welke noot is dit?" speel je de noot op de snaar
+function playFromName(it) {
+  const name = SHARP_NAMES[it.pc], both = FretQuiz.both(it.pc), frets = FretQuiz.spots(it.pc, [it.s], 0, 12).map(p => p.f);
+  return carry(it, { type: 'play', skill: 'hals-play', prompt: `Speel ${both} op de ${STR_NAME[it.s]}`, big: name, sub: `op de ${STR_NAME[it.s]}`,
+    steps: [{ k: 'pc', pc: it.pc, name, string: it.s, frets }], highlight: [it.s], hint: `Fret ${frets.join(' of ')}`, explain: it.explain, _spot: { s: it.s, f: it.f } });
+}
+// Halsjacht, Toepassen: in plaats van alle plekken aantikken speel je de noot op elke snaar
+function playFromTapAll(it) {
+  const by = {};
+  for (const p of it.valid) (by[p.s] = by[p.s] || []).push(p.f);
+  const strs = Object.keys(by).map(Number).sort((a, b) => b - a);
+  if (!strs.length) return null;
+  if (strs.length === 1) {
+    const s = strs[0], frets = by[s].sort((a, b) => a - b);
+    return carry(it, { type: 'play', skill: 'hals-play-all', prompt: frets.length > 1 ? `Speel alle ${it.name}'s op de ${STR_NAME[s]}, van laag naar hoog` : `Speel de ${it.name} op de ${STR_NAME[s]}`, big: it.name, sub: `op de ${STR_NAME[s]}`,
+      // geen fretnummers in de vakjes: die moet je zelf vinden (Hint geeft ze)
+      steps: frets.map((f, i) => (i ? { k: 'rel', semis: f - frets[i - 1], name: it.name } : { k: 'pc', pc: it.pc, name: it.name, string: s, frets: [f] })),
+      highlight: [s], hint: `Fret ${frets.join(' en ')}`, explain: it.explain });
+  }
+  return carry(it, { type: 'play', skill: 'hals-play-all', prompt: `Speel de ${it.name} op elke snaar`, big: it.name, sub: `van de ${STR_NAME[strs[0]]} naar de ${STR_NAME[strs[strs.length - 1]]}`,
+    steps: strs.map(s => ({ k: 'pc', pc: it.pc, name: it.name, label: STR_LETTER[s], string: s, frets: by[s] })),
+    highlight: [strs[0]], hint: strs.map(s => `${STR_LETTER[s]}: ${by[s].join(' of ')}`).join(', '), explain: it.explain });
+}
+// ---- zonder gitaar: een speelopdracht wordt een vraag over dezelfde stof ----
+function askFromPlay(it) {
+  const sk = it.skill || '', m = /^play-(scale|chord|box)-([a-z0-9]+)/.exec(sk);
+  let alt = null;
+  if (sk === 'play-octave') alt = G.tapOctave();
+  else if (sk === 'play-fifth' || sk === 'play-power') alt = pick([G.tapFifth, G.fifthAbove])();
+  else if (sk.startsWith('iv-play-')) alt = G.ivTap([Number(sk.slice(8)) || 7]);
+  else if (sk === 'play-degree') alt = G.majDegree();
+  else if (m && m[1] === 'scale') alt = m[2] === 'major' ? G.majNotes() : m[2] === 'minor' ? G.minNotes('natural') : SCALES[m[2]] ? G.scaleNotesQ(m[2], it.big || 'A') : null;
+  else if (m && m[1] === 'chord') alt = CHORDS[m[2]] ? G.chordNotes([m[2]]) : G.triadFormula();
+  else if (sk.startsWith('play-box-')) { const sc = sk.split('-')[2]; alt = SCALES[sc] ? G.scaleNotesQ(sc, it.big || 'A') : null; }
+  else if (sk === 'play-key-root') alt = G.keyFromSig();
+  else if (sk === 'play-harm7') alt = G.harm7();
+  else if (sk === 'play-dia-root') alt = G.romanOf();
+  else if (sk === 'play-dia-chord') alt = G.diaChord();
+  else if (sk === 'play-prog') alt = pick([G.prog145, G.prog251, G.prog1564])();
+  else if (sk === 'note-play' && it.steps && it.steps[0] && it.steps[0].string != null) alt = findItem(it.steps[0].pc, [it.steps[0].string]);
+  else if (sk === 'hals-play' || sk === 'hals-play-all') alt = null;   // komt uit de Halsjacht: het origineel gebruiken
+  return alt ? carry(it, alt) : null;
+}
+// zet één vraag om naar de stand van het schuifje (null: geen goede vervanger, dan valt hij weg)
+function fitItem(it, guitar) {
+  // een eerder omgezette vraag eerst terug naar het origineel
+  if (it._orig && (it.type === 'play') !== guitar) it = Object.assign({}, it._orig, Object.fromEntries(Object.entries(it).filter(([k]) => k[0] === '_' && k !== '_orig')));
+  if (guitar) {
+    if (it.type === 'tap') return playFromTap(it);
+    if (it.type === 'name') return playFromName(it);
+    if (it.type === 'tapall') return playFromTapAll(it);
+    return it;
+  }
+  if (it.type === 'play') return askFromPlay(it);
+  return it;
+}
+function fitMode(items, guitar = Guitar.on()) { return items.map(it => fitItem(it, guitar)).filter(Boolean); }
 
 // ---------- Lesspeler (één oefening tegelijk, zoals Duolingo) ----------
 const sameSet = (a, b) => a.length === b.length && a.every(x => b.includes(x));
@@ -5401,9 +5874,10 @@ const Lesson = {
     if (!sp) { setTimeout(() => { location.hash = ''; }, 0); return; }
     // bin: een herhaalronde (nieuwe fouten en vragen die vandaag terugkomen)
     this.bin = sp.mode === 'bin'; this.review = this.bin;
-    this.cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
-    let items = sp.items.map((it, i) => Object.assign({ _id: i }, it));
-    if (this.cantPlay && items.some(i => i.type !== 'play')) items = items.filter(i => i.type !== 'play');
+    // elke vraag in de stand van het schuifje: met gitaar spelen, zonder gitaar tikken
+    let items = fitMode(sp.items.map((it, i) => Object.assign({ _id: i }, it)));
+    this.allLearn = items.length > 0 && items.every(i => i.type === 'learn');
+    this.learnHist = [];
     this.queue = items;
     this.total = items.length; this.doneIds = new Set(); this.mistakes = 0; this.skipped = 0; this.hints = 0;
     this.combo = 0; this.fixed = 0; this.recalled = 0; this.mastered = 0; this.wrongKeys = new Set(); this.times = [];
@@ -5463,7 +5937,6 @@ const Lesson = {
     this.answered = false;
     if (!this.queue.length) return this.finish();
     const it = this.queue.shift();
-    if (it.type === 'play' && this.cantPlay) { this.doneIds.add(it._id); this.updateBar(); return this.next(); }
     this.cur = it;
     this.body.innerHTML = '';
     this.body.classList.remove('enter'); void this.body.offsetWidth; this.body.classList.add('enter');
@@ -5471,7 +5944,7 @@ const Lesson = {
     this.foot.innerHTML = '';
     const [ico, label] = KIND[KIND[it.type] ? it.type : 'theory'];
     const from = it._box ? `herhaling na ${SRS_DAYS[it._box]} ${SRS_DAYS[it._box] === 1 ? 'dag' : 'dagen'}` : 'eerder fout';
-    this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, ${from}` : label));
+    this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, ${from}` : it.kicker || label));
     this.body.append(h('h2', { class: 'ls-prompt', text: it.prompt }));
     if (it.sub && it.type !== 'play') this.body.append(h('p', { class: 'ls-sub', text: it.sub }));
     if (it.type === 'mc') this.renderMC(it);
@@ -5587,11 +6060,27 @@ const Lesson = {
       this.body.append(h('figure', { class: 'card neck learnneck' }, svg));
       drawNeck(svg, Object.assign({ big: true }, it.neck));
     }
-    this.body.append(h('div', { class: 'learn-text' }, it.text.map(t => h('p', { text: t }))));
+    if (it.circle) this.body.append(h('figure', { class: 'card circlefig', html: circleSvg() }));
+    if (it.text.length) this.body.append(h('div', { class: 'learn-text' }, it.text.map(t => h('p', { text: t }))));
+    if (it.table) this.body.append(h('div', { class: 'learn-table' }, h('table', {},
+      h('thead', {}, h('tr', {}, it.table.h.map(c => h('th', { scope: 'col', text: c })))),
+      h('tbody', {}, it.table.r.map(r => h('tr', {}, r.map((c, i) => h(i ? 'td' : 'th', i ? { text: c } : { scope: 'row', text: c }))))))));
+    if (it.list) this.body.append(h('ul', { class: 'learn-list' }, it.list.map(t => h('li', { text: t }))));
+    if (it.listen) this.body.append(h('div', { class: 'listen' + (it.listen.every(x => x.chip) ? ' chips' : '') }, it.listen.map(sp => h('button', { type: 'button', class: 'lsn', 'aria-label': `Luister: ${sp.l}`, onclick: e => { Listen.play(sp); Fx.pop(e.currentTarget); Activity.ping(); } }, sp.chip ? null : h('span', { html: ICONS.sound }), h('span', { text: sp.l })))));
+    if (it.tip) this.body.append(h('p', { class: 'learn-tip' }, h('span', { html: ICONS.ear }), h('span', { text: it.tip })));
     const last = !this.queue.some(q => q.type === 'learn');
-    this.foot.append(h('button', { class: 'primary big', type: 'button', text: last ? 'Begrepen' : 'Volgende', onclick: () => {
+    const back = this.learnHist.length ? h('button', { class: 'big ghost ls-back', type: 'button', text: 'Vorige', onclick: () => {
+      // terug naar het vorige kaartje
+      const prev = this.learnHist.pop();
+      this.doneIds.delete(prev._id);
+      this.queue.unshift(it); this.queue.unshift(prev);
+      this.updateBar(); this.next();
+    } }) : null;
+    const go = h('button', { class: 'primary big', type: 'button', text: last ? (it.course ? 'Naar de oefeningen' : 'Begrepen') : 'Volgende', onclick: () => {
+      this.learnHist.push(it);
       this.doneIds.add(it._id); this.updateBar(); Sfx.play('tap'); this.next();
-    } }));
+    } });
+    this.foot.append(back ? h('div', { class: 'ls-row learn-nav' }, back, go) : go);
   },
   renderName(it) {
     const svg = svgEl('Gitaarhals met één gemarkeerde plek');
@@ -5745,6 +6234,7 @@ const Lesson = {
   // --- speelopdrachten ---
   renderPlay(it) {
     this.ps = { idx: 0, last: null, found: new Set() };
+    this.t1 = performance.now();
     const big = h('div', { class: 'note ls-big', html: /^[A-G][♯♭]?$/.test(it.big || '') ? bigNoteHTML(it.big) : `<span class="deg">${it.big || ''}</span>` });
     this.body.append(big);
     if (it.sub) this.body.append(h('p', { class: 'ls-sub', text: it.sub }));
@@ -5767,7 +6257,7 @@ const Lesson = {
     const row = h('div', { class: 'ls-row' });
     if (!Engine.mic) row.append(h('button', { class: 'primary big', type: 'button', text: Engine.starting ? 'Toegang vragen…' : 'Start microfoon', onclick: async () => { await Engine.startMic(); if (this.cur && this.cur.type === 'play' && !this.answered) this.playFoot(); } }));
     row.append(h('button', { class: 'big', type: 'button', text: 'Hint', onclick: () => this.hint() }), h('button', { class: 'big', type: 'button', text: 'Overslaan', onclick: () => this.skip() }));
-    this.foot.append(row, h('button', { class: 'linkish', type: 'button', text: 'Ik kan nu niet spelen', onclick: () => this.cantPlayNow() }));
+    this.foot.append(row, h('button', { class: 'linkish', type: 'button', text: 'Geen gitaar bij de hand? Verder zonder gitaar', onclick: () => this.noGuitarNow() }));
   },
   onMic() { if (this.cur && this.cur.type === 'play' && !this.answered) this.playFoot(); },
   renderSteps() {
@@ -5776,7 +6266,7 @@ const Lesson = {
       const st = it.steps[0];
       this.stepsEl.innerHTML = st.pcs.map((pc, i) => `<span class="slot${ps.found.has(pc) ? ' on' : ''}"><small>${st.labels ? st.labels[i] : ''}</small><b>${ps.found.has(pc) ? st.names[i] : '?'}</b></span>`).join('');
     } else if (it.steps.length > 1) {
-      this.stepsEl.innerHTML = it.steps.map((st, i) => `<span class="slot${i < ps.idx ? ' on' : ''}${i === ps.idx && !this.answered ? ' now' : ''}"><small>${i + 1}</small><b>${i < ps.idx ? st.name : '?'}</b></span>`).join('');
+      this.stepsEl.innerHTML = it.steps.map((st, i) => `<span class="slot${i < ps.idx ? ' on' : ''}${i === ps.idx && !this.answered ? ' now' : ''}"><small>${st.label || i + 1}</small><b>${i < ps.idx ? st.name : '?'}</b></span>`).join('');
     } else this.stepsEl.innerHTML = '';
     if (this.playSvg) {
       if (it.neck) {
@@ -5788,7 +6278,10 @@ const Lesson = {
           return m;
         });
         drawNeck(this.playSvg, { from: it.neck.from, to: it.neck.to, marks, highlight: cur && cur.pos ? [cur.pos.s] : [] });
-      } else drawNeck(this.playSvg, { from: 0, to: Math.max(12, Store.settings.maxFret), highlight: it.highlight, marks: this.playMarks || [] });
+      } else {
+        const cur = it.steps[ps.idx], hl = cur && cur.string != null ? [cur.string] : it.highlight;
+        drawNeck(this.playSvg, { from: 0, to: Math.max(12, Store.settings.maxFret), highlight: hl, marks: this.playMarks || [] });
+      }
     }
   },
   hint() {
@@ -5804,24 +6297,33 @@ const Lesson = {
       }
       drawNeck(this.hintSvg, it.hintNeck);
     }
-    if (it.highlight && it.steps[0].frets) { this.playMarks = it.steps[0].frets.map(f => ({ s: it.steps[0].string, f, kind: 'hint', label: it.steps[0].name })); this.renderSteps(); }
+    const st = it.steps[this.ps.idx] || it.steps[0];
+    if (it.highlight && st.frets) { this.playMarks = st.frets.map(f => ({ s: st.string, f, kind: 'hint', label: st.name })); this.renderSteps(); }
   },
   skip() {
     const it = this.cur;
     if (!it || this.answered) return;
+    if (it._spot) FretQuiz.record(it._spot.s, it._spot.f, false, (performance.now() - this.t1) / 1000);
     this.mistakes++; this.skipped++;
     this.doneIds.add(it._id); this.updateBar();
     const ans = it.steps.map(st => st.k === 'set' ? st.names.join(' ') : st.name).join(' → ');
     this.fxEl = $('.ls-big', this.body); this.via = 'tap';
     this.wrong(it, 'Overgeslagen', it.hint || '', ans);
   },
-  cantPlayNow() {
-    Store.settings.cantPlayUntil = Date.now() + 15 * 60 * 1000; Store.saveSettings();
-    this.cantPlay = true;
-    for (const q of this.queue) if (q.type === 'play') this.doneIds.add(q._id);
-    this.queue = this.queue.filter(q => q.type !== 'play');
-    if (this.cur && this.cur.type === 'play') this.doneIds.add(this.cur._id);
+  // geen gitaar bij de hand: schuifje op Zonder gitaar, en de rest van de les wordt tikken
+  noGuitarNow() {
+    Guitar.set(false);
+    const cur = this.cur, before = this.queue;
+    this.queue = fitMode(before, false);
+    // vragen zonder goede vervanger vallen weg: die tellen als gedaan, zodat de balk klopt
+    const kept = new Set(this.queue.map(q => q._id));
+    for (const q of before) if (!kept.has(q._id)) this.doneIds.add(q._id);
+    if (cur && cur.type === 'play' && !this.answered) {
+      const alt = fitItem(cur, false);
+      if (alt) this.queue.unshift(alt); else this.doneIds.add(cur._id);
+    }
     this.updateBar();
+    UI.flash(ICONS.phone, 'Je oefent nu zonder gitaar', 'Speelopdrachten worden vragen op je telefoon. Zet het schuifje terug bij Leerpad of Oefenen.', 'badge', null, true);
     this.next();
   },
   onNote(n) {
@@ -5858,6 +6360,7 @@ const Lesson = {
   },
   playDone() {
     const it = this.cur;
+    if (it._spot) { const secs = (performance.now() - this.t1) / 1000; FretQuiz.record(it._spot.s, it._spot.f, true, secs); this.times.push(secs); }
     this.doneIds.add(it._id); this.updateBar();
     this.fxEl = $('.ls-big', this.body); this.via = 'mic';
     this.right(it, null, 1500);
@@ -5889,6 +6392,13 @@ const Lesson = {
       // zo werkt herhalen: uitleg op het moment dat het gebeurt
       how = this.fixed ? 'Wat je nu goed had, komt morgen terug. Weet je het dan nog, dan zie je het na 3 en daarna na 7 dagen nog één keer.' : '';
       if (xp) Progress.addXP(xp);
+    } else if (this.allLearn) {
+      // een les om te lezen: geen score, wel XP, en dan door naar de oefeningen
+      xp = sp.xp || 10;
+      Progress.addXP(xp);
+      if (sp.onFinish) sp.onFinish({ passed: true, accuracy: 1, perfect: false, secs, xp });
+      title = 'Les gelezen!'; mood = 'boek'; sub = sp.title || '';
+      how = 'De oefeningen bij deze les staan nu open. Je kunt de les altijd teruglezen met Lees de les.';
     } else {
       xp = passed ? (sp.xp || 10) + (perfect ? 5 : 0) : 5;
       Progress.addXP(xp);
@@ -5914,13 +6424,13 @@ const Lesson = {
       sub ? h('p', { class: 'help', text: sub }) : null,
       h('div', { class: 'end-stats' },
         h('div', {}, h('small', { text: 'XP' }), xpEl),
-        this.bin ? h('div', {}, h('small', { text: 'Goed' }), h('b', { text: `${this.fixed + this.recalled}/${this.total}` })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
+        this.bin ? h('div', {}, h('small', { text: 'Goed' }), h('b', { text: `${this.fixed + this.recalled}/${this.total}` })) : this.allLearn ? h('div', {}, h('small', { text: 'Kaartjes' }), h('b', { text: String(this.total) })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
         speed != null ? h('div', {}, h('small', { text: 'Per noot' }), h('b', { text: `${fmt1(speed)} s` })) : h('div', {}, h('small', { text: 'Tijd' }), h('b', { text: mm }))),
-      this.bin ? h('div', { class: 'end-srs' }, Srs.row({ delta: Srs.delta(this.srsBefore) }), how ? h('p', { class: 'help', text: how }) : null) : null,
+      this.bin ? h('div', { class: 'end-srs' }, Srs.row({ delta: Srs.delta(this.srsBefore) }), how ? h('p', { class: 'help', text: how }) : null) : how ? h('p', { class: 'help end-how', text: how }) : null,
       got.length ? Moments.list(got, 'Verdiend') : null,
       Progress.goalLine()));
     countUp(xpEl, xp, { prefix: '+', delay: 250 });
-    if (!this.bin) countUp(pctEl, Math.round(accuracy * 100), { suffix: '%', delay: 350 });
+    if (!this.bin && !this.allLearn) countUp(pctEl, Math.round(accuracy * 100), { suffix: '%', delay: 350 });
     this.counter.textContent = '';
     this.barFill.style.width = '100%';
     const done = () => { const s = this.spec; this.spec = null; if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; };
@@ -5963,10 +6473,12 @@ const Bin = {
     return JSON.parse(JSON.stringify(o));
   },
   add(it, from, topic) {
-    const k = it._bin || this.key(it), all = this.all(), ex = all.find(x => x.k === k);
+    // een vraag die voor de gitaarstand is omgezet, gaat als origineel in de lijst
+    const src = it._orig || it;
+    const k = it._bin || this.key(src), all = this.all(), ex = all.find(x => x.k === k);
     if (ex) { ex.n++; ex.t = Date.now(); ex.box = 0; ex.due = ''; }
     else {
-      all.push({ k, it: this.clean(it), n: 1, t: Date.now(), from: from || '', topic: topic || it._topic || '', box: 0 });
+      all.push({ k, it: this.clean(src), n: 1, t: Date.now(), from: from || '', topic: topic || it._topic || '', box: 0 });
       // maximaal 40 nieuwe fouten en 150 in totaal: de oudste gaan eruit
       const b0 = all.filter(x => !x.box);
       for (let i = 0; i < b0.length - this.MAX; i++) all.splice(all.indexOf(b0[i]), 1);
@@ -5977,8 +6489,8 @@ const Bin = {
     return k;
   },
   has(k) { return this.list().some(x => x.k === k); },
-  canPlay() { return !((Store.settings.cantPlayUntil || 0) > Date.now()); },
-  playable(x) { return x.it.type !== 'play' || this.canPlay(); },
+  // kan deze vraag in de huidige stand (met of zonder gitaar)? Speelopdrachten worden zonder gitaar een vraag.
+  playable(x) { return Guitar.on() || x.it.type !== 'play' || /^(play-(octave|fifth|power|degree|scale-|chord-|box-|key-root|harm7|dia-|prog)|iv-play-|note-play)/.test(x.it.skill || ''); },
   // verse kopie om opnieuw te stellen; meerkeuze-opties opnieuw geschud
   copy(x) {
     const it = JSON.parse(JSON.stringify(x.it));
@@ -6001,7 +6513,7 @@ const Bin = {
     const back = () => { if (location.hash === from) Router.render(); else location.hash = from; };
     const items = this.items(o.keys, 10);
     if (!items.length) { (o.after || back)(); return; }
-    const needMic = items.some(x => x.type === 'play') && !Engine.mic;
+    const needMic = needsMic(items) && !Engine.mic;
     Loader.run({ title: items.length === 1 ? 'Herhaal je fout' : 'Herhaal je fouten', sub: `${items.length} ${items.length === 1 ? 'vraag' : 'vragen'} uit deze les`, mood: 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
       Lesson.open({ mode: 'bin', title: 'Herhalen', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
   },
@@ -6086,12 +6598,12 @@ const Srs = {
       const todo = this.todoCount();
       if (!todo && Review.start(o)) return;
       const nx = this.next();
-      UI.flash(ICONS.retry, todo ? 'Alleen speelvragen over' : 'Niets te herhalen', todo ? 'Zet speelopdrachten weer aan om ze te herhalen.' : nx ? this.comes(nx) : 'Wat je fout hebt in een les, komt hier terug.', 'badge', null, true);
+      UI.flash(ICONS.retry, todo ? 'Alleen speelvragen over' : 'Niets te herhalen', todo ? 'Zet het schuifje op Met gitaar om ze te herhalen.' : nx ? this.comes(nx) : 'Wat je fout hebt in een les, komt hier terug.', 'badge', null, true);
       (o.after || back)();
       return;
     }
     const due = items.filter(x => x._box).length;
-    const needMic = items.some(x => x.type === 'play') && !Engine.mic;
+    const needMic = needsMic(items) && !Engine.mic;
     Loader.run({ title: 'Herhalen', sub: this.what(items.length - due, due), mood: due ? 'denk' : 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
       Lesson.open({ mode: 'bin', title: 'Herhalen', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
   },
@@ -6141,45 +6653,30 @@ const Srs = {
   },
 };
 
-// ---------- Leerpad: units uit path.json (of het cursusschema) ----------
-const COURSE_DOC = 'https://claude.ai/code/artifact/a8cea592-791b-4211-9b66-8fdbddcd8c09';
+// ---------- Leerpad: de cursus in de app, één nieuwe les per week ----------
 const PathData = {
-  remote: null,
-  async load() {
-    const before = JSON.stringify(this.units());
-    try {
-      const r = await fetch('path.json?t=' + Date.now(), { cache: 'no-store' });
-      if (r.ok) {
-        const j = await r.json();
-        if (j && Array.isArray(j.units)) { this.remote = j; Store.put('path', j); }
-      }
-    } catch (e) {}
-    // alleen opnieuw tekenen als er echt iets veranderd is (anders breekt de intro-animatie af)
-    const v = document.body.dataset.view;
-    if (JSON.stringify(this.units()) !== before && (v === 'path' || v === 'progress' || v === 'practice')) Router.render();
+  cache: {},
+  unit(k) {
+    if (!this.cache[k]) { const c = COURSE[k], tp = TOPICS[c.topic] || TOPICS.generic; this.cache[k] = Object.assign({ title: tp.title, subtitle: tp.subtitle }, c); }
+    return this.cache[k];
   },
-  units() {
-    const src = this.remote || Store.get('path', null), today = todayKey();
-    let list;
-    if (src) {
-      list = src.units.slice();
-      // vangnet: staat een gegeven les een dag later nog niet in path.json, dan opent de unit uit het cursusschema
-      const max = list.reduce((m, u) => Math.max(m, (u && u.lesson) || 0), 0);
-      for (const u of FASE1) if (u.lesson > max && u.date < today) list.push(u);
-    } else {
-      // zonder path.json: een les telt als gegeven vanaf 20:15 op de lesdag
-      const late = new Date().getHours() * 60 + new Date().getMinutes() >= 20 * 60 + 15;
-      list = FASE1.filter(u => u.date < today || (u.date === today && late));
-    }
-    list = list.filter(u => u && u.lesson && (TOPICS[u.topic] || (u.quiz && u.quiz.length))).slice().sort((a, b) => a.lesson - b.lesson);
-    return list;
+  // openingsdatum per les (zie courseDates): alle open lessen, plus de eerstvolgende
+  schedule() {
+    const passed = COURSE.map((c, k) => unitPassedDay(this.unit(k)));
+    return courseDates(passed, todayKey(), COURSE.length).map((date, k) => ({ unit: Object.assign({ date }, this.unit(k)), date }));
   },
-  upcoming() {
-    const have = this.units(), last = have.length ? have[have.length - 1].lesson : 0;
-    return FASE1.filter(u => u.lesson > last).slice(0, 2);
-  },
+  units() { const t = todayKey(); return this.schedule().filter(x => x.date && x.date <= t).map(x => x.unit); },
+  // de volgende les: { unit, date } met een datum in de toekomst, of date null als de vorige toets nog niet gehaald is
+  upcoming() { const t = todayKey(); return this.schedule().filter(x => !x.date || x.date > t); },
 };
-const nodeKey = (unit, i) => `L${unit.lesson}-${i}`;
+// dag waarop de unittoets van een les voor het eerst gehaald is
+function unitPassedDay(unit) {
+  const nodes = unitNodes(unit), st = nodeStat(unit, nodes.length - 1);
+  if (!st || !st.done) return null;
+  return st.doneDay || (st.last ? dayKeyOf(new Date(st.last)) : todayKey());
+}
+// de les zelf is stap 'les'; de oefeningen houden hun oude nummers, zodat je voortgang blijft kloppen
+const nodeKey = (unit, i) => `L${unit.lesson}-${unit.track !== 'hals' && unit.cards && unit.cards.length ? (i === 0 ? 'les' : i - 1) : i}`;
 const nodeStat = (unit, i) => Store.stats.path.nodes[nodeKey(unit, i)];
 const nodeDone = (unit, i) => !!(nodeStat(unit, i) && nodeStat(unit, i).done);
 function nodeState(unit, nodes, i) {
@@ -6204,7 +6701,7 @@ function recordNode(unit, i, node, res) {
   if (res.perfect) st.perfect = true;
   if (node.test) st.test = true;
   if (res.passed) st.done = true;
-  if (res.passed && !wasDone) PathFx.justDone = k;
+  if (res.passed && !wasDone) { PathFx.justDone = k; st.doneDay = todayKey(); }
   if (res.passed) Quests.bump('nodes');
   Store.saveStats();
 }
@@ -6222,10 +6719,10 @@ function nodeInfo(node) {
 }
 function startNode(unit, i, nodes, after) {
   const node = nodes[i], items = node.gen(), hals = unit.track === 'hals';
-  const cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
-  const needMic = !cantPlay && items.some(x => x.type === 'play') && !Engine.mic;
-  Loader.run({ title: node.test ? 'Unittoets' : hals ? `${unit.title}: ${node.title.toLowerCase()}` : node.title, sub: needMic ? 'Microfoon aanzetten…' : hals ? 'Halsjacht, zonder gitaar' : null, wait: needMic ? Engine.startMic() : null }, () => Lesson.open({
-    title: hals ? `Halsjacht niveau ${unit.idx + 1}: ${unit.title}` : `Les ${unit.lesson}: ${node.title}`, topic: unit.topic, items,
+  const needMic = needsMic(items) && !Engine.mic;
+  const title = node.test ? 'Unittoets' : node.lesson ? `Les ${unit.lesson}: ${unit.title}` : hals ? `${unit.title}: ${node.title.toLowerCase()}` : node.title;
+  Loader.run({ title, sub: needMic ? 'Microfoon aanzetten…' : node.lesson ? 'Lees rustig, en luister naar de voorbeelden' : hals ? `Halsjacht, ${Guitar.on() ? 'met' : 'zonder'} gitaar` : null, wait: needMic ? Engine.startMic() : null }, () => Lesson.open({
+    title: hals ? `Halsjacht niveau ${unit.idx + 1}: ${unit.title}` : node.lesson ? `Les ${unit.lesson}: ${unit.title}` : `Les ${unit.lesson}: ${node.title}`, topic: unit.topic, items,
     test: !!node.test, pass: node.pass || 0, label: hals ? node.title : null, xp: node.test ? 20 : node.pass ? 15 : 10,
     onFinish: res => recordNode(unit, i, node, res),
     onDone: after || (() => { location.hash = ''; }),
@@ -6241,37 +6738,18 @@ function niceDate(iso) {
 const SIDE_MOODS = ['gitaar', 'noot', 'hals', 'luister', 'boek'];
 const dayNo = () => Math.floor(new Date(todayKey() + 'T12:00:00') / 86400000);
 
-// ---------- Startscherm: de Vandaag-kaart, een klein podium met je niveau ----------
-function homeLine(sk, secs, goal, lv) {
-  const hr = new Date().getHours(), d = dayNo();
-  const hi = hr < 6 ? 'Nog wakker?' : hr < 12 ? 'Goedemorgen!' : hr < 18 ? 'Goedemiddag!' : 'Goedenavond!';
-  const todo = Srs.todoCount(), left = Math.max(1, Math.ceil((goal - secs) / 60));
-  if (secs >= goal) return ['Dagdoel gehaald. Rock on!', 'Lekker gespeeld vandaag!', 'Dagdoel binnen. Alles wat je nu doet is extra.'][d % 3];
-  if (todo) return `${hi} Er ${todo === 1 ? 'komt een vraag' : `komen ${todo} vragen`} terug om te herhalen.`;
-  if (!secs) return sk.n ? `${hi} Je reeks staat op ${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'}. Houd hem vast!` : `${hi} ${Math.round(goal / 60)} minuten oefenen en je reeks begint.`;
-  if (lv.left <= 25) return `Nog ${lv.left} XP en je bent ${lv.next}!`;
-  return `Nog ${left} ${left === 1 ? 'minuut' : 'minuten'} voor je dagdoel. Je kunt het!`;
-}
-function homeHero() {
-  const st = Store.stats, xp = st.xp || 0, lv = Level.of(xp), sk = Progress.streak(), secs = Progress.day().secs, goal = Progress.goalSecs();
-  const met = secs >= goal, acc = Score.accuracy(), notes = Score.notes(), gmin = Math.round(goal / 60), done = Math.min(gmin, Math.floor(secs / 60));
-  const stat = (icon, v, l, cls) => h('div', { class: 'hh-stat' + (cls ? ' ' + cls : '') }, h('span', { class: 'hh-ico', html: icon }), h('b', { text: v }), h('small', { text: l }));
-  return h('section', { class: 'home-hero' + (met ? ' met' : ''), id: 'homeHero' },
-    h('div', { class: 'hh-top' },
-      h('div', { class: 'hh-level' },
-        h('p', { class: 'hh-eyebrow', text: `Fretjacht niveau ${lv.n}` }),
-        h('h2', { class: 'hh-title', text: lv.title }),
-        Level.meter(lv),
-        h('p', { class: 'hh-xp' }, h('b', { text: `${xp} XP` }), h('span', { text: ` · nog ${lv.left} tot niveau ${lv.n + 1}` }))),
-      h('div', { class: 'hh-fret', html: Mascot.svg(met ? 'juich' : secs ? 'gitaar' : 'zwaai') })),
-    h('p', { class: 'hh-say', text: homeLine(sk, secs, goal, lv) }),
-    h('div', { class: 'hh-stats' },
-      stat(ICONS.flame, String(sk.n), sk.n === 1 ? 'dag op rij' : 'dagen op rij', sk.today ? 'lit' : ''),
-      stat(ICONS.note, String(notes), notes === 1 ? 'noot gevonden' : 'noten gevonden'),
-      stat(ICONS.star, acc == null ? '–' : `${acc}%`, 'goed beantwoord')),
-    h('div', { class: 'hh-goal' },
-      h('div', { class: 'hh-goal-t' }, h('span', { text: 'Dagdoel' }), h('b', { text: met ? 'gehaald!' : `${done} van ${gmin} minuten` })),
-      h('div', { class: 'hh-bar', role: 'img', 'aria-label': `Dagdoel: ${done} van ${gmin} minuten` }, h('span', { style: `width:${(100 * clamp(secs / goal, 0, 1)).toFixed(1)}%` }))));
+// ---------- Bovenkant van het leerpad: niveau, opdrachten en het gitaarschuifje ----------
+// Reeks en dagdoel staan al in de kop; hier alleen wat je nodig hebt om te kiezen, zodat de cursus meteen in beeld is.
+function homeTop() {
+  const xp = Store.stats.xp || 0, lv = Level.of(xp);
+  return h('section', { class: 'home-top', id: 'homeTop' },
+    h('div', { class: 'ht-level' },
+      h('span', { class: 'ht-badge', 'aria-hidden': 'true', text: String(lv.n) }),
+      h('div', { class: 'ht-main' },
+        h('b', { class: 'ht-title', text: `Niveau ${lv.n}: ${lv.title}` }),
+        h('div', { class: 'ht-row' }, Level.meter(lv, 20), h('small', { class: 'ht-xp', text: `${xp} XP · nog ${lv.left}` })))),
+    Quests.card(),
+    guitarSwitch(() => Router.render()));
 }
 
 // ---------- Twee paden: Muziektheorie (de cursus) en de Halsjacht ----------
@@ -6280,16 +6758,16 @@ function trackHead(track) {
   if (track === 'hals') {
     const n = halsDoneCount(), nx = nextHals();
     const states = HALS_LEVELS.map((L, i) => halsLevelDone(i) ? 'done' : nx && nx.unit.idx === i ? 'now' : '');
-    return h('div', { class: 'track-head' }, h('p', {}, h('b', { text: n ? `${n} van ${HALS_LEVELS.length} niveaus beheerst` : `${HALS_LEVELS.length} niveaus, zonder gitaar` }), h('span', { text: 'Per niveau: leren, herkennen en toepassen.' })), trackDots(states));
+    return h('div', { class: 'track-head' }, h('p', {}, h('b', { text: n ? `${n} van ${HALS_LEVELS.length} niveaus beheerst` : `${HALS_LEVELS.length} niveaus, met of zonder gitaar` }), h('span', { text: 'Per niveau: leren, herkennen en toepassen.' })), trackDots(states));
   }
-  const units = PathData.units(), total = Math.max(FASE1.length, units.reduce((m, u) => Math.max(m, u.lesson), 0));
+  const units = PathData.units(), total = COURSE.length;
   const cur = units.length ? units[units.length - 1].lesson : 0;
   const states = Array.from({ length: total }, (_, k) => {
     const u = units.find(x => x.lesson === k + 1);
     if (!u) return '';
     return nodeDone(u, unitNodes(u).length - 1) ? 'done' : 'now';
   });
-  return h('div', { class: 'track-head' }, h('p', {}, h('b', { text: cur ? `Cursus: les ${cur} van ${total}` : `Cursus: ${total} lessen` }), h('span', { text: 'Na elke les op maandag en donderdag komt er een unit bij.' })), trackDots(states));
+  return h('div', { class: 'track-head' }, h('p', {}, h('b', { text: cur ? `Cursus: les ${cur} van ${total}` : `Cursus: ${total} lessen` }), h('span', { text: 'Elke zondag een nieuwe les, als je de vorige af hebt.' })), trackDots(states));
 }
 function trackSwitch(track, onPick) {
   const btn = (v, icon, label) => h('button', { type: 'button', role: 'tab', 'aria-selected': String(track === v), class: track === v ? 'on' : '', 'data-track': v, onclick: () => onPick(v) }, h('span', { html: icon }), h('span', { text: label }));
@@ -6298,6 +6776,13 @@ function trackSwitch(track, onPick) {
 // oefen een Halsjacht-niveau vrij, met de instellingen van dat niveau
 function practiceLevel(u) {
   const L = HALS_LEVELS[u.idx];
+  // met gitaar: Noten zoeken op de snaren van dit niveau; zonder gitaar: Welke noot?
+  if (Guitar.on()) {
+    TempSettings.apply('notes', { strings: L.strings.slice(), naturalsOnly: L.nat, minFret: 0, maxFret: 12 });
+    const go = () => { location.hash = '#m-notes'; };
+    if (Engine.mic) go(); else Loader.run({ title: 'Noten zoeken', sub: 'Microfoon aanzetten…', mood: 'luister', wait: Engine.startMic() }, go);
+    return;
+  }
   TempSettings.apply('noteq', { kind: 'name', strings: L.strings.slice(), nat: L.nat });
   location.hash = '#m-noteq';
 }
@@ -6315,7 +6800,8 @@ function renderUnits(wrap, units, o) {
         h('div', { class: 'uh-prog', role: 'img', 'aria-label': `${doneCount} van ${nodes.length} stappen gedaan` }, h('span', { style: `width:${(100 * doneCount / nodes.length).toFixed(1)}%` }))),
       h('div', { class: 'uh-side' },
         complete ? h('span', { class: 'uh-done', html: ICONS.check, title: hals ? 'Niveau beheerst' : 'Unit gehaald' }) : h('span', { class: 'uh-count', text: `${doneCount} van ${nodes.length}` }),
-        hals ? h('button', { class: 'uh-link', type: 'button', text: 'Vrij oefenen', onclick: () => practiceLevel(u) }) : h('a', { class: 'uh-link', href: u.doc || COURSE_DOC, target: '_blank', rel: 'noopener', text: `Lees les ${u.lesson}` })));
+        hals ? h('button', { class: 'uh-link', type: 'button', text: 'Vrij oefenen', onclick: () => practiceLevel(u) })
+          : nodes[0] && nodes[0].lesson ? h('button', { class: 'uh-link', type: 'button', text: 'Lees de les', onclick: () => startNode(u, 0, nodes) }) : null));
     const track = h('div', { class: 'track' });
     nodes.forEach((n, i) => {
       const state = nodeState(u, nodes, i), k = nodeKey(u, i);
@@ -6331,7 +6817,7 @@ function renderUnits(wrap, units, o) {
     if (nodes.length >= 3) track.append(h('div', { class: 'side-fret', html: Mascot.svg(mood) }));
     // uitlegkaartje: de kern van de les, open bij de unit waar je nu bent
     const sum = unitSummary(u);
-    const card = sum.length ? h('details', { class: 'unit-sum', open: current && !doneCount ? true : null },
+    const card = sum.length ? h('details', { class: 'unit-sum' },
       h('summary', {}, h('span', { class: 'us-ico', html: hals ? ICONS.neck : ICONS.book }), h('span', { text: hals ? 'Zo onthoud je het' : 'De les in het kort' })),
       h('div', { class: 'us-body' }, h('div', { class: 'us-fret', html: Mascot.svg('boek') }), h('ul', {}, sum.map(t => h('li', { text: t }))))) : null;
     wrap.append(h('div', { class: `unit c-${color}${hals ? ' hals' : ''}`, id: `unit-${u.lesson}` }, head, card, track));
@@ -6342,19 +6828,21 @@ function renderTrack(box, track, o) {
   box.append(trackHead(track));
   if (track === 'hals') {
     renderUnits(box, HalsData.units(), Object.assign({ hals: true, next: nextHals() }, o));
-    box.append(h('div', { class: 'path-end', text: 'Beheers je alle acht niveaus, dan ken je de hele hals. Zonder gitaar, waar je ook bent.' }));
+    box.append(h('div', { class: 'path-end', text: 'Beheers je alle acht niveaus, dan ken je de hele hals. Met of zonder gitaar, waar je ook bent.' }));
     return nextHals();
   }
   const units = PathData.units();
-  if (!units.length) box.append(h('div', { class: 'card empty' }, h('div', { class: 'empty-fret', html: Mascot.svg('slaap') }), h('h2', { text: 'Je leerpad begint na les 1' }), h('p', { class: 'help', text: 'Zodra je eerste muziektheorieles binnen is, verschijnt hier de eerste unit met oefeningen. Begin intussen met de Halsjacht.' })));
   renderUnits(box, units, Object.assign({ next: nextNode() }, o));
-  for (const up of PathData.upcoming()) {
-    const tp = TOPICS[up.topic];
-    box.append(h('div', { class: 'unit locked' }, h('div', { class: 'unit-head' },
-      h('div', { class: 'uh-text' }, h('p', { class: 'uh-eyebrow', text: `Les ${up.lesson}, opent ${niceDate(up.date)}` }), h('h2', { text: tp ? tp.title : 'Volgende les' }), tp ? h('p', { class: 'uh-sub', text: tp.subtitle }) : null),
+  const up = PathData.upcoming()[0];
+  if (up) {
+    const u = up.unit, t = todayKey();
+    const when = up.date ? (up.date === plusDays(t, 1) ? 'Opent morgen, zondag ' : 'Opent zondag ') + new Date(up.date + 'T12:00:00').toLocaleDateString('nl-NL', { day: 'numeric', month: 'long' }) + '.'
+      : `Opent op de zondag nadat je de unittoets van les ${u.lesson - 1} hebt gehaald.`;
+    box.append(h('div', { class: 'unit locked', id: 'nextLesson' }, h('div', { class: 'unit-head' },
+      h('div', { class: 'uh-text' }, h('p', { class: 'uh-eyebrow', text: `Les ${u.lesson}` }), h('h2', { text: u.title }), h('p', { class: 'uh-sub', text: u.subtitle }), h('p', { class: 'uh-when', text: when })),
       h('div', { class: 'uh-side' }, h('span', { class: 'uh-lock', html: ICONS.lock })))));
   }
-  box.append(h('div', { class: 'path-end', text: 'Na elke les van maandag en donderdag komt hier een nieuwe unit bij.' }));
+  box.append(h('div', { class: 'path-end', text: units.length >= COURSE.length ? 'Dit was fase 1: de basis van de muziektheorie.' : 'Elke zondag komt er een les bij, als je de unittoets van de vorige hebt gehaald.' }));
   return nextNode();
 }
 function scrollToNext(box, nx, just) {
@@ -6366,12 +6854,7 @@ function renderPath(view) {
   const intro = PathFx.intro && !reducedMotion(); PathFx.intro = false;
   const just = PathFx.justDone; PathFx.justDone = null;
   const wrap = h('section', { class: 'path' + (intro ? ' intro' : '') });
-  if ((Store.settings.cantPlayUntil || 0) > Date.now()) {
-    const until = new Date(Store.settings.cantPlayUntil).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
-    wrap.append(h('div', { class: 'note-bar' }, h('span', { text: `Speelopdrachten staan uit tot ${until}.` }), h('button', { type: 'button', text: 'Weer aanzetten', onclick: () => { Store.settings.cantPlayUntil = 0; Store.saveSettings(); Router.render(); } })));
-  }
-  wrap.append(homeHero());
-  if (units.length) wrap.append(Quests.card());
+  wrap.append(homeTop());
   // laatst gekozen pad; zonder cursusunits begin je in de Halsjacht
   let track = Store.settings.track === 'hals' || (!units.length && Store.settings.track !== 'theory') ? 'hals' : 'theory';
   const box = h('div', { class: 'track-box' });
@@ -6418,7 +6901,7 @@ const Review = {
     if (!items.length) return false;
     const from = location.hash === '#les' ? '' : location.hash;
     const back = () => { if (location.hash === from) Router.render(); else location.hash = from; };
-    const needMic = items.some(x => x.type === 'play') && !Engine.mic && Bin.canPlay();
+    const needMic = needsMic(items) && !Engine.mic;
     Loader.run({ title: 'Herhalen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst', mood: 'boek', wait: needMic ? Engine.startMic() : null }, () =>
       Lesson.open({ title: 'Herhalen', label: 'Herhalen', sub: 'Vragen uit eerdere lessen. Wat je fout had, komt terug bij Herhalen.', items, xp: 10, onDone: o.after || back, onExit: o.exit || o.after || back }));
     return true;
@@ -6706,7 +7189,7 @@ function renderProgressEmpty(view) {
       li(ICONS.flame, 'Je reeks', `elke dag dat je ${Math.round(Progress.goalSecs() / 60)} minuten oefent`),
       li(ICONS.chart, 'Je oefenkalender', 'hoe vaak en hoe lang je speelt'),
       li(ICONS.retry, 'Herhalen', 'fouten komen terug na 1, 3 en 7 dagen'),
-      li(ICONS.book, 'Voor je les', 'je zwakke plekken, klaar om te kopiëren'))));
+      li(ICONS.book, 'Je cursus', 'welke lessen je af hebt en wat er zondag bijkomt'))));
   view.append(badgesCard());
   view.append(h('div', { class: 'row links' }, h('a', { class: 'link', href: '#instellingen', text: 'Instellingen' })));
 }
@@ -6745,14 +7228,6 @@ function renderProgress(view) {
     tile('Nauwkeurig', acc == null ? '–' : `${acc}%`, acc == null ? 'vanaf 10 antwoorden' : `${ans.r} van ${ans.r + ans.w} goed`, ICONS.star),
     tile('Deze week', `${wk}`, 'minuten', ICONS.clock),
     tile('Herhalen', String(todo), todo ? 'tik om te herhalen' : nxt ? `${Srs.when(nxt.date)} ${nxt.n} terug` : known ? `${known} onder de knie` : 'niets vandaag', ICONS.retry, todo ? () => Srs.start() : null)));
-  const sumOut = h('pre', { class: 'cc-out', hidden: true });
-  view.append(h('div', { class: 'card course-card' },
-    h('div', { class: 'cc-fret', html: Mascot.svg('boek') }),
-    h('div', { class: 'cc-text' },
-      h('h2', { class: 'card-h', text: 'Voor je muziektheorieles' }),
-      h('p', { class: 'help', text: 'Kopieer je voortgang en plak hem als reactie op je volgende les. Dan stem ik de lessen af op wat je nog lastig vindt.' }),
-      h('button', { class: 'primary', type: 'button', id: 'copyProgress', html: `${ICONS.copy}<span>Kopieer voortgang</span>`, onclick: () => copyCourseSummary(sumOut) })),
-    sumOut));
   const calInfo = h('p', { class: 'chart-info', text: 'Tik op een dag voor de minuten' });
   view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Oefenkalender' }), h('p', { class: 'help', text: 'De laatste 16 weken. Hoe donkerder, hoe langer je oefende. De donkerste kleur is je dagdoel gehaald.' }), renderCalendar(calInfo),
     h('div', { class: 'cal-legend', html: `<span>minder</span>${[0, 1, 2, 3, 4].map(l => `<i class="l${l}"></i>`).join('')}<span>dagdoel</span>` }), calInfo));
@@ -6848,15 +7323,15 @@ const Quests = {
     }
     if (changed) { Store.saveStats(); this.render(); }
   },
-  // kaart bovenaan het leerpad
+  // één regel bovenaan het leerpad; tik erop voor de drie opdrachten
+  open: false,
   card() {
     const qs = this.today(), d = Progress.day(), done = qs.filter(q => d.qd && d.qd[q.id]).length, all = done === qs.length, fz = Store.stats.freezes || 0;
-    return h('section', { class: 'quests' + (all ? ' all' : ''), id: 'questCard' },
-      h('div', { class: 'q-head' },
-        h('div', { class: 'q-title' },
-          h('h2', { text: all ? 'Alle opdrachten gedaan' : 'Opdrachten van vandaag' }),
-          h('span', { class: 'q-freeze' + (fz ? ' has' : ''), title: 'Reeksbevriezers', 'aria-label': `${fz} reeksbevriezers` }, h('span', { html: ICONS.ice }), h('b', { text: `${fz} ${fz === 1 ? 'bevriezer' : 'bevriezers'}` }))),
-        h('div', { class: 'q-fret', html: Mascot.svg(all ? 'juich' : 'noot') })),
+    return h('details', { class: 'quests' + (all ? ' all' : ''), id: 'questCard', open: this.open ? true : null, ontoggle: e => { this.open = e.currentTarget.open; } },
+      h('summary', {},
+        h('span', { class: 'q-sico', html: all ? ICONS.check : ICONS.target }),
+        h('span', { class: 'q-sum' }, h('b', { text: all ? 'Opdrachten gedaan' : 'Opdrachten' }), all ? null : h('span', { class: 'q-dots', 'aria-label': `${done} van ${qs.length} gedaan` }, qs.map(q => h('i', { class: d.qd && d.qd[q.id] ? 'on' : '' })))),
+        h('span', { class: 'q-freeze' + (fz ? ' has' : ''), title: 'Reeksbevriezers', 'aria-label': `${fz} reeksbevriezers` }, h('span', { html: ICONS.ice }), h('b', { text: String(fz) }))),
       all ? null : h('ul', { class: 'q-list' }, qs.map(q => {
         const v = this.progress(q), ok = !!(d.qd && d.qd[q.id]), def = this.def(q.id);
         return h('li', { class: ok ? 'done' : '' },
@@ -6910,59 +7385,6 @@ const Track = {
     Score.answer(ok);
   },
 };
-const topicName = k => (TOPICS[k] && k !== 'generic' ? TOPICS[k].title : k === 'generic' ? 'eigen vragen uit de les' : k === 'review' ? 'herhalen' : k === 'hals' ? 'noten op de hals (Halsjacht)' : k);
-const shorten = (t, n = 70) => (t.length > n ? t.slice(0, n - 1).trim() + '…' : t);
-// leesbare naam van een vraag: bij de hals de noot en de plek
-const itemLabel = it => (it.type === 'name' ? `${FretQuiz.both(it.pc)} op ${FretQuiz.where(it.s, it.f)}` : it.prompt);
-function courseSummary() {
-  const st = Store.stats, sk = Progress.streak(), units = PathData.units(), L = [];
-  L.push(`Fretjacht-voortgang, ${new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })}`);
-  L.push(`- Oefentijd: ${Math.round(Progress.weekSecs() / 60)} minuten deze week, reeks ${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'}, dagdoel ${Math.round(Progress.goalSecs() / 60)} minuten.`);
-  if (units.length) L.push(`- Leerpad: ${units.slice(-3).map(u => { const nodes = unitNodes(u), done = nodes.filter((n, k) => nodeDone(u, k)).length; return `${unitMeta(u).title} ${done} van ${nodes.length} stappen${nodeDone(u, nodes.length - 1) ? ', toets gehaald' : ''}`; }).join('; ')}.`);
-  const tp = Object.entries(st.topics || {}).filter(([k, v]) => k !== 'overig' && v.r + v.w >= 3).map(([k, v]) => ({ k, pct: Math.round(100 * v.r / (v.r + v.w)), n: v.r + v.w })).sort((a, b) => a.pct - b.pct);
-  if (tp.length) L.push(`- Goed per onderwerp: ${tp.map(x => `${topicName(x.k)} ${x.pct}% (${x.n} vragen)`).join(', ')}.`);
-  const weakSk = Object.values(st.skills || {}).filter(v => v.w >= 2 && v.p).sort((a, b) => b.w / (b.r + b.w) - a.w / (a.r + a.w)).slice(0, 3);
-  if (weakSk.length) L.push(`- Vaak fout: ${weakSk.map(v => `“${shorten(v.p)}” (${v.w} van ${v.r + v.w} fout)`).join(', ')}.`);
-  const bin = Bin.list();
-  if (bin.length) L.push(`- Net fout, nog te herhalen (${bin.length}): ${bin.slice(-4).map(x => `“${shorten(itemLabel(x.it))}”`).join(', ')}.`);
-  const sc = Srs.snapshot(), inBoxes = sc[1] + sc[2] + sc[3];
-  if (inBoxes || sc[4]) L.push(`- Herhalen na 1, 3 en 7 dagen: ${inBoxes} ${inBoxes === 1 ? 'vraag' : 'vragen'} onderweg, ${sc[4]} onder de knie.`);
-  const sticky = Bin.all().filter(x => x.n >= 3).sort((a, b) => b.n - a.n).slice(0, 3);
-  if (sticky.length) L.push(`- Blijft lastig: ${sticky.map(x => `“${shorten(itemLabel(x.it))}” (${x.n} keer fout)`).join(', ')}.`);
-  const rows = Object.entries(st.notes.items).filter(([, v]) => v.n > 0).map(([k, v]) => { const [s, pc] = k.split('-').map(Number); return { s, pc, avg: v.total / v.n }; }).sort((a, b) => b.avg - a.avg).slice(0, 3);
-  if (rows.length) L.push(`- Traagst op de hals: ${rows.map(r => `${pcLabel(r.pc, 'sharps')} op de ${STR_NAME[r.s]} (${fmt1(r.avg)} s)`).join(', ')}.`);
-  // Halsjacht en Welke noot?: hoe goed ken je de hals zonder gitaar
-  const fb = st.fb || { items: {}, n: 0, ok: 0 }, hn = halsDoneCount(), hx = nextHals();
-  if (hn || fb.n) {
-    const pos = Object.entries(fb.items).filter(([, v]) => v.n >= 2).map(([k, v]) => { const [s, f] = k.split('-').map(Number); return { s, f, w: FretQuiz.weight(s, f) }; }).sort((a, b) => b.w - a.w).slice(0, 3);
-    const tt = Object.values(fb.items).reduce((a, v) => a + (v.t || 0), 0);
-    L.push(`- Halsjacht: ${hn} van ${HALS_LEVELS.length} niveaus beheerst${hx ? ` (nu: ${hx.unit.title}, ${hx.node.title.toLowerCase()})` : ''}${fb.n ? `; noten herkennen ${Math.round(100 * fb.ok / fb.n)}% goed${fb.ok ? `, gemiddeld ${fmt1(tt / fb.ok)} s per noot` : ''}` : ''}${pos.length ? `; lastigst: ${pos.map(p => `${FretQuiz.nameAt(p.s, p.f)} op ${FretQuiz.where(p.s, p.f)}`).join(', ')}` : ''}.`);
-  }
-  const eq = st.earq || { ok: {}, n: {} };
-  const ear = Object.keys(eq.n).filter(k => eq.n[k] >= 3).map(k => ({ k, pct: Math.round(100 * (eq.ok[k] || 0) / eq.n[k]) })).sort((a, b) => a.pct - b.pct).slice(0, 3);
-  if (ear.length) L.push(`- Op gehoor: ${ear.map(x => `${earName(x.k)} ${x.pct}%`).join(', ')}.`);
-  const tg = st.targets;
-  if (tg && tg.tries) {
-    const by = Object.entries(tg.by || {}).filter(([, v]) => v.t >= 3).map(([k, v]) => ({ k, pct: Math.round(100 * v.h / v.t) })).sort((a, b) => a.pct - b.pct);
-    L.push(`- Doeltonen: ${tg.hits} van ${tg.tries} geraakt${tg.hits ? `, gemiddeld ${fmt1(tg.time / tg.hits)} s` : ''}${by.length ? `; lastigst: de ${TARGET_NAME[by[0].k] || by[0].k} (${by[0].pct}%)` : ''}.`);
-  }
-  if (st.ear && Object.keys(st.ear.ok || {}).length) L.push(`- Op gehoor naspelen: ${Object.values(st.ear.ok).reduce((a, b) => a + b, 0)} keer goed.`);
-  L.push('Stem de volgende lessen en oefeningen hier graag op af.');
-  return L.join('\n');
-}
-async function copyCourseSummary(out) {
-  const text = courseSummary();
-  out.hidden = false;
-  out.textContent = text;
-  try {
-    await navigator.clipboard.writeText(text);
-    UI.flash(Mascot.svg('boek', { crop: 'head' }), 'Gekopieerd', 'Plak het als reactie op je volgende les.', 'goal', null, true);
-  } catch (e) {
-    const r = document.createRange(); r.selectNodeContents(out);
-    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
-    UI.flash(ICONS.book, 'Kopieer de tekst hieronder', 'Hij staat al geselecteerd.', 'badge', null, true);
-  }
-}
 
 // ---------- Momenten: niveau omhoog, dagdoel, opdrachten, bevriezer, plectrums ----------
 // Tijdens een les of Oefen vandaag verschijnt er geen melding over je vraag heen. Alles wat je verdient,
@@ -7095,7 +7517,7 @@ const Backup = {
     if (Daily.active) Daily.stop();
     // instellingen van de microfoon horen bij dit toestel en blijven staan
     const cur = Store.settings, set = Object.assign({}, j.settings && typeof j.settings === 'object' ? j.settings : {});
-    set.gateDb = cur.gateDb; set.cantPlayUntil = 0;
+    set.gateDb = cur.gateDb;
     set.metro = Object.assign({}, set.metro || {}, { corr: cur.metro.corr });
     Store.put('stats', j.stats);
     Store.put('settings', set);
@@ -7146,7 +7568,9 @@ const Daily = {
     const steps = [];
     let est = 0;
     const add = s => { steps.push(s); est += s.minutes; };
-    if (!((Store.settings.cantPlayUntil || 0) > Date.now())) add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
+    // met gitaar alles met de microfoon, zonder gitaar alles op je telefoon
+    const g = Guitar.on();
+    if (g) add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
     const nx = nextNode();
     if (nx) add({ kind: 'node', ref: nx, minutes: 4, title: 'Leerpad', sub: `Unit ${nx.unitNo}: ${nx.node.title}` });
     // de volgende stap in de Halsjacht: zonder gitaar, dus altijd mogelijk
@@ -7159,11 +7583,11 @@ const Daily = {
     const cu = nx ? nx.unit : PathData.units().slice(-1)[0];
     if (cu) {
       const d = unitMeta(cu).drill;
-      if (d && MODES[d.mode] && d.mode !== 'notes' && !((Store.settings.cantPlayUntil || 0) > Date.now())) add({ kind: 'drill', mode: d.mode, set: d.set, minutes: 3, title: 'Toepassen', sub: `${MODES[d.mode].title}, past bij les ${cu.lesson}` });
+      if (d && MODES[d.mode] && d.mode !== 'notes' && g === !NO_MIC.includes(d.mode)) add({ kind: 'drill', mode: d.mode, set: d.set, minutes: 3, title: 'Toepassen', sub: `${MODES[d.mode].title}, past bij les ${cu.lesson}` });
     }
-    const cant = (Store.settings.cantPlayUntil || 0) > Date.now();
-    const extras = cant ? [{ mode: 'noteq', minutes: 3, sub: 'Welke noot? Zonder gitaar' }, { mode: 'earq', minutes: 4, sub: 'Gehoortraining, zonder gitaar' }] : shuffle([{ mode: 'challenge', minutes: 2, sub: '60 seconden' }, { mode: 'scales', minutes: 3, sub: 'Toonladders' }, { mode: 'positions', minutes: 2, sub: 'Alle posities' }, { mode: 'ear', minutes: 3, sub: 'Op gehoor naspelen' }, { mode: 'targets', minutes: 3, sub: 'Doeltonen over akkoordwissels' }, { mode: 'earq', minutes: 3, sub: 'Gehoortraining' }, { mode: 'noteq', minutes: 2, sub: 'Welke noot? Zonder gitaar' }]);
-    for (const x of extras) { if (est >= remainMin) break; add({ kind: 'drill', mode: x.mode, minutes: x.minutes, title: 'Extra', sub: x.sub }); }
+    const extras = g ? shuffle([{ mode: 'challenge', minutes: 2, sub: '60 seconden' }, { mode: 'scales', minutes: 3, sub: 'Toonladders' }, { mode: 'positions', minutes: 2, sub: 'Alle posities' }, { mode: 'ear', minutes: 3, sub: 'Op gehoor naspelen' }, { mode: 'targets', minutes: 3, sub: 'Doeltonen over akkoordwissels' }])
+      : [{ mode: 'noteq', minutes: 3, sub: 'Welke noot?' }, { mode: 'earq', minutes: 4, sub: 'Gehoortraining' }, { mode: 'noteq', minutes: 3, sub: 'Welke noot?, zoek de noot', set: { kind: 'find' } }];
+    for (const x of extras) { if (est >= remainMin) break; add({ kind: 'drill', mode: x.mode, set: x.set, minutes: x.minutes, title: 'Extra', sub: x.sub }); }
     return steps;
   },
   showPlan() {
@@ -7173,7 +7597,7 @@ const Daily = {
     const sheet = h('div', { class: 'sheet-wrap', onclick: e => { if (e.target === sheet) sheet.remove(); } },
       h('div', { class: 'sheet' },
         h('div', { class: 'plan-head' }, h('div', { class: 'plan-fret', html: Mascot.svg(met ? 'juich' : 'zwaai') }),
-          h('div', {}, h('h3', { text: met ? 'Extra oefenen' : 'Oefen vandaag' }), h('p', { class: 'help', text: `${total} minuten in ${steps.length} stappen${met ? '. Je dagdoel is al gehaald.' : '.'}` }))),
+          h('div', {}, h('h3', { text: met ? 'Extra oefenen' : 'Oefen vandaag' }), h('p', { class: 'help', text: `${total} minuten in ${steps.length} stappen, ${Guitar.on() ? 'met' : 'zonder'} gitaar${met ? '. Je dagdoel is al gehaald.' : '.'}` }))),
         h('ol', { class: 'plan' }, steps.map((s, i) => h('li', {}, h('span', { class: 'pl-n', text: String(i + 1) }), h('div', {}, h('b', { text: s.title }), h('small', { text: s.sub })), h('span', { class: 'pl-m', text: `${s.minutes} min` })))),
         h('p', { class: 'help', text: 'De oefentijd telt alleen als je echt bezig bent. Tussen de stappen ga je vanzelf door.' }),
         h('button', { class: 'primary big', type: 'button', text: 'Start', onclick: () => { sheet.remove(); this.start(steps); } })));
@@ -7184,7 +7608,7 @@ const Daily = {
     this.startXP = Store.stats.xp || 0; this.startSecs = Progress.day().secs;
     // alles wat je in deze sessie verdient, komt aan het eind in één overzicht
     Moments.session = [];
-    const needMic = !Engine.mic && !((Store.settings.cantPlayUntil || 0) > Date.now());
+    const needMic = !Engine.mic && Guitar.on();
     Loader.run({ title: 'Oefen vandaag', sub: needMic ? 'Microfoon aanzetten…' : `${steps.length} stappen`, mood: 'luister', wait: needMic ? Engine.startMic() : null }, () => this.run());
   },
   run() {
@@ -7269,19 +7693,27 @@ const Daily = {
 };
 
 // ---------- Oefenen: het pedalboard ----------
-const HUB = [
-  { title: 'De hals', ids: ['noteq', 'notes', 'positions', 'intervals', 'degrees'] },
-  { title: 'Solo’s', ids: ['scales', 'chords', 'targets', 'bends'] },
-  { title: 'Gehoor', ids: ['earq', 'ear'] },
-  { title: 'Uitdaging', ids: ['challenge', 'heatmap'] },
-  { title: 'Gereedschap', ids: ['explorer', 'metro', 'tuner'], tools: true },
-];
+// het pedalboard per stand van het schuifje; de oefeningen van de andere stand staan ingeklapt onderaan
+const HUB = {
+  met: [
+    { title: 'De hals', ids: ['notes', 'positions', 'intervals', 'degrees'] },
+    { title: 'Solo’s', ids: ['scales', 'chords', 'targets', 'bends'] },
+    { title: 'Gehoor', ids: ['ear'] },
+    { title: 'Uitdaging', ids: ['challenge', 'heatmap'] },
+    { title: 'Gereedschap', ids: ['explorer', 'metro', 'tuner'], tools: true },
+  ],
+  zonder: [
+    { title: 'Zonder gitaar', ids: ['noteq', 'earq'] },
+    { title: 'Gereedschap', ids: ['explorer', 'metro', 'heatmap'], tools: true },
+  ],
+};
+const HUB_OTHER = { met: ['noteq', 'earq'], zonder: ['notes', 'positions', 'intervals', 'degrees', 'scales', 'chords', 'targets', 'bends', 'ear', 'challenge', 'tuner'] };
 const PEDAL_SUB = {
   notes: 'Vind de noot op de snaar', positions: 'Eén noot, elke snaar', intervals: 'Van toon naar toon', degrees: 'Trap 1 tot 7 in een toonsoort',
   scales: 'Boxen en patronen', chords: 'Alle tonen van een akkoord', bends: 'Zuiver omhoog buigen', ear: 'Luister en speel na',
   challenge: 'Zoveel noten in één minuut', heatmap: 'Waar zit je zwakke plek?', metro: 'Strak op de tel', tuner: 'Stem je gitaar',
-  targets: 'De terts op elk akkoord', earq: 'Zonder gitaar, alleen luisteren', explorer: 'Toonladders en akkoorden op de hals',
-  noteq: 'Zonder gitaar: herkennen en zoeken',
+  targets: 'De terts op elk akkoord', earq: 'Intervallen en akkoorden herkennen', explorer: 'Toonladders en akkoorden op de hals',
+  noteq: 'Noten op de hals herkennen en zoeken',
 };
 const PEDAL_TIP = {
   notes: 'Speel de noot op de snaar die oplicht.', positions: 'Speel dezelfde noot op elke snaar, van laag naar hoog.',
@@ -7364,24 +7796,30 @@ function emptyHero(where) {
 }
 
 function renderPractice(view) {
-  const wrap = h('section', { class: 'hub' });
+  const wrap = h('section', { class: 'hub' }), g = Guitar.on(), mode = g ? 'met' : 'zonder';
+  wrap.append(guitarSwitch(() => Router.render()));
   const hero = emptyHero('practice');
   if (hero) wrap.append(hero);
   wrap.append(Srs.card());
-  wrap.append(h('p', { class: 'hub-intro', text: hero ? 'Of trap zelf een pedaal in. Brandt het lampje, dan heb je die oefening vandaag al gespeeld.' : 'Trap een pedaal in om te beginnen. Brandt het lampje, dan heb je die oefening vandaag al gespeeld.' }));
+  wrap.append(h('p', { class: 'hub-intro', text: g ? 'Pak je gitaar en trap een pedaal in. Brandt het lampje, dan heb je die oefening vandaag al gespeeld.' : 'Alles hieronder doe je op je telefoon. Brandt het lampje, dan heb je die oefening vandaag al gedaan.' }));
   const units = PathData.units(), cu = units[units.length - 1];
   if (cu) {
     const meta = unitMeta(cu), d = meta.drill;
-    if (d && MODES[d.mode]) wrap.append(h('div', { class: 'hub-sec' }, h('h2', { class: 'hub-h', text: 'Past bij je les' }),
+    // de oefening bij je les, als die past bij met of zonder gitaar
+    if (d && MODES[d.mode] && g === !NO_MIC.includes(d.mode)) wrap.append(h('div', { class: 'hub-sec' }, h('h2', { class: 'hub-h', text: 'Past bij je les' }),
       pedal(d.mode, { wide: true, color: UNIT_COLORS[(units.length - 1) % UNIT_COLORS.length], eyebrow: `Les ${cu.lesson}: ${meta.title}`, sub: drillSub(d), before: () => { if (d.set) TempSettings.apply(d.mode, d.set); } })));
   }
-  for (const sec of HUB) {
+  for (const sec of HUB[mode]) {
     const ids = sec.ids.filter(id => MODES[id]);
     if (!ids.length) continue;
     wrap.append(h('div', { class: 'hub-sec' }, h('h2', { class: 'hub-h', text: sec.title }),
       h('div', { class: 'pedals' + (sec.tools ? ' tools' : '') }, ids.map(id => pedal(id)))));
   }
-  wrap.append(h('p', { class: 'foot', text: 'De app hoort welke toon klinkt, niet op welke snaar je hem speelt. Speel dus echt waar het gevraagd wordt, en leg je telefoon dicht bij je gitaar.' }));
+  const other = HUB_OTHER[mode].filter(id => MODES[id]);
+  if (other.length) wrap.append(h('details', { class: 'hub-other' },
+    h('summary', {}, h('span', { html: g ? ICONS.phone : ICONS.guitar }), h('span', { text: g ? 'Zonder gitaar' : 'Met gitaar' }), h('small', { text: `${other.length} oefeningen` })),
+    h('div', { class: 'pedals' }, other.map(id => pedal(id)))));
+  if (g) wrap.append(h('p', { class: 'foot', text: 'De app hoort welke toon klinkt, niet op welke snaar je hem speelt. Speel dus echt waar het gevraagd wordt, en leg je telefoon dicht bij je gitaar.' }));
   view.append(wrap);
 }
 
@@ -7449,7 +7887,13 @@ window.__fj = {
   markPlayed: ids => { const md = Store.stats.modeDays || (Store.stats.modeDays = {}); ids.forEach(i => { md[i] = todayKey(); }); Quests.check(); },
   freezes: () => ({ n: Store.stats.freezes || 0, frozen: Store.stats.frozen || {} }),
   targets: () => (current && current.id === 'targets' ? { want: current.want, chord: current.chord && current.chord.name, hit: current.hit, idx: current.idx } : null),
-  summary: () => courseSummary(),
+  // met of zonder gitaar, de cursusplanning en de vraagtypes van de les die nu loopt
+  guitar: () => Guitar.on(),
+  setGuitar: v => { Guitar.set(v); Router.render(); },
+  course: () => PathData.schedule().map(x => ({ lesson: x.unit.lesson, topic: x.unit.topic, date: x.date })),
+  // de les van unit k openen, ook als die nog op slot zit
+  openLes: k => { const u = PathData.unit(k); startNode(u, 0, unitNodes(u)); },
+  lessonTypes: () => (current === Lesson ? [Lesson.cur].concat(Lesson.queue || []).filter(Boolean).map(x => x.type) : []),
   earq: () => (current && current.id === 'earq' && current.q ? current.q.key : null),
   addSecs: n => { Progress.day().secs += n; Store.saveStats(); Progress.renderTop(); },
 };
@@ -7462,7 +7906,6 @@ $$('.tabbar a').forEach(a => { $('.tb-ico', a).innerHTML = TAB_ICONS[a.dataset.t
 // teller op Oefenen: wat er vandaag te herhalen is
 $('.tabbar a[data-tab="practice"] .tb-ico').append(h('b', { class: 'tb-badge', hidden: true }));
 Router.render();
-PathData.load();
 setTimeout(() => Badges.check(), 1500);
 
 })();

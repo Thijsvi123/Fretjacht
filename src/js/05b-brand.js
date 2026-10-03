@@ -125,6 +125,8 @@ Object.assign(ICONS, {
   eye: svgI('<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/>'),
   neck: svgI('<path d="M3 8.5h18M3 12h18M3 15.5h18" opacity=".55"/><path d="M8 6v12M14 6v12" stroke-width="2.6"/><circle cx="11" cy="12" r="2.2" fill="currentColor"/>'),
   level: svgI('<path d="M4 20h4v-5H4zM10 20h4V10h-4zM16 20h4V4h-4z"/>'),
+  guitar: svgI('<path d="M8.5 11A3.4 3.4 0 1 1 13 15.5A5 5 0 1 1 8.5 11Z"/><circle cx="9.2" cy="14.8" r="1.4"/><path d="M11.4 12.6 19.4 4.6"/><path d="M18.2 2.8l3 3"/>'),
+  phone: svgI('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>'),
 });
 
 // ---------- Illustraties per oefening (48×48, lijnen in currentColor) ----------
@@ -235,7 +237,7 @@ const LOADER_LINES = [
   'Leg je telefoon dicht bij je gitaar.',
   'Een blije fret springt alle kanten op. In het Engels heet dat de weasel war dance.',
   'Fretten slapen 14 tot 18 uur per dag. Jouw dagdoel is een stuk korter.',
-  'Geen gitaar bij de hand? Tik op “Ik kan nu niet spelen”.',
+  'Geen gitaar bij de hand? Zet het schuifje op Zonder gitaar.',
   'Wat je fout hebt, komt terug bij Herhalen: meteen, en daarna na 1, 3 en 7 dagen.',
   'Bewaar af en toe een reservekopie van je voortgang. Dat doe je bij Voortgang.',
 ];
@@ -278,16 +280,28 @@ function countUp(el, to, o = {}) {
 // ---------- Tijdelijke instellingen voor een oefening (bij een les of sessie) ----------
 const TempSettings = {
   saved: null,
+  // set geldt tijdelijk voor deze oefening; heeft de oefening geen eigen instellingen (Noten zoeken),
+  // dan gaat het om de algemene instellingen
   apply(mode, set) {
-    if (!set || !Store.settings[mode]) return;
-    if (!this.saved || this.saved.mode !== mode) { this.restore(); this.saved = { mode, prev: JSON.parse(JSON.stringify(Store.settings[mode])) }; }
-    Object.assign(Store.settings[mode], set);
+    if (!set) return;
+    const root = !Store.settings[mode] || typeof Store.settings[mode] !== 'object';
+    const obj = root ? Store.settings : Store.settings[mode];
+    if (!this.saved || this.saved.mode !== mode) {
+      this.restore();
+      const prev = root ? Object.fromEntries(Object.keys(set).map(k => [k, JSON.parse(JSON.stringify(obj[k]))])) : JSON.parse(JSON.stringify(obj));
+      this.saved = { mode, root, prev };
+    }
+    Object.assign(obj, set);
   },
   restore() {
     if (!this.saved) return;
-    const cur = Store.settings[this.saved.mode], prev = this.saved.prev;
-    for (const k of Object.keys(cur)) if (!(k in prev)) delete cur[k];
-    Object.assign(cur, prev);
+    const prev = this.saved.prev;
+    if (this.saved.root) Object.assign(Store.settings, prev);
+    else {
+      const cur = Store.settings[this.saved.mode];
+      for (const k of Object.keys(cur)) if (!(k in prev)) delete cur[k];
+      Object.assign(cur, prev);
+    }
     this.saved = null;
     Store.saveSettings();
   },

@@ -62,7 +62,13 @@ window.__fj = {
   markPlayed: ids => { const md = Store.stats.modeDays || (Store.stats.modeDays = {}); ids.forEach(i => { md[i] = todayKey(); }); Quests.check(); },
   freezes: () => ({ n: Store.stats.freezes || 0, frozen: Store.stats.frozen || {} }),
   targets: () => (current && current.id === 'targets' ? { want: current.want, chord: current.chord && current.chord.name, hit: current.hit, idx: current.idx } : null),
-  summary: () => courseSummary(),
+  // met of zonder gitaar, de cursusplanning en de vraagtypes van de les die nu loopt
+  guitar: () => Guitar.on(),
+  setGuitar: v => { Guitar.set(v); Router.render(); },
+  course: () => PathData.schedule().map(x => ({ lesson: x.unit.lesson, topic: x.unit.topic, date: x.date })),
+  // de les van unit k openen, ook als die nog op slot zit
+  openLes: k => { const u = PathData.unit(k); startNode(u, 0, unitNodes(u)); },
+  lessonTypes: () => (current === Lesson ? [Lesson.cur].concat(Lesson.queue || []).filter(Boolean).map(x => x.type) : []),
   earq: () => (current && current.id === 'earq' && current.q ? current.q.key : null),
   addSecs: n => { Progress.day().secs += n; Store.saveStats(); Progress.renderTop(); },
 };
@@ -75,5 +81,4 @@ $$('.tabbar a').forEach(a => { $('.tb-ico', a).innerHTML = TAB_ICONS[a.dataset.t
 // teller op Oefenen: wat er vandaag te herhalen is
 $('.tabbar a[data-tab="practice"] .tb-ico').append(h('b', { class: 'tb-badge', hidden: true }));
 Router.render();
-PathData.load();
 setTimeout(() => Badges.check(), 1500);

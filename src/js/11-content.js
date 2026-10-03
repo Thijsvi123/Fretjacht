@@ -93,7 +93,7 @@ const G = {
   },
   fretShorter: () => mc('fret-shorter', 'Hoeveel korter maakt elke fret de trillende snaar ongeveer?', '6%', ['1%', '12%', '25%'], 'Elke halve toon is een verhouding van ongeveer 1,06. Daarom maakt elke fret de snaar ongeveer 6% korter, en liggen de frets richting de body steeds dichter bij elkaar.'),
   equalTemp: () => mc('equal-temp', 'Wat doet de gelijkzwevende stemming?', 'Het foutje van de kwintencirkel over alle 12 stappen verdelen', ['Alle kwinten precies zuiver maken', 'De kwint weglaten uit de toonladder', 'Alleen de open snaren stemmen'], 'Twaalf zuivere kwinten zijn iets meer dan 7 octaven. Door dat verschil over alle 12 stappen te verdelen kun je in elke toonsoort spelen.'),
-  comma: () => mc('comma', 'Twaalf zuivere kwinten op elkaar zijn…', 'iets meer dan 7 octaven', ['precies 7 octaven', 'precies 12 octaven', 'iets minder dan 6 octaven'], '1,5¹² ≈ 129,7 en 2⁷ = 128. Dat kleine verschil heet het Pythagoreïsch komma.'),
+  comma: () => mc('comma', 'Twaalf zuivere kwinten op elkaar zijn…', 'iets meer dan 7 octaven', ['precies 7 octaven', 'precies 12 octaven', 'iets minder dan 6 octaven'], '1,5¹² ≈ 129,7 en 2⁷ = 128. Dat kleine verschil heet de komma van Pythagoras.'),
   tapOctave: () => {
     const r = rootSpot(12);
     return tapItem('tap-octave', 'Tik dezelfde noot een octaaf hoger', { sub: `De ${r.name} is gemarkeerd.`, marks: [{ s: r.s, f: r.f, kind: 'todo root', label: r.name }], valid: r.valid, explain: 'Een octaaf hoger ligt twee snaren hoger en twee frets verder (over de B-snaar heen: drie), of 12 frets verder op dezelfde snaar.' });
@@ -194,9 +194,9 @@ const G = {
   keyFromSig: side => {
     const keys = Object.keys(MAJOR_SIG).filter(k => k !== 'G♭' && k !== 'C' && (side === 'sharp' ? MAJOR_SIG[k] > 0 : side === 'flat' ? MAJOR_SIG[k] < 0 : true));
     const key = pick(keys), n = MAJOR_SIG[key];
-    return mc('key-from-sig', `Welke majeurtoonsoort heeft ${sigText(n)}?`, key, Object.keys(MAJOR_SIG).filter(k => k !== key && Math.abs(MAJOR_SIG[k] - n) <= 2 && k !== 'G♭'), `${sigText(n)[0].toUpperCase() + sigText(n).slice(1)}: ${key} majeur. ${n > 0 ? 'De laatste kruis ligt een halve toon onder de grondtoon.' : 'De voorlaatste mol is de grondtoon (behalve bij F).'}`);
+    return mc('key-from-sig', `Welke majeurtoonsoort heeft ${sigText(n)}?`, key, Object.keys(MAJOR_SIG).filter(k => k !== key && Math.abs(MAJOR_SIG[k] - n) <= 2 && k !== 'G♭'), `${sigText(n)[0].toUpperCase() + sigText(n).slice(1)}: ${key} majeur. ${n > 0 ? 'Het laatste kruis ligt een halve toon onder de grondtoon.' : 'De voorlaatste mol is de grondtoon (behalve bij F).'}`);
   },
-  sharpOrder: () => mc('sharp-order', 'In welke volgorde komen de kruisen erbij?', 'F C G D A E B', ['C G D A E B F', 'B E A D G C F', 'F G A B C D E'], 'Elke volgende kruis-toonsoort ligt een kwint hoger en krijgt er één kruis bij: F♯, C♯, G♯, D♯, A♯, E♯, B♯.'),
+  sharpOrder: () => mc('sharp-order', 'In welke volgorde komen de kruisen erbij?', 'F C G D A E B', ['C G D A E B F', 'B E A D G C F', 'F G A B C D E'], 'Elke volgende toonsoort met kruisen ligt een kwint hoger en krijgt er één kruis bij: F♯, C♯, G♯, D♯, A♯, E♯, B♯.'),
   flatOrder: () => mc('flat-order', 'In welke volgorde komen de mollen erbij?', 'B E A D G C F', ['F C G D A E B', 'E A D G C F B', 'B A G F E D C'], 'De mollen komen er in omgekeerde volgorde bij: B♭, E♭, A♭, D♭, G♭, C♭, F♭.'),
   relMinor: () => {
     const key = pick(['C', 'G', 'D', 'A', 'F', 'B♭', 'E♭', 'E']), m = relMinorOf(key);
@@ -455,17 +455,28 @@ const TOPICS = {
     ],
   },
 };
-// Fase 1 zoals in het cursusboek (terugval als path.json niet bereikbaar is)
-const FASE1 = [
-  { lesson: 1, date: '2026-10-02', topic: 'twelve-tones' },
-  { lesson: 2, date: '2026-10-05', topic: 'intervals' },
-  { lesson: 3, date: '2026-10-08', topic: 'major-scale' },
-  { lesson: 4, date: '2026-10-12', topic: 'keys-circle' },
-  { lesson: 5, date: '2026-10-15', topic: 'minor' },
-  { lesson: 6, date: '2026-10-19', topic: 'chord-building' },
-  { lesson: 7, date: '2026-10-22', topic: 'diatonic-chords' },
-  { lesson: 8, date: '2026-10-26', topic: 'progressions' },
-];
+// ---------- Wanneer een les opengaat ----------
+// Les 1 opende op 2 oktober. Daarna opent elke les op zondag: de eerste zondag nadat je de unittoets van de
+// vorige les haalde, en minstens een dag na de opening van die vorige. Zo komt er hooguit één les per week bij,
+// en nooit een stapel lessen als je even niet oefent.
+const COURSE_START = '2026-10-02';
+const dayKey = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const plusDays = (key, n) => { const d = new Date(key + 'T12:00:00'); d.setDate(d.getDate() + n); return dayKey(d); };
+const sundayOnOrAfter = key => { const d = new Date(key + 'T12:00:00'); d.setDate(d.getDate() + (7 - d.getDay()) % 7); return dayKey(d); };
+// passed[k] = dag waarop de unittoets van les k+1 voor het eerst gehaald is (of null).
+// Geeft per les de openingsdatum: alle open lessen, plus hooguit één volgende (een datum in de toekomst,
+// of null zolang de toets van de vorige les nog niet gehaald is).
+function courseDates(passed, today, n) {
+  const out = [];
+  for (let k = 0; k < n; k++) {
+    if (k === 0) { out.push(COURSE_START); if (COURSE_START > today) break; continue; }
+    if (!passed[k - 1]) { out.push(null); break; }
+    const prev = out[k - 1], next = sundayOnOrAfter(passed[k - 1] > plusDays(prev, 1) ? passed[k - 1] : plusDays(prev, 1));
+    out.push(next);
+    if (next > today) break;
+  }
+  return out;
+}
 function authoredItems(unit) {
   return (unit.quiz || []).filter(q => q && q.q && Array.isArray(q.options) && q.options.length >= 2 && q.options[q.answer] != null).map(q => {
     const options = shuffle(q.options.map(String));
@@ -487,11 +498,16 @@ function unitNodes(unit) {
   }
   nodes.push({ title: 'Unittoets', test: true, gen: () => {
     let all = [];
-    for (const n of nodes.slice(0, -1)) all = all.concat(n.gen());
+    for (const n of nodes.slice(0, -1)) if (!n.lesson) all = all.concat(n.gen());
     all = shuffle(all);
     const plays = all.filter(x => x.type === 'play').slice(0, 3), rest = all.filter(x => x.type !== 'play').slice(0, 10 - plays.length);
     return shuffle(rest.concat(plays));
   } });
+  // eerst de les: uitleg in kaartjes, pas daarna de oefeningen
+  if (unit.cards && unit.cards.length) {
+    const n = unit.cards.length;
+    nodes.unshift({ title: 'Les', lesson: true, icon: ICONS.book, info: `De uitleg in ${n} kaartjes, met geluid en de hals erbij. Ongeveer ${Math.max(5, Math.round(n * 0.9))} minuten, zonder gitaar.`, gen: () => unit.cards.map((c, i) => cardItem(c, unit, i, n)) });
+  }
   return nodes;
 }
 // ---------- Uitlegkaartje: de kern van de les in een paar zinnen ----------
@@ -513,7 +529,7 @@ const TOPIC_SUMMARY = {
   ],
   'keys-circle': [
     'De voortekens van een toonsoort vertellen welke noten een ♯ of ♭ krijgen.',
-    'Op de kwintencirkel komt er bij elke stap rechtsom, een kwint omhoog, één kruis bij.',
+    'Op de kwintencirkel ga je rechtsom telkens een kwint omhoog. Bij elke stap komt er één kruis bij.',
     'Kruisen komen in de volgorde F♯ C♯ G♯ D♯ A♯ E♯ B♯, mollen precies andersom: B♭ E♭ A♭ D♭ G♭ C♭ F♭.',
   ],
   'minor': [
@@ -533,7 +549,7 @@ const TOPIC_SUMMARY = {
   ],
   'progressions': [
     'I, IV en V zijn de basis van rock en blues. De 12-maten blues gebruikt alleen deze drie akkoorden.',
-    'ii, V, I is de kern van jazz: elke stap gaat een kwint omlaag, terug naar huis.',
+    'ii–V–I is de kern van jazz: elke stap gaat een kwint omlaag, terug naar huis.',
     'Een V7 wil oplossen naar I: de leidtoon gaat een halve toon omhoog naar de grondtoon.',
   ],
 };

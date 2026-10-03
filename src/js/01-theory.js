@@ -121,7 +121,7 @@ const CHORDS = {
   dom7: { sym: '7', name: 'dominant 7', tones: [DG(0, 0, 'R'), DG(2, 4, '3'), DG(4, 7, '5'), DG(6, 10, '♭7')] },
   maj7: { sym: 'maj7', name: 'groot 7', tones: [DG(0, 0, 'R'), DG(2, 4, '3'), DG(4, 7, '5'), DG(6, 11, '7')] },
   m7: { sym: 'm7', name: 'mineur 7', tones: [DG(0, 0, 'R'), DG(2, 3, '♭3'), DG(4, 7, '5'), DG(6, 10, '♭7')] },
-  m7b5: { sym: 'm7♭5', name: 'half-verminderd', tones: [DG(0, 0, 'R'), DG(2, 3, '♭3'), DG(4, 6, '♭5'), DG(6, 10, '♭7')] },
+  m7b5: { sym: 'm7♭5', name: 'halfverminderd', tones: [DG(0, 0, 'R'), DG(2, 3, '♭3'), DG(4, 6, '♭5'), DG(6, 10, '♭7')] },
   dim: { sym: '°', name: 'verminderd', tones: [DG(0, 0, 'R'), DG(2, 3, '♭3'), DG(4, 6, '♭5')] },
   sus4: { sym: 'sus4', name: 'sus4', tones: [DG(0, 0, 'R'), DG(3, 5, '4'), DG(4, 7, '5')] },
 };

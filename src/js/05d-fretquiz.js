@@ -24,7 +24,7 @@ const FretQuiz = {
     for (let g = Math.max(0, f - 3); g <= Math.min(15, f + 3); g++) if (g !== f && NATURAL.has(this.pcAt(s, g))) out.push(g === 0 ? `${this.nameAt(s, g)} los` : `${this.nameAt(s, g)} op ${g}`);
     return out.slice(0, 3).join(', ');
   },
-  // toetsenbord als een stukje piano: stamtonen onder, kruizen en mollen erboven, alleen waar ze bestaan
+  // toetsenbord als een stukje piano: stamtonen onder, kruisen en mollen erboven, alleen waar ze bestaan
   keypad(all, onPick) {
     const el = h('div', { class: 'keypad' + (all ? ' k12' : ' k7'), role: 'group', 'aria-label': 'Kies de noot' });
     LETTERS.forEach((n, i) => el.append(h('button', { type: 'button', class: 'key nat', style: `--c:${2 * i + 1}`, 'data-pc': String(LETTER_PC[i]), 'aria-label': n, onclick: e => onPick(LETTER_PC[i], e.currentTarget) }, h('b', { text: n }))));
@@ -58,7 +58,7 @@ const FretQuiz = {
     const miss = 1 - it.ok / it.n, slow = it.ok ? Math.min(2, it.t / it.ok / 3) : 1.5;
     return 0.6 + 2.5 * miss + slow;
   },
-  // only: true of 'nat' = alleen stamtonen, 'acc' = alleen kruizen en mollen
+  // only: true of 'nat' = alleen stamtonen, 'acc' = alleen kruisen en mollen
   pickSpot(strings, from, to, only, prev) {
     const cands = [];
     for (const s of strings) for (let f = from; f <= to; f++) {

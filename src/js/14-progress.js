@@ -257,7 +257,7 @@ function renderProgressEmpty(view) {
       li(ICONS.flame, 'Je reeks', `elke dag dat je ${Math.round(Progress.goalSecs() / 60)} minuten oefent`),
       li(ICONS.chart, 'Je oefenkalender', 'hoe vaak en hoe lang je speelt'),
       li(ICONS.retry, 'Herhalen', 'fouten komen terug na 1, 3 en 7 dagen'),
-      li(ICONS.book, 'Voor je les', 'je zwakke plekken, klaar om te kopiëren'))));
+      li(ICONS.book, 'Je cursus', 'welke lessen je af hebt en wat er zondag bijkomt'))));
   view.append(badgesCard());
   view.append(h('div', { class: 'row links' }, h('a', { class: 'link', href: '#instellingen', text: 'Instellingen' })));
 }
@@ -296,14 +296,6 @@ function renderProgress(view) {
     tile('Nauwkeurig', acc == null ? '–' : `${acc}%`, acc == null ? 'vanaf 10 antwoorden' : `${ans.r} van ${ans.r + ans.w} goed`, ICONS.star),
     tile('Deze week', `${wk}`, 'minuten', ICONS.clock),
     tile('Herhalen', String(todo), todo ? 'tik om te herhalen' : nxt ? `${Srs.when(nxt.date)} ${nxt.n} terug` : known ? `${known} onder de knie` : 'niets vandaag', ICONS.retry, todo ? () => Srs.start() : null)));
-  const sumOut = h('pre', { class: 'cc-out', hidden: true });
-  view.append(h('div', { class: 'card course-card' },
-    h('div', { class: 'cc-fret', html: Mascot.svg('boek') }),
-    h('div', { class: 'cc-text' },
-      h('h2', { class: 'card-h', text: 'Voor je muziektheorieles' }),
-      h('p', { class: 'help', text: 'Kopieer je voortgang en plak hem als reactie op je volgende les. Dan stem ik de lessen af op wat je nog lastig vindt.' }),
-      h('button', { class: 'primary', type: 'button', id: 'copyProgress', html: `${ICONS.copy}<span>Kopieer voortgang</span>`, onclick: () => copyCourseSummary(sumOut) })),
-    sumOut));
   const calInfo = h('p', { class: 'chart-info', text: 'Tik op een dag voor de minuten' });
   view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Oefenkalender' }), h('p', { class: 'help', text: 'De laatste 16 weken. Hoe donkerder, hoe langer je oefende. De donkerste kleur is je dagdoel gehaald.' }), renderCalendar(calInfo),
     h('div', { class: 'cal-legend', html: `<span>minder</span>${[0, 1, 2, 3, 4].map(l => `<i class="l${l}"></i>`).join('')}<span>dagdoel</span>` }), calInfo));

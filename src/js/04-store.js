@@ -1,6 +1,6 @@
 // ---------- Opslag ----------
 const DEFAULT_SETTINGS = {
-  gateDb: -48, strict: false, sound: true, haptics: true, names: 'sharps', goal: 15, cantPlayUntil: 0,
+  gateDb: -48, strict: false, sound: true, haptics: true, names: 'sharps', goal: 15, guitar: true,
   strings: [0, 1, 2, 3, 4, 5], minFret: 0, maxFret: 12, naturalsOnly: false, autoHint: 0,
   positions: { order: 'up' },
   intervals: { set: [3, 4, 5, 7, 10, 12], dir: 'up', naturalRoots: true },

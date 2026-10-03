@@ -1,42 +1,27 @@
-// ---------- Leerpad: units uit path.json (of het cursusschema) ----------
-const COURSE_DOC = 'https://claude.ai/code/artifact/a8cea592-791b-4211-9b66-8fdbddcd8c09';
+// ---------- Leerpad: de cursus in de app, één nieuwe les per week ----------
 const PathData = {
-  remote: null,
-  async load() {
-    const before = JSON.stringify(this.units());
-    try {
-      const r = await fetch('path.json?t=' + Date.now(), { cache: 'no-store' });
-      if (r.ok) {
-        const j = await r.json();
-        if (j && Array.isArray(j.units)) { this.remote = j; Store.put('path', j); }
-      }
-    } catch (e) {}
-    // alleen opnieuw tekenen als er echt iets veranderd is (anders breekt de intro-animatie af)
-    const v = document.body.dataset.view;
-    if (JSON.stringify(this.units()) !== before && (v === 'path' || v === 'progress' || v === 'practice')) Router.render();
+  cache: {},
+  unit(k) {
+    if (!this.cache[k]) { const c = COURSE[k], tp = TOPICS[c.topic] || TOPICS.generic; this.cache[k] = Object.assign({ title: tp.title, subtitle: tp.subtitle }, c); }
+    return this.cache[k];
   },
-  units() {
-    const src = this.remote || Store.get('path', null), today = todayKey();
-    let list;
-    if (src) {
-      list = src.units.slice();
-      // vangnet: staat een gegeven les een dag later nog niet in path.json, dan opent de unit uit het cursusschema
-      const max = list.reduce((m, u) => Math.max(m, (u && u.lesson) || 0), 0);
-      for (const u of FASE1) if (u.lesson > max && u.date < today) list.push(u);
-    } else {
-      // zonder path.json: een les telt als gegeven vanaf 20:15 op de lesdag
-      const late = new Date().getHours() * 60 + new Date().getMinutes() >= 20 * 60 + 15;
-      list = FASE1.filter(u => u.date < today || (u.date === today && late));
-    }
-    list = list.filter(u => u && u.lesson && (TOPICS[u.topic] || (u.quiz && u.quiz.length))).slice().sort((a, b) => a.lesson - b.lesson);
-    return list;
+  // openingsdatum per les (zie courseDates): alle open lessen, plus de eerstvolgende
+  schedule() {
+    const passed = COURSE.map((c, k) => unitPassedDay(this.unit(k)));
+    return courseDates(passed, todayKey(), COURSE.length).map((date, k) => ({ unit: Object.assign({ date }, this.unit(k)), date }));
   },
-  upcoming() {
-    const have = this.units(), last = have.length ? have[have.length - 1].lesson : 0;
-    return FASE1.filter(u => u.lesson > last).slice(0, 2);
-  },
+  units() { const t = todayKey(); return this.schedule().filter(x => x.date && x.date <= t).map(x => x.unit); },
+  // de volgende les: { unit, date } met een datum in de toekomst, of date null als de vorige toets nog niet gehaald is
+  upcoming() { const t = todayKey(); return this.schedule().filter(x => !x.date || x.date > t); },
 };
-const nodeKey = (unit, i) => `L${unit.lesson}-${i}`;
+// dag waarop de unittoets van een les voor het eerst gehaald is
+function unitPassedDay(unit) {
+  const nodes = unitNodes(unit), st = nodeStat(unit, nodes.length - 1);
+  if (!st || !st.done) return null;
+  return st.doneDay || (st.last ? dayKeyOf(new Date(st.last)) : todayKey());
+}
+// de les zelf is stap 'les'; de oefeningen houden hun oude nummers, zodat je voortgang blijft kloppen
+const nodeKey = (unit, i) => `L${unit.lesson}-${unit.track !== 'hals' && unit.cards && unit.cards.length ? (i === 0 ? 'les' : i - 1) : i}`;
 const nodeStat = (unit, i) => Store.stats.path.nodes[nodeKey(unit, i)];
 const nodeDone = (unit, i) => !!(nodeStat(unit, i) && nodeStat(unit, i).done);
 function nodeState(unit, nodes, i) {
@@ -61,7 +46,7 @@ function recordNode(unit, i, node, res) {
   if (res.perfect) st.perfect = true;
   if (node.test) st.test = true;
   if (res.passed) st.done = true;
-  if (res.passed && !wasDone) PathFx.justDone = k;
+  if (res.passed && !wasDone) { PathFx.justDone = k; st.doneDay = todayKey(); }
   if (res.passed) Quests.bump('nodes');
   Store.saveStats();
 }
@@ -79,10 +64,10 @@ function nodeInfo(node) {
 }
 function startNode(unit, i, nodes, after) {
   const node = nodes[i], items = node.gen(), hals = unit.track === 'hals';
-  const cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
-  const needMic = !cantPlay && items.some(x => x.type === 'play') && !Engine.mic;
-  Loader.run({ title: node.test ? 'Unittoets' : hals ? `${unit.title}: ${node.title.toLowerCase()}` : node.title, sub: needMic ? 'Microfoon aanzetten…' : hals ? 'Halsjacht, zonder gitaar' : null, wait: needMic ? Engine.startMic() : null }, () => Lesson.open({
-    title: hals ? `Halsjacht niveau ${unit.idx + 1}: ${unit.title}` : `Les ${unit.lesson}: ${node.title}`, topic: unit.topic, items,
+  const needMic = needsMic(items) && !Engine.mic;
+  const title = node.test ? 'Unittoets' : node.lesson ? `Les ${unit.lesson}: ${unit.title}` : hals ? `${unit.title}: ${node.title.toLowerCase()}` : node.title;
+  Loader.run({ title, sub: needMic ? 'Microfoon aanzetten…' : node.lesson ? 'Lees rustig, en luister naar de voorbeelden' : hals ? `Halsjacht, ${Guitar.on() ? 'met' : 'zonder'} gitaar` : null, wait: needMic ? Engine.startMic() : null }, () => Lesson.open({
+    title: hals ? `Halsjacht niveau ${unit.idx + 1}: ${unit.title}` : node.lesson ? `Les ${unit.lesson}: ${unit.title}` : `Les ${unit.lesson}: ${node.title}`, topic: unit.topic, items,
     test: !!node.test, pass: node.pass || 0, label: hals ? node.title : null, xp: node.test ? 20 : node.pass ? 15 : 10,
     onFinish: res => recordNode(unit, i, node, res),
     onDone: after || (() => { location.hash = ''; }),
@@ -98,37 +83,18 @@ function niceDate(iso) {
 const SIDE_MOODS = ['gitaar', 'noot', 'hals', 'luister', 'boek'];
 const dayNo = () => Math.floor(new Date(todayKey() + 'T12:00:00') / 86400000);
 
-// ---------- Startscherm: de Vandaag-kaart, een klein podium met je niveau ----------
-function homeLine(sk, secs, goal, lv) {
-  const hr = new Date().getHours(), d = dayNo();
-  const hi = hr < 6 ? 'Nog wakker?' : hr < 12 ? 'Goedemorgen!' : hr < 18 ? 'Goedemiddag!' : 'Goedenavond!';
-  const todo = Srs.todoCount(), left = Math.max(1, Math.ceil((goal - secs) / 60));
-  if (secs >= goal) return ['Dagdoel gehaald. Rock on!', 'Lekker gespeeld vandaag!', 'Dagdoel binnen. Alles wat je nu doet is extra.'][d % 3];
-  if (todo) return `${hi} Er ${todo === 1 ? 'komt een vraag' : `komen ${todo} vragen`} terug om te herhalen.`;
-  if (!secs) return sk.n ? `${hi} Je reeks staat op ${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'}. Houd hem vast!` : `${hi} ${Math.round(goal / 60)} minuten oefenen en je reeks begint.`;
-  if (lv.left <= 25) return `Nog ${lv.left} XP en je bent ${lv.next}!`;
-  return `Nog ${left} ${left === 1 ? 'minuut' : 'minuten'} voor je dagdoel. Je kunt het!`;
-}
-function homeHero() {
-  const st = Store.stats, xp = st.xp || 0, lv = Level.of(xp), sk = Progress.streak(), secs = Progress.day().secs, goal = Progress.goalSecs();
-  const met = secs >= goal, acc = Score.accuracy(), notes = Score.notes(), gmin = Math.round(goal / 60), done = Math.min(gmin, Math.floor(secs / 60));
-  const stat = (icon, v, l, cls) => h('div', { class: 'hh-stat' + (cls ? ' ' + cls : '') }, h('span', { class: 'hh-ico', html: icon }), h('b', { text: v }), h('small', { text: l }));
-  return h('section', { class: 'home-hero' + (met ? ' met' : ''), id: 'homeHero' },
-    h('div', { class: 'hh-top' },
-      h('div', { class: 'hh-level' },
-        h('p', { class: 'hh-eyebrow', text: `Fretjacht niveau ${lv.n}` }),
-        h('h2', { class: 'hh-title', text: lv.title }),
-        Level.meter(lv),
-        h('p', { class: 'hh-xp' }, h('b', { text: `${xp} XP` }), h('span', { text: ` · nog ${lv.left} tot niveau ${lv.n + 1}` }))),
-      h('div', { class: 'hh-fret', html: Mascot.svg(met ? 'juich' : secs ? 'gitaar' : 'zwaai') })),
-    h('p', { class: 'hh-say', text: homeLine(sk, secs, goal, lv) }),
-    h('div', { class: 'hh-stats' },
-      stat(ICONS.flame, String(sk.n), sk.n === 1 ? 'dag op rij' : 'dagen op rij', sk.today ? 'lit' : ''),
-      stat(ICONS.note, String(notes), notes === 1 ? 'noot gevonden' : 'noten gevonden'),
-      stat(ICONS.star, acc == null ? '–' : `${acc}%`, 'goed beantwoord')),
-    h('div', { class: 'hh-goal' },
-      h('div', { class: 'hh-goal-t' }, h('span', { text: 'Dagdoel' }), h('b', { text: met ? 'gehaald!' : `${done} van ${gmin} minuten` })),
-      h('div', { class: 'hh-bar', role: 'img', 'aria-label': `Dagdoel: ${done} van ${gmin} minuten` }, h('span', { style: `width:${(100 * clamp(secs / goal, 0, 1)).toFixed(1)}%` }))));
+// ---------- Bovenkant van het leerpad: niveau, opdrachten en het gitaarschuifje ----------
+// Reeks en dagdoel staan al in de kop; hier alleen wat je nodig hebt om te kiezen, zodat de cursus meteen in beeld is.
+function homeTop() {
+  const xp = Store.stats.xp || 0, lv = Level.of(xp);
+  return h('section', { class: 'home-top', id: 'homeTop' },
+    h('div', { class: 'ht-level' },
+      h('span', { class: 'ht-badge', 'aria-hidden': 'true', text: String(lv.n) }),
+      h('div', { class: 'ht-main' },
+        h('b', { class: 'ht-title', text: `Niveau ${lv.n}: ${lv.title}` }),
+        h('div', { class: 'ht-row' }, Level.meter(lv, 20), h('small', { class: 'ht-xp', text: `${xp} XP · nog ${lv.left}` })))),
+    Quests.card(),
+    guitarSwitch(() => Router.render()));
 }
 
 // ---------- Twee paden: Muziektheorie (de cursus) en de Halsjacht ----------
@@ -137,16 +103,16 @@ function trackHead(track) {
   if (track === 'hals') {
     const n = halsDoneCount(), nx = nextHals();
     const states = HALS_LEVELS.map((L, i) => halsLevelDone(i) ? 'done' : nx && nx.unit.idx === i ? 'now' : '');
-    return h('div', { class: 'track-head' }, h('p', {}, h('b', { text: n ? `${n} van ${HALS_LEVELS.length} niveaus beheerst` : `${HALS_LEVELS.length} niveaus, zonder gitaar` }), h('span', { text: 'Per niveau: leren, herkennen en toepassen.' })), trackDots(states));
+    return h('div', { class: 'track-head' }, h('p', {}, h('b', { text: n ? `${n} van ${HALS_LEVELS.length} niveaus beheerst` : `${HALS_LEVELS.length} niveaus, met of zonder gitaar` }), h('span', { text: 'Per niveau: leren, herkennen en toepassen.' })), trackDots(states));
   }
-  const units = PathData.units(), total = Math.max(FASE1.length, units.reduce((m, u) => Math.max(m, u.lesson), 0));
+  const units = PathData.units(), total = COURSE.length;
   const cur = units.length ? units[units.length - 1].lesson : 0;
   const states = Array.from({ length: total }, (_, k) => {
     const u = units.find(x => x.lesson === k + 1);
     if (!u) return '';
     return nodeDone(u, unitNodes(u).length - 1) ? 'done' : 'now';
   });
-  return h('div', { class: 'track-head' }, h('p', {}, h('b', { text: cur ? `Cursus: les ${cur} van ${total}` : `Cursus: ${total} lessen` }), h('span', { text: 'Na elke les op maandag en donderdag komt er een unit bij.' })), trackDots(states));
+  return h('div', { class: 'track-head' }, h('p', {}, h('b', { text: cur ? `Cursus: les ${cur} van ${total}` : `Cursus: ${total} lessen` }), h('span', { text: 'Elke zondag een nieuwe les, als je de vorige af hebt.' })), trackDots(states));
 }
 function trackSwitch(track, onPick) {
   const btn = (v, icon, label) => h('button', { type: 'button', role: 'tab', 'aria-selected': String(track === v), class: track === v ? 'on' : '', 'data-track': v, onclick: () => onPick(v) }, h('span', { html: icon }), h('span', { text: label }));
@@ -155,6 +121,13 @@ function trackSwitch(track, onPick) {
 // oefen een Halsjacht-niveau vrij, met de instellingen van dat niveau
 function practiceLevel(u) {
   const L = HALS_LEVELS[u.idx];
+  // met gitaar: Noten zoeken op de snaren van dit niveau; zonder gitaar: Welke noot?
+  if (Guitar.on()) {
+    TempSettings.apply('notes', { strings: L.strings.slice(), naturalsOnly: L.nat, minFret: 0, maxFret: 12 });
+    const go = () => { location.hash = '#m-notes'; };
+    if (Engine.mic) go(); else Loader.run({ title: 'Noten zoeken', sub: 'Microfoon aanzetten…', mood: 'luister', wait: Engine.startMic() }, go);
+    return;
+  }
   TempSettings.apply('noteq', { kind: 'name', strings: L.strings.slice(), nat: L.nat });
   location.hash = '#m-noteq';
 }
@@ -172,7 +145,8 @@ function renderUnits(wrap, units, o) {
         h('div', { class: 'uh-prog', role: 'img', 'aria-label': `${doneCount} van ${nodes.length} stappen gedaan` }, h('span', { style: `width:${(100 * doneCount / nodes.length).toFixed(1)}%` }))),
       h('div', { class: 'uh-side' },
         complete ? h('span', { class: 'uh-done', html: ICONS.check, title: hals ? 'Niveau beheerst' : 'Unit gehaald' }) : h('span', { class: 'uh-count', text: `${doneCount} van ${nodes.length}` }),
-        hals ? h('button', { class: 'uh-link', type: 'button', text: 'Vrij oefenen', onclick: () => practiceLevel(u) }) : h('a', { class: 'uh-link', href: u.doc || COURSE_DOC, target: '_blank', rel: 'noopener', text: `Lees les ${u.lesson}` })));
+        hals ? h('button', { class: 'uh-link', type: 'button', text: 'Vrij oefenen', onclick: () => practiceLevel(u) })
+          : nodes[0] && nodes[0].lesson ? h('button', { class: 'uh-link', type: 'button', text: 'Lees de les', onclick: () => startNode(u, 0, nodes) }) : null));
     const track = h('div', { class: 'track' });
     nodes.forEach((n, i) => {
       const state = nodeState(u, nodes, i), k = nodeKey(u, i);
@@ -188,7 +162,7 @@ function renderUnits(wrap, units, o) {
     if (nodes.length >= 3) track.append(h('div', { class: 'side-fret', html: Mascot.svg(mood) }));
     // uitlegkaartje: de kern van de les, open bij de unit waar je nu bent
     const sum = unitSummary(u);
-    const card = sum.length ? h('details', { class: 'unit-sum', open: current && !doneCount ? true : null },
+    const card = sum.length ? h('details', { class: 'unit-sum' },
       h('summary', {}, h('span', { class: 'us-ico', html: hals ? ICONS.neck : ICONS.book }), h('span', { text: hals ? 'Zo onthoud je het' : 'De les in het kort' })),
       h('div', { class: 'us-body' }, h('div', { class: 'us-fret', html: Mascot.svg('boek') }), h('ul', {}, sum.map(t => h('li', { text: t }))))) : null;
     wrap.append(h('div', { class: `unit c-${color}${hals ? ' hals' : ''}`, id: `unit-${u.lesson}` }, head, card, track));
@@ -199,19 +173,21 @@ function renderTrack(box, track, o) {
   box.append(trackHead(track));
   if (track === 'hals') {
     renderUnits(box, HalsData.units(), Object.assign({ hals: true, next: nextHals() }, o));
-    box.append(h('div', { class: 'path-end', text: 'Beheers je alle acht niveaus, dan ken je de hele hals. Zonder gitaar, waar je ook bent.' }));
+    box.append(h('div', { class: 'path-end', text: 'Beheers je alle acht niveaus, dan ken je de hele hals. Met of zonder gitaar, waar je ook bent.' }));
     return nextHals();
   }
   const units = PathData.units();
-  if (!units.length) box.append(h('div', { class: 'card empty' }, h('div', { class: 'empty-fret', html: Mascot.svg('slaap') }), h('h2', { text: 'Je leerpad begint na les 1' }), h('p', { class: 'help', text: 'Zodra je eerste muziektheorieles binnen is, verschijnt hier de eerste unit met oefeningen. Begin intussen met de Halsjacht.' })));
   renderUnits(box, units, Object.assign({ next: nextNode() }, o));
-  for (const up of PathData.upcoming()) {
-    const tp = TOPICS[up.topic];
-    box.append(h('div', { class: 'unit locked' }, h('div', { class: 'unit-head' },
-      h('div', { class: 'uh-text' }, h('p', { class: 'uh-eyebrow', text: `Les ${up.lesson}, opent ${niceDate(up.date)}` }), h('h2', { text: tp ? tp.title : 'Volgende les' }), tp ? h('p', { class: 'uh-sub', text: tp.subtitle }) : null),
+  const up = PathData.upcoming()[0];
+  if (up) {
+    const u = up.unit, t = todayKey();
+    const when = up.date ? (up.date === plusDays(t, 1) ? 'Opent morgen, zondag ' : 'Opent zondag ') + new Date(up.date + 'T12:00:00').toLocaleDateString('nl-NL', { day: 'numeric', month: 'long' }) + '.'
+      : `Opent op de zondag nadat je de unittoets van les ${u.lesson - 1} hebt gehaald.`;
+    box.append(h('div', { class: 'unit locked', id: 'nextLesson' }, h('div', { class: 'unit-head' },
+      h('div', { class: 'uh-text' }, h('p', { class: 'uh-eyebrow', text: `Les ${u.lesson}` }), h('h2', { text: u.title }), h('p', { class: 'uh-sub', text: u.subtitle }), h('p', { class: 'uh-when', text: when })),
       h('div', { class: 'uh-side' }, h('span', { class: 'uh-lock', html: ICONS.lock })))));
   }
-  box.append(h('div', { class: 'path-end', text: 'Na elke les van maandag en donderdag komt hier een nieuwe unit bij.' }));
+  box.append(h('div', { class: 'path-end', text: units.length >= COURSE.length ? 'Dit was fase 1: de basis van de muziektheorie.' : 'Elke zondag komt er een les bij, als je de unittoets van de vorige hebt gehaald.' }));
   return nextNode();
 }
 function scrollToNext(box, nx, just) {
@@ -223,12 +199,7 @@ function renderPath(view) {
   const intro = PathFx.intro && !reducedMotion(); PathFx.intro = false;
   const just = PathFx.justDone; PathFx.justDone = null;
   const wrap = h('section', { class: 'path' + (intro ? ' intro' : '') });
-  if ((Store.settings.cantPlayUntil || 0) > Date.now()) {
-    const until = new Date(Store.settings.cantPlayUntil).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
-    wrap.append(h('div', { class: 'note-bar' }, h('span', { text: `Speelopdrachten staan uit tot ${until}.` }), h('button', { type: 'button', text: 'Weer aanzetten', onclick: () => { Store.settings.cantPlayUntil = 0; Store.saveSettings(); Router.render(); } })));
-  }
-  wrap.append(homeHero());
-  if (units.length) wrap.append(Quests.card());
+  wrap.append(homeTop());
   // laatst gekozen pad; zonder cursusunits begin je in de Halsjacht
   let track = Store.settings.track === 'hals' || (!units.length && Store.settings.track !== 'theory') ? 'hals' : 'theory';
   const box = h('div', { class: 'track-box' });
@@ -275,7 +246,7 @@ const Review = {
     if (!items.length) return false;
     const from = location.hash === '#les' ? '' : location.hash;
     const back = () => { if (location.hash === from) Router.render(); else location.hash = from; };
-    const needMic = items.some(x => x.type === 'play') && !Engine.mic && Bin.canPlay();
+    const needMic = needsMic(items) && !Engine.mic;
     Loader.run({ title: 'Herhalen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst', mood: 'boek', wait: needMic ? Engine.startMic() : null }, () =>
       Lesson.open({ title: 'Herhalen', label: 'Herhalen', sub: 'Vragen uit eerdere lessen. Wat je fout had, komt terug bij Herhalen.', items, xp: 10, onDone: o.after || back, onExit: o.exit || o.after || back }));
     return true;

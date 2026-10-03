@@ -1,4 +1,4 @@
-"""Nieuwe functies: dagelijkse opdrachten, reeksbevriezer, uitlegkaartje, voortgang voor de cursus,
+"""Nieuwe functies: dagelijkse opdrachten, reeksbevriezer, uitlegkaartje,
 halsverkenner, doeltonen en gehoortraining. Zelfde opties als learn.py (SCHEME, SHOTS, FONTS_DIR)."""
 import os, asyncio, subprocess, sys, time, json
 from datetime import date, timedelta
@@ -120,11 +120,9 @@ async def main():
             await ev("location.hash = '#oefenen'"); await page.wait_for_timeout(500)
             R['hub_new'] = await ev("['targets', 'earq', 'explorer'].map(m => !!document.querySelector(`.pedal[data-mode=${m}]`))")
             await shot('hub_full', full_page=True)
-            # --- Voortgang: kopiëren voor de cursus ---
+            # --- Voortgang: de cursus zit in de app, dus geen voortgang meer om te kopiëren ---
             await ev("location.hash = '#voortgang'"); await page.wait_for_timeout(500)
-            await page.click('#copyProgress'); await page.wait_for_timeout(500)
-            R['clipboard'] = await ev('navigator.clipboard.readText()')
-            R['copy_flash'] = await ev("Array.from(document.querySelectorAll('.flash')).map(e => e.textContent)")
+            R['no_copy'] = await ev("!document.querySelector('#copyProgress') && !document.body.textContent.includes('Kopieer voortgang')")
             await shot('progress'); await shot('progress_full', full_page=True)
             await b.close()
     finally:

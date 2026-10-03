@@ -1,17 +1,25 @@
 // ---------- Oefenen: het pedalboard ----------
-const HUB = [
-  { title: 'De hals', ids: ['noteq', 'notes', 'positions', 'intervals', 'degrees'] },
-  { title: 'Solo’s', ids: ['scales', 'chords', 'targets', 'bends'] },
-  { title: 'Gehoor', ids: ['earq', 'ear'] },
-  { title: 'Uitdaging', ids: ['challenge', 'heatmap'] },
-  { title: 'Gereedschap', ids: ['explorer', 'metro', 'tuner'], tools: true },
-];
+// het pedalboard per stand van het schuifje; de oefeningen van de andere stand staan ingeklapt onderaan
+const HUB = {
+  met: [
+    { title: 'De hals', ids: ['notes', 'positions', 'intervals', 'degrees'] },
+    { title: 'Solo’s', ids: ['scales', 'chords', 'targets', 'bends'] },
+    { title: 'Gehoor', ids: ['ear'] },
+    { title: 'Uitdaging', ids: ['challenge', 'heatmap'] },
+    { title: 'Gereedschap', ids: ['explorer', 'metro', 'tuner'], tools: true },
+  ],
+  zonder: [
+    { title: 'Zonder gitaar', ids: ['noteq', 'earq'] },
+    { title: 'Gereedschap', ids: ['explorer', 'metro', 'heatmap'], tools: true },
+  ],
+};
+const HUB_OTHER = { met: ['noteq', 'earq'], zonder: ['notes', 'positions', 'intervals', 'degrees', 'scales', 'chords', 'targets', 'bends', 'ear', 'challenge', 'tuner'] };
 const PEDAL_SUB = {
   notes: 'Vind de noot op de snaar', positions: 'Eén noot, elke snaar', intervals: 'Van toon naar toon', degrees: 'Trap 1 tot 7 in een toonsoort',
   scales: 'Boxen en patronen', chords: 'Alle tonen van een akkoord', bends: 'Zuiver omhoog buigen', ear: 'Luister en speel na',
   challenge: 'Zoveel noten in één minuut', heatmap: 'Waar zit je zwakke plek?', metro: 'Strak op de tel', tuner: 'Stem je gitaar',
-  targets: 'De terts op elk akkoord', earq: 'Zonder gitaar, alleen luisteren', explorer: 'Toonladders en akkoorden op de hals',
-  noteq: 'Zonder gitaar: herkennen en zoeken',
+  targets: 'De terts op elk akkoord', earq: 'Intervallen en akkoorden herkennen', explorer: 'Toonladders en akkoorden op de hals',
+  noteq: 'Noten op de hals herkennen en zoeken',
 };
 const PEDAL_TIP = {
   notes: 'Speel de noot op de snaar die oplicht.', positions: 'Speel dezelfde noot op elke snaar, van laag naar hoog.',
@@ -94,23 +102,29 @@ function emptyHero(where) {
 }
 
 function renderPractice(view) {
-  const wrap = h('section', { class: 'hub' });
+  const wrap = h('section', { class: 'hub' }), g = Guitar.on(), mode = g ? 'met' : 'zonder';
+  wrap.append(guitarSwitch(() => Router.render()));
   const hero = emptyHero('practice');
   if (hero) wrap.append(hero);
   wrap.append(Srs.card());
-  wrap.append(h('p', { class: 'hub-intro', text: hero ? 'Of trap zelf een pedaal in. Brandt het lampje, dan heb je die oefening vandaag al gespeeld.' : 'Trap een pedaal in om te beginnen. Brandt het lampje, dan heb je die oefening vandaag al gespeeld.' }));
+  wrap.append(h('p', { class: 'hub-intro', text: g ? 'Pak je gitaar en trap een pedaal in. Brandt het lampje, dan heb je die oefening vandaag al gespeeld.' : 'Alles hieronder doe je op je telefoon. Brandt het lampje, dan heb je die oefening vandaag al gedaan.' }));
   const units = PathData.units(), cu = units[units.length - 1];
   if (cu) {
     const meta = unitMeta(cu), d = meta.drill;
-    if (d && MODES[d.mode]) wrap.append(h('div', { class: 'hub-sec' }, h('h2', { class: 'hub-h', text: 'Past bij je les' }),
+    // de oefening bij je les, als die past bij met of zonder gitaar
+    if (d && MODES[d.mode] && g === !NO_MIC.includes(d.mode)) wrap.append(h('div', { class: 'hub-sec' }, h('h2', { class: 'hub-h', text: 'Past bij je les' }),
       pedal(d.mode, { wide: true, color: UNIT_COLORS[(units.length - 1) % UNIT_COLORS.length], eyebrow: `Les ${cu.lesson}: ${meta.title}`, sub: drillSub(d), before: () => { if (d.set) TempSettings.apply(d.mode, d.set); } })));
   }
-  for (const sec of HUB) {
+  for (const sec of HUB[mode]) {
     const ids = sec.ids.filter(id => MODES[id]);
     if (!ids.length) continue;
     wrap.append(h('div', { class: 'hub-sec' }, h('h2', { class: 'hub-h', text: sec.title }),
       h('div', { class: 'pedals' + (sec.tools ? ' tools' : '') }, ids.map(id => pedal(id)))));
   }
-  wrap.append(h('p', { class: 'foot', text: 'De app hoort welke toon klinkt, niet op welke snaar je hem speelt. Speel dus echt waar het gevraagd wordt, en leg je telefoon dicht bij je gitaar.' }));
+  const other = HUB_OTHER[mode].filter(id => MODES[id]);
+  if (other.length) wrap.append(h('details', { class: 'hub-other' },
+    h('summary', {}, h('span', { html: g ? ICONS.phone : ICONS.guitar }), h('span', { text: g ? 'Zonder gitaar' : 'Met gitaar' }), h('small', { text: `${other.length} oefeningen` })),
+    h('div', { class: 'pedals' }, other.map(id => pedal(id)))));
+  if (g) wrap.append(h('p', { class: 'foot', text: 'De app hoort welke toon klinkt, niet op welke snaar je hem speelt. Speel dus echt waar het gevraagd wordt, en leg je telefoon dicht bij je gitaar.' }));
   view.append(wrap);
 }

@@ -22,10 +22,12 @@ const Bin = {
     return JSON.parse(JSON.stringify(o));
   },
   add(it, from, topic) {
-    const k = it._bin || this.key(it), all = this.all(), ex = all.find(x => x.k === k);
+    // een vraag die voor de gitaarstand is omgezet, gaat als origineel in de lijst
+    const src = it._orig || it;
+    const k = it._bin || this.key(src), all = this.all(), ex = all.find(x => x.k === k);
     if (ex) { ex.n++; ex.t = Date.now(); ex.box = 0; ex.due = ''; }
     else {
-      all.push({ k, it: this.clean(it), n: 1, t: Date.now(), from: from || '', topic: topic || it._topic || '', box: 0 });
+      all.push({ k, it: this.clean(src), n: 1, t: Date.now(), from: from || '', topic: topic || it._topic || '', box: 0 });
       // maximaal 40 nieuwe fouten en 150 in totaal: de oudste gaan eruit
       const b0 = all.filter(x => !x.box);
       for (let i = 0; i < b0.length - this.MAX; i++) all.splice(all.indexOf(b0[i]), 1);
@@ -36,8 +38,8 @@ const Bin = {
     return k;
   },
   has(k) { return this.list().some(x => x.k === k); },
-  canPlay() { return !((Store.settings.cantPlayUntil || 0) > Date.now()); },
-  playable(x) { return x.it.type !== 'play' || this.canPlay(); },
+  // kan deze vraag in de huidige stand (met of zonder gitaar)? Speelopdrachten worden zonder gitaar een vraag.
+  playable(x) { return Guitar.on() || x.it.type !== 'play' || /^(play-(octave|fifth|power|degree|scale-|chord-|box-|key-root|harm7|dia-|prog)|iv-play-|note-play)/.test(x.it.skill || ''); },
   // verse kopie om opnieuw te stellen; meerkeuze-opties opnieuw geschud
   copy(x) {
     const it = JSON.parse(JSON.stringify(x.it));
@@ -60,7 +62,7 @@ const Bin = {
     const back = () => { if (location.hash === from) Router.render(); else location.hash = from; };
     const items = this.items(o.keys, 10);
     if (!items.length) { (o.after || back)(); return; }
-    const needMic = items.some(x => x.type === 'play') && !Engine.mic;
+    const needMic = needsMic(items) && !Engine.mic;
     Loader.run({ title: items.length === 1 ? 'Herhaal je fout' : 'Herhaal je fouten', sub: `${items.length} ${items.length === 1 ? 'vraag' : 'vragen'} uit deze les`, mood: 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
       Lesson.open({ mode: 'bin', title: 'Herhalen', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
   },
@@ -145,12 +147,12 @@ const Srs = {
       const todo = this.todoCount();
       if (!todo && Review.start(o)) return;
       const nx = this.next();
-      UI.flash(ICONS.retry, todo ? 'Alleen speelvragen over' : 'Niets te herhalen', todo ? 'Zet speelopdrachten weer aan om ze te herhalen.' : nx ? this.comes(nx) : 'Wat je fout hebt in een les, komt hier terug.', 'badge', null, true);
+      UI.flash(ICONS.retry, todo ? 'Alleen speelvragen over' : 'Niets te herhalen', todo ? 'Zet het schuifje op Met gitaar om ze te herhalen.' : nx ? this.comes(nx) : 'Wat je fout hebt in een les, komt hier terug.', 'badge', null, true);
       (o.after || back)();
       return;
     }
     const due = items.filter(x => x._box).length;
-    const needMic = items.some(x => x.type === 'play') && !Engine.mic;
+    const needMic = needsMic(items) && !Engine.mic;
     Loader.run({ title: 'Herhalen', sub: this.what(items.length - due, due), mood: due ? 'denk' : 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
       Lesson.open({ mode: 'bin', title: 'Herhalen', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
   },

@@ -187,8 +187,6 @@ async def main():
             await shot('srs_card_done')
             await go('#voortgang'); R['tile'] = await ev("Array.from(document.querySelectorAll('.tile')).map(e => e.textContent).join(' | ')")
             check('Voortgang-tegel Herhalen', 'Herhalen' in R['tile'] and 'onder de knie' in R['tile'], R['tile'])
-            R['summary'] = await ev('__fj.summary()')
-            check('Cursusvoortgang noemt herhalen', 'onder de knie' in R['summary'], R['summary'][-200:])
 
             # ---------- 4. trillen uit ----------
             await fresh(seed, {'haptics': False})

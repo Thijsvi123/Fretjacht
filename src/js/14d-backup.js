@@ -80,7 +80,7 @@ const Backup = {
     if (Daily.active) Daily.stop();
     // instellingen van de microfoon horen bij dit toestel en blijven staan
     const cur = Store.settings, set = Object.assign({}, j.settings && typeof j.settings === 'object' ? j.settings : {});
-    set.gateDb = cur.gateDb; set.cantPlayUntil = 0;
+    set.gateDb = cur.gateDb;
     set.metro = Object.assign({}, set.metro || {}, { corr: cur.metro.corr });
     Store.put('stats', j.stats);
     Store.put('settings', set);
