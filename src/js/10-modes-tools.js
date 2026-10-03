@@ -171,7 +171,7 @@ registerMode({
     this.want = want; this.target = tone; this.hit = false; this.hinted = false; this.t0 = performance.now();
     const st = Store.stats.targets; st.tries++; st.by[want] = st.by[want] || { h: 0, t: 0 }; st.by[want].t++;
     Store.saveStats();
-    this.card.classList.remove('hit', 'miss');
+    this.card.classList.remove('hit', 'miss', 'nope');
     $('.pr-eyebrow', this.card).textContent = `${P.name} in ${this.key()}${P.minor ? ' mineur' : ''}`;
     $('.pr-note', this.card).innerHTML = `${bigNoteHTML(root)}<span class="sym">${CHORDS[type].sym}</span>`;
     $('.pr-note', this.card).setAttribute('aria-label', `${spoken(root)} ${CHORDS[type].name}`);
@@ -210,7 +210,7 @@ registerMode({
     Engine.block(650);
   },
   hint() { if (!this.target || this.hit) return; this.hinted = true; this.renderWhere(); this.drawNeck(); },
-  skip() { if (Store.settings.targets.tempo > 0) return; this.streak = 0; this.next(); },
+  skip() { if (Store.settings.targets.tempo > 0) return; this.streak = 0; DrillFx.reset(this.card); this.next(); },
   expected() { return !this.target || this.hit ? [] : [48 + this.target.pc]; },
   onNote(n) {
     if (!this.target || this.hit) return;
@@ -222,15 +222,14 @@ registerMode({
       st.hits++; st.time += secs; if (near) st.near++; st.best = Math.max(st.best || 0, this.streak); st.by[this.want].h++;
       Store.saveStats();
       Quests.bump('targets');
-      this.card.classList.remove('miss'); this.card.classList.add('hit');
-      toast.textContent = near ? 'Raak, en een kleine stap vanaf de vorige. Zo klinkt een solo melodisch.' : `Raak! ${fmt1(secs)} s`;
+      this.card.classList.remove('miss');
+      DrillFx.hit(this.card, near ? 'Een kleine stap vanaf de vorige: zo klinkt een solo melodisch.' : `${fmt1(secs)} s`);
       this.renderWhere(); this.drawNeck(true); this.renderStats();
-      Engine.ding();
       if (!(Store.settings.targets.tempo > 0)) this.timer = setTimeout(() => this.next(), 1100);
       return;
     }
     const t = this.chord.tones.find(x => x.pc === pc), heard = pcName(pc, Store.settings.names === 'flats' ? 'flats' : 'sharps');
-    toast.textContent = t ? `${t.name} is ${degName(t.label)} van ${this.chord.name}. Zoek de ${TARGET_NAME[this.want]}.` : `${heard} zit niet in ${this.chord.name}.`;
+    DrillFx.miss(this.card, t ? `${t.name} is ${degName(t.label)} van ${this.chord.name}. Zoek de ${TARGET_NAME[this.want]}.` : `${heard} zit niet in ${this.chord.name}.${DrillFx.near(n.midi, this.target.pc)}`);
   },
   startTempo() {
     const s = Store.settings.targets;
@@ -252,7 +251,7 @@ registerMode({
     if (i === 0) {
       const missed = this.started && !this.hit;
       const msg = missed ? `Te laat: de ${TARGET_NAME[this.want]} van ${this.chord.name} was ${this.target.name}.` : '';
-      if (missed) this.streak = 0;
+      if (missed) { this.streak = 0; DrillFx.reset(this.card); }
       this.started = true;
       this.next();
       if (missed) { this.card.classList.add('miss'); $('.pr-toast', this.card).textContent = msg; }
@@ -360,20 +359,30 @@ registerMode({
     st.n[q.key] = (st.n[q.key] || 0) + 1;
     if (ok) st.ok[q.key] = (st.ok[q.key] || 0) + 1;
     Store.saveStats();
-    $$('.opt', this.optsEl).forEach(b => { b.disabled = true; b.classList.toggle('right', b.dataset.k === q.key); b.classList.toggle('wrong', b.dataset.k === key && !ok); if (b.dataset.k === q.key && ok) b.classList.add('pop'); });
+    const mark = (b, good) => b.append(h('span', { class: 'opt-mark' + (good ? '' : ' bad'), html: good ? ICONS.check : ICONS.close }));
+    $$('.opt', this.optsEl).forEach(b => {
+      b.disabled = true;
+      if (b.dataset.k === q.key) { b.classList.add('right'); mark(b, true); if (!ok) b.classList.add('reveal'); }
+      if (b.dataset.k === key && !ok) { b.classList.add('wrong'); mark(b, false); }
+    });
+    // reeks bijhouden; bij goed een tikje, geluidje en noten uit de knop, bij fout twee tikjes en een schudje
+    DrillFx.sync();
+    DrillFx.n = ok ? DrillFx.n + 1 : 0;
+    DrillFx.badge($('.eq-stage', this.card));
+    const line = ok && DrillFx.n >= 3 ? Feedback.streak(DrillFx.n) : '', oops = Feedback.word('wrong');
+    if (ok) Feedback.right({ el: $(`.opt[data-k="${q.key}"]`, this.optsEl), via: 'tap', big: !!line });
+    else Feedback.wrong({ el: $(`.opt[data-k="${key}"]`, this.optsEl), via: 'tap' });
     const hint = q.kind === 'iv' ? (IV_HINT[q.semis] ? `Geheugensteun: ${IV_HINT[q.semis]}.` : '') : `Klinkt ${CHORD_FEEL[q.type] || ''}.`;
     this.fbEl.className = 'eq-fb ' + (ok ? 'ok' : 'bad');
     this.fbEl.innerHTML = '';
-    this.fbEl.append(h('p', {}, h('b', { text: ok ? pick(PRAISE) : `Het was ${q.kind === 'iv' ? 'een ' : ''}${earName(q.key)}.` }), ' ', hint));
+    this.fbEl.append(h('p', {}, h('b', { text: ok ? line || Feedback.word('right') : `${oops}${/[!.?]$/.test(oops) ? '' : '.'} Het was ${q.kind === 'iv' ? 'een ' : ''}${earName(q.key)}.` }), ' ', hint));
     if (!ok) this.fbEl.append(h('div', { class: 'eq-cmp' },
       h('button', { type: 'button', text: `Hoor ${earName(key)}`, onclick: () => this.play(key) }),
       h('button', { type: 'button', class: 'primary', text: `Hoor ${earName(q.key)}`, onclick: () => this.play(q.key) })));
-    if (ok) { Quests.bump('earq'); Sfx.play('right'); this.timer = setTimeout(() => this.next(), 1700); }
-    else { Sfx.play('wrong'); this.shake(); }
+    if (ok) { Quests.bump('earq'); this.timer = setTimeout(() => this.next(), 1700); }
     this.renderStats();
     Activity.ping();
   },
-  shake() { const b = $('.opt.wrong', this.optsEl); if (b) { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); } },
   renderStats() {
     const s = Store.settings.earq, st = Store.stats.earq;
     const keys = s.kind === 'iv' ? s.ivs.map(n => 'iv-' + n) : s.chords.map(t => 'ch-' + t);

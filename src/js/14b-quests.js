@@ -4,6 +4,7 @@ const QUESTS = [
   { id: 'node', cat: 'a', icon: 'path', target: () => 1, text: () => 'Rond een stap in je leerpad af', value: d => qc(d, 'nodes'), ok: () => !!nextNode() },
   { id: 'fix', cat: 'a', icon: 'plaster', target: () => Math.min(3, Bin.count()), text: n => (n === 1 ? 'Herstel een fout uit je foutenbak' : `Herstel ${n} fouten uit je foutenbak`), value: d => qc(d, 'fixed'), ok: () => Bin.items().length > 0 },
   { id: 'combo', cat: 'a', icon: 'flame', target: () => 6, text: n => `Beantwoord ${n} vragen op rij goed`, value: d => qc(d, 'combo'), ok: () => PathData.units().length > 0 },
+  { id: 'srs', cat: 'a', icon: 'retry', target: () => Math.min(5, Srs.dueList().filter(x => Bin.playable(x)).length), text: n => (n === 1 ? 'Herhaal de vraag die vandaag terugkomt' : `Herhaal ${n} vragen die vandaag terugkomen`), value: d => qc(d, 'srs'), ok: () => Srs.dueList().some(x => Bin.playable(x)) },
   { id: 'notes', cat: 'b', icon: 'note', target: () => 25, text: n => `Vind ${n} noten op de hals`, value: d => qc(d, 'notes') },
   { id: 'challenge', cat: 'b', icon: 'bolt', target: () => clamp(Math.round((Store.stats.challenge.best || 12) * 0.8), 8, 40), text: n => `Haal ${n} of meer bij 60 seconden`, value: d => qc(d, 'challenge') },
   { id: 'scales', cat: 'b', icon: 'pick', target: () => 2, text: n => `Speel ${n} toonladderboxen helemaal`, value: d => qc(d, 'scales') },
@@ -132,6 +133,10 @@ function courseSummary() {
   if (weakSk.length) L.push(`- Vaak fout: ${weakSk.map(v => `“${shorten(v.p)}” (${v.w} van ${v.r + v.w} fout)`).join(', ')}.`);
   const bin = Bin.list();
   if (bin.length) L.push(`- Nog in de foutenbak (${bin.length}): ${bin.slice(-4).map(x => `“${shorten(x.it.prompt)}”`).join(', ')}.`);
+  const sc = Srs.snapshot(), inBoxes = sc[1] + sc[2] + sc[3];
+  if (inBoxes || sc[4]) L.push(`- Herhalen na 1, 3 en 7 dagen: ${inBoxes} ${inBoxes === 1 ? 'vraag' : 'vragen'} onderweg, ${sc[4]} onder de knie.`);
+  const sticky = Bin.all().filter(x => x.n >= 3).sort((a, b) => b.n - a.n).slice(0, 3);
+  if (sticky.length) L.push(`- Blijft lastig: ${sticky.map(x => `“${shorten(x.it.prompt)}” (${x.n} keer fout)`).join(', ')}.`);
   const rows = Object.entries(st.notes.items).filter(([, v]) => v.n > 0).map(([k, v]) => { const [s, pc] = k.split('-').map(Number); return { s, pc, avg: v.total / v.n }; }).sort((a, b) => b.avg - a.avg).slice(0, 3);
   if (rows.length) L.push(`- Traagst op de hals: ${rows.map(r => `${pcLabel(r.pc, 'sharps')} op de ${STR_NAME[r.s]} (${fmt1(r.avg)} s)`).join(', ')}.`);
   const eq = st.earq || { ok: {}, n: {} };

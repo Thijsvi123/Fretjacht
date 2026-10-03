@@ -53,7 +53,7 @@ registerMode({
     $('.pr-note', this.card).setAttribute('aria-label', spoken(s.root));
     $('.pr-where', this.card).innerHTML = `<b>${SCALES[s.scale].short}</b><small>box ${s.box}</small>`;
     $('.pr-leds', this.card).hidden = true;
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     $('.pr-toast', this.card).textContent = Engine.mic ? 'Begin bij de laagste noot' : 'Druk op Start en sta de microfoon toe.';
     this.renderProgress();
     this.draw();
@@ -89,7 +89,7 @@ registerMode({
       const prev = this.seq[this.idx - 1];
       if (prev && (n.midi === prev.midi || (!Store.settings.strict && mod12(n.midi) === prev.pc))) return;   // vorige noot klinkt nog
       this.errors++;
-      $('.pr-toast', this.card).textContent = Store.settings.scales.labels === 'none' ? 'Mis. Probeer het nog eens.' : `Je speelde ${pcName(n.midi, 'sharps')}, de volgende is ${exp.name}`;
+      DrillFx.miss(this.card, Store.settings.scales.labels === 'none' ? 'Mis. Probeer het nog eens.' : `Je speelde ${pcName(n.midi, 'sharps')}, de volgende is ${exp.name}.${mod12(n.midi) === exp.pc ? ' Goede noot, ander octaaf.' : DrillFx.near(n.midi, exp.pc)}`);
       this.renderProgress();
       return;
     }
@@ -110,10 +110,9 @@ registerMode({
     const rec = !this.errors && (st.best[key] == null || secs < st.best[key]);
     if (rec) st.best[key] = secs;
     Store.saveStats();
-    this.card.classList.add('hit');
-    $('.pr-toast', this.card).textContent = `Klaar in ${fmt1(secs)} s${this.errors ? ` met ${this.errors} mis` : rec ? ' · nieuw record' : ''}. Nog een keer!`;
+    DrillFx.hit(this.card, `Klaar in ${fmt1(secs)} s${this.errors ? ` met ${this.errors} mis` : rec ? ', nieuw record' : ''}. Nog een keer!`);
+    if (rec && !this.errors && st.runs > 1) setTimeout(() => Confetti.burst({ n: 50 }), 150);
     this.renderProgress(); this.draw(); this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.reset(), 2200);
   },
   renderStats() {
@@ -162,7 +161,7 @@ registerMode({
     $('.pr-note', this.card).setAttribute('aria-label', `${spoken(root)} ${CHORDS[type].name}`);
     $('.pr-where', this.card).innerHTML = `<span class="muted">${root} ${CHORDS[type].name}</span>`;
     $('.pr-leds', this.card).hidden = true;
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     $('.pr-toast', this.card).textContent = Engine.mic ? 'Speel de tonen, in elke volgorde en octaaf' : 'Druk op Start en sta de microfoon toe.';
     this.renderSlots();
     drawNeck(this.svg, { from: 0, to: 12, marks: [] });
@@ -191,22 +190,21 @@ registerMode({
   onNote(n) {
     if (this.done) return;
     const pc = mod12(n.midi), t = this.tones.find(x => x.pc === pc);
-    if (!t) { $('.pr-toast', this.card).textContent = `${pcName(pc, 'sharps')} zit niet in ${this.root}${CHORDS[this.type].sym}`; return; }
+    if (!t) { DrillFx.miss(this.card, `${pcName(pc, 'sharps')} zit niet in ${this.root}${CHORDS[this.type].sym}.`); return; }
     if (this.found.has(pc)) return;
     this.found.add(pc);
     $('.pr-toast', this.card).textContent = `${t.name} is de ${t.label === 'R' ? 'grondtoon' : t.label}`;
     this.renderSlots();
+    Fx.pop($$('.slot', this.card)[this.tones.indexOf(t)]);
     if (this.found.size === this.tones.length) this.success();
   },
   success() {
     this.done = true;
     const st = Store.stats.chords; st.n++; st.total += this.elapsed; Store.saveStats();
-    this.card.classList.add('hit');
-    $('.pr-toast', this.card).textContent = `Goed! ${this.tones.map(t => t.name).join(' ')} in ${fmt1(this.elapsed)} s`;
+    DrillFx.hit(this.card, `${this.tones.map(t => t.name).join(' ')} in ${fmt1(this.elapsed)} s`);
     this.renderSlots();
     drawNeck(this.svg, { from: 0, to: 12, marks: this.mapMarks() });
     this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.next(), 2600);
   },
   renderStats() {
@@ -308,9 +306,9 @@ registerMode({
     this.last = cents;
     const r = Store.stats.bends.recent; r.push(cents); while (r.length > 20) r.shift(); Store.saveStats();
     const ok = Math.abs(cents) <= s.tol;
-    this.card.classList.toggle('hit', ok); this.card.classList.toggle('miss', !ok);
-    $('.pr-toast', this.card).textContent = ok ? `Zuiver! ${cents === 0 ? 'Precies goed' : `${Math.abs(cents)} cent ${cents < 0 ? 'te laag' : 'te hoog'}`}` : `${Math.abs(cents)} cent ${cents < 0 ? 'te laag, bend verder door' : 'te hoog, iets minder ver'}`;
-    if (ok) Engine.ding();
+    this.card.classList.toggle('miss', !ok);
+    if (ok) DrillFx.hit(this.card, cents === 0 ? 'Precies goed.' : `${Math.abs(cents)} cent ${cents < 0 ? 'te laag' : 'te hoog'}, binnen de marge.`);
+    else { this.card.classList.remove('hit'); DrillFx.miss(this.card, `${Math.abs(cents)} cent ${cents < 0 ? 'te laag: bend verder door.' : 'te hoog: iets minder ver.'}`); }
     this.renderStats();
   },
   drawGraph() {

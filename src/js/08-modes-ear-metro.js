@@ -79,7 +79,7 @@ registerMode({
     const first = pcName(this.phrase[0], 'sharps');
     $('.pr-note', this.card).innerHTML = lv === 1 ? '<span class="deg">?</span>' : bigNoteHTML(first) + '<span class="sym">…</span>';
     $('.pr-where', this.card).innerHTML = lv === 1 ? 'Zoek de noot die je hoort' : `Het begint op <b>${first}</b>. Zoek de rest op gehoor.`;
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     this.renderSlots();
     if (Engine.mic) this.playTimer = setTimeout(() => this.play(), 500);
     else $('.pr-toast', this.card).textContent = 'Druk op Start. Je hoort dan meteen het eerste fragment.';
@@ -117,12 +117,13 @@ registerMode({
         const d = exp - n.midi;
         tip = Math.abs(d) >= 12 && mod12(d) === 0 ? ' Goede noot, ander octaaf.' : d > 0 ? ' Zoek hoger ↑' : ' Zoek lager ↓';
       }
-      $('.pr-toast', this.card).textContent = `Je speelde ${heard}.${tip}`;
+      DrillFx.miss(this.card, `Je speelde ${heard}.${tip}`);
       return;
     }
     this.idx++;
     $('.pr-toast', this.card).textContent = this.idx < this.phrase.length ? `Goed! Nu noot ${this.idx + 1}` : '';
     this.renderSlots();
+    if (this.idx < this.phrase.length) Fx.pop($$('.slot.on', this.card).pop());
     if (this.idx >= this.phrase.length) this.success();
   },
   success() {
@@ -131,11 +132,9 @@ registerMode({
     st.tries[lv] = (st.tries[lv] || 0) + 1;
     if (!this.revealed) st.ok[lv] = (st.ok[lv] || 0) + 1;
     Store.saveStats();
-    this.card.classList.add('hit');
     $('.pr-note', this.card).innerHTML = this.phrase.length === 1 ? bigNoteHTML(pcName(this.phrase[0], 'sharps')) : $('.pr-note', this.card).innerHTML.replace('<span class="sym">…</span>', '');
-    $('.pr-toast', this.card).textContent = this.revealed ? 'Gelukt, met hulp.' : this.wrong ? `Goed! Na ${this.wrong} keer zoeken.` : 'In één keer goed!';
+    DrillFx.hit(this.card, this.revealed ? 'Gelukt, met hulp.' : this.wrong ? `Na ${this.wrong} keer zoeken.` : 'In één keer goed.');
     this.renderSlots(); this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.next(false), 1600);
   },
   renderStats() {

@@ -75,6 +75,10 @@ registerMode({
       NoteGame.record(this.target, this.elapsed, false);
       Engine.blip();
       this.nextTarget();
+      // de nieuwe noot springt erin, de vorige spat uiteen in noten
+      const note = $('.pr-note', this.card);
+      Fx.notes(note.firstElementChild || note, { n: 5, dist: 40 }); Fx.pop(note); Fx.edge('ok');
+      if ([10, 20, 30, 40].includes(this.score)) { Fx.pop(this.timerEl); $('.pr-toast', this.card).textContent = `${this.score} al! ${Feedback.word('play')}`; }
     }
   },
   end() {
@@ -93,6 +97,8 @@ registerMode({
     $('.pr-toast', this.card).textContent = rec && this.score ? 'Nieuw record!' : `Record: ${st.best}. Druk op Begin voor een nieuwe ronde.`;
     setLeds(this.card, 0);
     Engine.chime();
+    Fx.pop($('.pr-note', this.card));
+    if (rec && this.score) setTimeout(() => Confetti.burst({ n: 80 }), 150);
     this.renderStats();
   },
   renderStats() {

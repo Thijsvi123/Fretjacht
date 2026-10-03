@@ -852,6 +852,117 @@ button.tile.tap .tile-ico .ico { color: var(--bad); }
 
 .mode-targets-own .pr-leds { display: none; }
 
+/* ===================== Feedback, herhalen en lege staten ===================== */
+/* trillen op een iPhone: een onzichtbare schakelaar */
+.hx { position: fixed; left: -200px; top: 0; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+
+/* noten en plectrums die uit een knop springen */
+.fx-notes { position: fixed; z-index: 75; width: 0; height: 0; pointer-events: none; }
+.fx-notes i { position: absolute; left: -10px; top: -10px; width: 20px; height: 20px; color: var(--c); animation: fx-note .85s var(--t, 0ms) cubic-bezier(.15, .7, .3, 1) both; }
+.fx-notes svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .2)); }
+@keyframes fx-note { 0% { transform: translate(0, 0) scale(.2); opacity: 0; } 18% { opacity: 1; } 65% { opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(1) rotate(var(--r)); opacity: 0; } }
+/* gloed langs de schermrand: ook uit je ooghoek te zien */
+.fx-edge { position: fixed; inset: 0; z-index: 74; pointer-events: none; opacity: 0; }
+.fx-edge.ok { box-shadow: inset 0 0 0 3px var(--ok), inset 0 0 44px color-mix(in srgb, var(--ok) 40%, transparent); animation: fx-edge .75s ease-out; }
+.fx-edge.bad { box-shadow: inset 0 0 0 3px var(--bad), inset 0 0 36px color-mix(in srgb, var(--bad) 30%, transparent); animation: fx-edge .6s ease-out; }
+@keyframes fx-edge { 0% { opacity: 0; } 18% { opacity: 1; } 100% { opacity: 0; } }
+.fx-pop { animation: fx-pop .48s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes fx-pop { 40% { transform: scale(1.12); } }
+.pr-note.fx-pop, .ls-big.fx-pop { transform-origin: 12% 60%; }
+svg .fx-pop { transform-box: fill-box; transform-origin: center; }
+
+/* les: vinkje of kruisje op het antwoord, balk kleurt even groen */
+.opt { position: relative; }
+.opt-mark { position: absolute; top: -10px; right: -8px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--ok); color: var(--ok-ink); border: 3px solid var(--surface); animation: stamp .45s cubic-bezier(.3, 1.6, .5, 1) both; }
+.opt-mark.bad { background: var(--bad); color: #FFFFFF; }
+.opt-mark .ico { width: 14px; height: 14px; stroke-width: 3.2; }
+.opt.reveal { animation: reveal .9s .3s ease-in-out 2; }
+@keyframes reveal { 50% { box-shadow: 0 3px 0 var(--ok), 0 0 0 6px color-mix(in srgb, var(--ok) 28%, transparent); } }
+.ls-bar.glow { animation: bar-glow .7s ease-out; }
+.ls-bar.glow span { animation: bar-flash .7s ease-out; }
+@keyframes bar-glow { 30% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 28%, transparent); } }
+@keyframes bar-flash { 30% { background: var(--ok); } }
+.fb p.fb-lift { margin-top: 6px; font: 500 13.5px/1.4 var(--body); color: var(--muted); }
+.ls-foot.ok .fb-note .ico { color: var(--ok); }
+
+/* oefeningen: het kaartje licht groen op of schudt even rood, met een reeksteller */
+.prompt { transition: box-shadow .2s; }
+.prompt.hit { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 45%, transparent); }
+.prompt.nope { box-shadow: 0 0 0 3px color-mix(in srgb, var(--bad) 40%, transparent); }
+.prompt.nope .note, .prompt.nope .note .deg, .prompt.nope .toast { color: var(--bad); }
+.pr-streak { position: absolute; top: 12px; right: 14px; z-index: 2; display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px 6px 8px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font: 800 semi-condensed 15px/1 var(--display); box-shadow: 0 3px 0 var(--accent-deep); opacity: 0; transform: scale(.6); transition: opacity .25s, transform .25s; pointer-events: none; }
+.pr-streak.show { opacity: 1; transform: none; animation: chip-bump .45s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes chip-bump { 0% { transform: scale(.7); } 60% { transform: scale(1.14); } 100% { transform: none; } }
+.pr-streak .ico { width: 16px; height: 16px; }
+.prompt:has(.timer) .pr-streak { display: none; }
+.eq-stage { position: relative; }
+.eq-stage .pr-streak { top: 2px; right: 0; }
+
+/* herhalen: kaart met de vakjes */
+.srs-card { display: grid; gap: 14px; padding: 14px 16px 16px; border-radius: 18px; background: var(--surface); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
+.srs-card.todo { border-color: color-mix(in srgb, var(--accent) 60%, var(--line)); box-shadow: 0 4px 0 color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.srs-card.none { border-style: dashed; box-shadow: none; }
+.bin-mode .ls-bin:has(.todo-count) { color: var(--accent-text); }
+.srs-head { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; align-items: center; }
+.srs-fret svg { width: 84px; height: 84px; display: block; }
+.srs-eyebrow { margin: 0; font: 700 13px/1.2 var(--body); color: var(--accent-text); }
+.srs-card h2 { margin: 2px 0 4px; font: 800 semi-condensed 23px/1.08 var(--display); letter-spacing: -.01em; text-wrap: balance; }
+.srs-sub { margin: 0; font-size: 14px; line-height: 1.42; color: var(--muted); }
+.srs-go { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.srs-go .ico { width: 21px; height: 21px; }
+.srs-go b { min-width: 26px; height: 26px; padding: 0 8px; border-radius: 13px; background: var(--accent-ink); color: var(--accent); font: 700 14px/26px var(--body); }
+.srs-fret .m-eyes, .he-fret .m-eyes { transform-box: fill-box; transform-origin: center; animation: blink 5.5s infinite; }
+.he-fret .m-gitaar .m-strum { transform-box: fill-box; transform-origin: 20% 20%; animation: strum 3.2s ease-in-out infinite; }
+.lb-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; padding: 8px 0 8px; }
+.lb { --lb: var(--accent); position: relative; display: grid; justify-items: center; align-content: start; gap: 2px; min-height: 74px; padding: 13px 2px 12px; border-radius: 8px 8px 12px 12px; background: var(--surface-2); border: 1.5px solid var(--line); text-align: center; min-width: 0; }
+.lb.b0 { --lb: var(--bad); }
+.lb.b4 { --lb: var(--ok); }
+.lb.has { background: color-mix(in srgb, var(--lb) 11%, var(--surface)); border-color: color-mix(in srgb, var(--lb) 50%, var(--line)); }
+.lb-cards { position: absolute; left: 20%; right: 20%; top: -8px; height: 12px; }
+.lb-cards i { position: absolute; left: 0; right: 0; top: 3px; height: 10px; border-radius: 3px 3px 0 0; background: var(--surface); border: 1.5px solid color-mix(in srgb, var(--lb) 55%, var(--line)); border-bottom: 0; box-shadow: inset 0 2px 0 color-mix(in srgb, var(--lb) 55%, transparent); }
+.lb-cards i:nth-child(2) { top: 0; transform: rotate(4deg) translateX(3px); }
+.lb-cards i:nth-child(3) { top: -2px; transform: rotate(-5deg) translateX(-3px); }
+.lb-n { font: 800 semi-condensed 26px/1 var(--display); }
+.lb:not(.has) .lb-n { color: var(--muted); opacity: .55; }
+.lb-l { font: 600 11px/1.15 var(--body); color: var(--muted); hyphens: manual; }
+.lb.due { border-color: var(--accent); }
+.lb-due { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); padding: 3px 7px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font: 700 10.5px/1 var(--body); font-style: normal; white-space: nowrap; box-shadow: 0 2px 0 var(--accent-deep); }
+.lb-d { position: absolute; top: -11px; right: -5px; min-width: 24px; padding: 3px 6px; border-radius: 999px; background: var(--surface); color: var(--muted); border: 1px solid var(--line); font: 800 11.5px/1 var(--body); animation: stamp .5s .45s cubic-bezier(.3, 1.6, .5, 1) both; }
+.lb.b1 .lb-d.up, .lb.b2 .lb-d.up, .lb.b3 .lb-d.up { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.lb.b0 .lb-d.down, .lb.b4 .lb-d.up { background: var(--ok); border-color: var(--ok); color: var(--ok-ink); }
+.lb.b0 .lb-d.up { background: var(--bad); border-color: var(--bad); color: #FFFFFF; }
+.end-srs { width: 100%; max-width: 420px; display: grid; gap: 8px; }
+.end-srs .help { margin: 0; }
+
+/* teller op het tabblad Oefenen */
+.tb-ico { position: relative; display: block; }
+.tb-badge { position: absolute; top: -7px; left: calc(100% - 9px); min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--bad); color: #FFFFFF; font: 700 11.5px/16px var(--body); text-align: center; border: 2px solid var(--surface); }
+
+/* lege staten: grote kaart met de fret en één duidelijke knop */
+.hero-empty { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 6px 14px; align-items: center; padding: 14px 16px 16px 8px; border-radius: 20px; background: var(--accent-soft); border: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); }
+.he-fret svg { width: 112px; height: 112px; display: block; }
+.hero-empty .he-fret { animation: he-bob 3.4s ease-in-out infinite; }
+@keyframes he-bob { 50% { transform: translateY(-4px) rotate(-2deg); } }
+.he-text h2 { margin: 0 0 4px; font: 800 semi-condensed 26px/1.05 var(--display); letter-spacing: -.01em; text-wrap: balance; }
+.he-text p { margin: 0; font-size: 14.5px; line-height: 1.45; }
+.he-go { grid-column: 1 / -1; display: grid; gap: 5px; margin: 8px 0 0 8px; width: calc(100% - 8px); }
+.he-go small { font: 500 12.5px/1.2 var(--body); opacity: .8; }
+.he-alt { grid-column: 1 / -1; justify-self: center; color: var(--accent-text); font: 600 14px/1.2 var(--body); text-decoration: none; padding: 6px; }
+.sc-go { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 12px 18px 12px 14px; border-radius: 12px; border: 0; background: var(--accent-ink); color: var(--accent); font: 700 15px/1 var(--body); box-shadow: 0 4px 0 rgba(0, 0, 0, .28); }
+.sc-go .ico { width: 16px; height: 16px; }
+.sc-go:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, .28); }
+.pv-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 12px; }
+.pv-list li { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 12px; align-items: center; }
+.pv-ico { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text); }
+.pv-ico .ico { width: 19px; height: 19px; }
+.pv-list b { display: block; font-size: 15px; line-height: 1.3; }
+.pv-list small { color: var(--muted); font-size: 13px; line-height: 1.35; }
+.week-wrap { position: relative; }
+.chart-empty { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); margin: 0; width: max-content; max-width: 78%; padding: 10px 14px; border-radius: 12px; background: var(--surface); border: 1.5px dashed var(--line); color: var(--muted); font: 600 13.5px/1.35 var(--body); text-align: center; }
+/* donker: tekst op het lichte rood donker houden */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ls-foot.bad button.primary, :root:not([data-theme="light"]) .opt-mark.bad, :root:not([data-theme="light"]) .tb-badge, :root:not([data-theme="light"]) .lb.b0 .lb-d.up { color: #1F0B07; } }
+:root[data-theme="dark"] .ls-foot.bad button.primary, :root[data-theme="dark"] .opt-mark.bad, :root[data-theme="dark"] .tb-badge, :root[data-theme="dark"] .lb.b0 .lb-d.up { color: #1F0B07; }
+
 </style>
 </head>
 <body data-view="path">
@@ -1373,10 +1484,11 @@ const Engine = {
     s.connect(bp); bp.connect(g); g.connect(ctx.destination);
     s.start(when);
   },
-  ding() {
+  // step: per noot op rij een halve toon hoger, zodat een reeks hoorbaar oploopt
+  ding(step) {
     if (!Store.settings.sound || !this.ctx) return;
-    const ctx = this.ctx, t0 = ctx.currentTime;
-    [1568, 2093].forEach((f, i) => {
+    const ctx = this.ctx, t0 = ctx.currentTime, up = Math.pow(2, (step || 0) / 12);
+    [1568 * up, 2093 * up].forEach((f, i) => {
       const o = ctx.createOscillator(), g = ctx.createGain(), t = t0 + i * 0.07;
       o.type = 'sine'; o.frequency.value = f;
       g.gain.setValueAtTime(0.0001, t);
@@ -1527,7 +1639,7 @@ function drawNeck(svg, o) {
 
 // ---------- Opslag ----------
 const DEFAULT_SETTINGS = {
-  gateDb: -48, strict: false, sound: true, names: 'sharps', goal: 15, cantPlayUntil: 0,
+  gateDb: -48, strict: false, sound: true, haptics: true, names: 'sharps', goal: 15, cantPlayUntil: 0,
   strings: [0, 1, 2, 3, 4, 5], minFret: 0, maxFret: 12, naturalsOnly: false, autoHint: 0,
   positions: { order: 'up' },
   intervals: { set: [3, 4, 5, 7, 10, 12], dir: 'up', naturalRoots: true },
@@ -1552,7 +1664,7 @@ const DEFAULT_STATS = () => ({
   ear: { ok: {}, tries: {} },
   bends: { recent: [] },
   rhythm: { recent: [], sessions: 0 },
-  xp: 0, days: {}, path: { nodes: {} }, badges: {}, bin: [], binCleared: 0, modeDays: {},
+  xp: 0, days: {}, path: { nodes: {} }, badges: {}, bin: [], binCleared: 0, srsDone: 0, modeDays: {},
   topics: {}, skills: {}, freezes: 0, frozen: {},
   targets: { hits: 0, tries: 0, time: 0, near: 0, best: 0, by: {} },
   earq: { ok: {}, n: {} },
@@ -1833,6 +1945,7 @@ const Router = {
     UI.updateLevel(-120);
     Progress.renderTop();
     Daily.renderBar();
+    Srs.badge();
     window.scrollTo(0, 0);
   },
   back() {
@@ -1867,7 +1980,8 @@ function renderSettings(view) {
     h('div', { class: 'set-grid' },
       h('div', { class: 'field' },
         checkEl('strict', 'Octaaf moet kloppen', s.strict, v => { s.strict = v; save(); }, 'Alleen de precieze toonhoogte telt. Werkt het best met een goede microfoon of via een versterker; een telefoon hoort lage noten soms een octaaf te hoog.'),
-        checkEl('sound', 'Geluidjes', s.sound, v => { s.sound = v; save(); }, 'Bij goede antwoorden en noten, als je een fout herstelt en als je je dagdoel haalt. In een les zet je ze ook aan of uit met het luidsprekertje.')),
+        checkEl('sound', 'Geluidjes', s.sound, v => { s.sound = v; save(); }, 'Bij goede antwoorden en noten, als je een fout herstelt en als je je dagdoel haalt. In een les zet je ze ook aan of uit met het luidsprekertje.'),
+        checkEl('haptics', 'Trillen bij goed en fout', s.haptics, v => { s.haptics = v; save(); if (v) Haptics.play('right'); }, 'Eén tikje bij een goed antwoord, twee bij een fout. Werkt op Android en op een iPhone met iOS 18 of nieuwer. Terwijl je speelt trilt de app niet, anders hoort de microfoon je telefoon.')),
       field('Notenamen', seg([{ value: 'sharps', label: 'met ♯' }, { value: 'flats', label: 'met ♭' }, { value: 'both', label: '♯ en ♭' }], s.names, v => { s.names = v; save(); }), 'Met ♯ en ♭ wisselt het af, zodat je leert dat F♯ en G♭ dezelfde toets zijn.'),
       field('Automatische hint bij Noten zoeken', selectEl('autoHint', [{ value: 0, label: 'Uit' }, { value: 5, label: 'Na 5 seconden' }, { value: 10, label: 'Na 10 seconden' }, { value: 20, label: 'Na 20 seconden' }], s.autoHint, v => { s.autoHint = Number(v); save(); }))));
   let armed = 0;
@@ -2132,6 +2246,7 @@ const LOADER_LINES = [
   'Fretten slapen 14 tot 18 uur per dag. Jouw dagdoel is een stuk korter.',
   'Geen gitaar bij de hand? Tik op “Ik kan nu niet spelen”.',
   'Foute antwoorden gaan naar je foutenbak. Herstel ze voor bonus-XP.',
+  'Een herstelde fout komt terug na 1, 3 en 7 dagen. Zo blijft hij hangen.',
 ];
 const Loader = {
   // toont de laadanimatie minstens min ms (en tot o.wait klaar is) en voert dan go() uit
@@ -2184,6 +2299,152 @@ const TempSettings = {
     Object.assign(cur, prev);
     this.saved = null;
     Store.saveSettings();
+  },
+};
+
+// ---------- Feedback bij goed en fout: trillen, animatie, geluid en een motiverend bericht ----------
+// Trillen: Android via navigator.vibrate. Op een iPhone (iOS 18 en nieuwer) geeft een klik op een
+// <input type="checkbox" switch> een tikje; dat gebruiken we als er geen vibrate is.
+// Tijdens het spelen (microfoon) trilt de app niet, anders hoort hij de telefoon zelf.
+const Haptics = {
+  el: null,
+  ios: /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1),
+  on() { return Store.settings.haptics !== false; },
+  tap() {
+    if (!this.el || !this.el.isConnected) {
+      this.el = h('label', { class: 'hx', 'aria-hidden': 'true' }, h('input', { type: 'checkbox', switch: true, tabindex: '-1' }));
+      document.body.append(this.el);
+    }
+    this.el.click();
+    const inp = this.el.firstChild;
+    if (document.activeElement === inp) inp.blur();
+  },
+  // right: één tikje, wrong: twee, big: drie (een reeks of mijlpaal)
+  play(kind) {
+    if (!this.on()) return;
+    const P = { tap: [10], right: [18], wrong: [40, 70, 40], big: [22, 60, 22, 60, 45] }[kind] || [15];
+    try {
+      if (typeof navigator.vibrate === 'function' && !this.ios) { navigator.vibrate(P); return; }
+      if (!this.ios) return;
+      const n = Math.ceil(P.length / 2);
+      this.tap();
+      for (let i = 1; i < n; i++) setTimeout(() => this.tap(), i * 120);
+    } catch (e) {}
+  },
+};
+
+// ---------- Kleine animaties ----------
+const NOTE_GLYPHS = [
+  '<svg viewBox="0 0 24 24"><ellipse cx="8.5" cy="18" rx="4.8" ry="3.5" transform="rotate(-20 8.5 18)" fill="currentColor"/><path d="M12.8 17V3.5c1 3.4 5.6 4.2 4.6 8.8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>',
+  '<svg viewBox="0 0 24 24"><ellipse cx="6" cy="19" rx="4" ry="3" transform="rotate(-20 6 19)" fill="currentColor"/><ellipse cx="17.5" cy="16.5" rx="4" ry="3" transform="rotate(-20 17.5 16.5)" fill="currentColor"/><path d="M9.6 18.2V6.2M21.1 15.7V3.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M9.6 6.2l11.5-2.5" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>',
+  '<svg viewBox="0 0 24 24"><path d="M12 3c4.4 0 7.5 1.6 7.5 4.6 0 4.1-4.2 9.6-7.5 13.4C8.7 17.2 4.5 11.7 4.5 7.6 4.5 4.6 7.6 3 12 3z" fill="currentColor"/></svg>',
+  '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.2 7.3 7.3 2.2-7.3 2.2-2.2 7.3-2.2-7.3L2.5 12l7.3-2.2z" fill="currentColor"/></svg>',
+];
+const Fx = {
+  restart(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); },
+  pop(el) { if (!reducedMotion()) this.restart(el, 'fx-pop'); },
+  shake(el) { this.restart(el, 'shake'); },
+  // gloed langs de rand van het scherm: ook uit je ooghoek te zien als je naar je gitaar kijkt
+  edge(kind) {
+    if (reducedMotion()) return;
+    let el = document.getElementById('fxEdge');
+    if (!el) { el = h('div', { id: 'fxEdge', class: 'fx-edge', 'aria-hidden': 'true' }); document.body.append(el); }
+    el.className = 'fx-edge'; void el.offsetWidth; el.className = 'fx-edge ' + kind;
+  },
+  // een handvol noten en plectrums springt uit een knop of noot
+  notes(el, o = {}) {
+    if (!el || reducedMotion()) return;
+    const r = el.getBoundingClientRect();
+    if (!r.width || r.bottom < 0 || r.top > innerHeight) return;
+    const n = o.n || 7, box = h('div', { class: 'fx-notes', 'aria-hidden': 'true', style: `left:${(r.left + r.width / 2).toFixed(0)}px;top:${(r.top + r.height / 2).toFixed(0)}px` });
+    for (let i = 0; i < n; i++) {
+      const a = -Math.PI / 2 + (i / (n - 1) - 0.5) * Math.PI * 1.25 + (Math.random() - 0.5) * 0.35, d = (o.dist || 54) + Math.random() * 34;
+      box.append(h('i', { style: `--dx:${(Math.cos(a) * d).toFixed(0)}px;--dy:${(Math.sin(a) * d).toFixed(0)}px;--r:${((Math.random() - 0.5) * 80).toFixed(0)}deg;--c:${CONFETTI_COLORS[(i + 1) % CONFETTI_COLORS.length]};--t:${i * 16}ms`, html: NOTE_GLYPHS[i % NOTE_GLYPHS.length] }));
+    }
+    document.body.append(box);
+    setTimeout(() => box.remove(), 1000);
+  },
+};
+
+// ---------- Motiverende berichten ----------
+const CHEER = {
+  right: ['Goed zo!', 'Precies!', 'Klopt!', 'Netjes!', 'Top!', 'Lekker bezig!', 'Helemaal goed!', 'Knap!', 'Mooi zo!', 'Zo doe je dat!'],
+  play: ['Raak!', 'Zuiver!', 'Mooi gespeeld!', 'Dat klinkt!', 'Strak!', 'Netjes gespeeld!'],
+  again: ['Nu wel!', 'Tweede keer goed!', 'Zie je wel!', 'Die zit erin!'],
+  fixed: ['Hersteld!', 'Opgelost!', 'Die zit!', 'Gerepareerd!'],
+  recall: ['Goed onthouden!', 'Nog steeds goed!', 'Blijft hangen!', 'Paraat!'],
+  wrong: ['Net niet', 'Bijna!', 'Niet helemaal', 'Nog niet', 'Oei, net mis'],
+  wrongAgain: ['Nog lastig', 'Deze is taai', 'Nog niet helemaal'],
+  lift: ['Van fouten leer je het meest.', 'Zo onthoud je hem straks beter.', 'Even goed kijken, dan lukt hij de volgende keer.', 'Elke fout is een stapje vooruit.', 'Ook de beste gitaristen spelen weleens een valse noot.'],
+};
+const STREAK_LINES = { 3: 'Drie op rij!', 5: 'Vijf op rij, lekker bezig!', 8: 'Acht op rij! Niet te stoppen.', 10: 'Tien op rij! Applaus.', 15: 'Vijftien op rij. Encore!', 20: 'Twintig op rij. Legendarisch!' };
+const Feedback = {
+  last: {},
+  // een woord uit de lijst, niet twee keer hetzelfde achter elkaar
+  word(pool) {
+    const arr = CHEER[pool] || CHEER.right;
+    let w = arr[0];
+    for (let i = 0; i < 5; i++) { w = pick(arr); if (w !== this.last[pool]) break; }
+    this.last[pool] = w;
+    return w;
+  },
+  streak(n) { return STREAK_LINES[n] || (n > 20 && n % 10 === 0 ? `${n} op rij!` : ''); },
+  // goed antwoord. o.el licht op, o.via: 'tap' (scherm) of 'mic' (gespeeld), o.sound: soort geluidje, o.big: een reeks of mijlpaal
+  right(o = {}) {
+    if (o.via !== 'mic') Haptics.play(o.big ? 'big' : 'right');
+    if (o.sound !== false) Sfx.play(o.sound || 'right');
+    // bij een grote noot springen de noten uit de letter zelf, niet uit het midden van de regel
+    if (o.el) { Fx.pop(o.el); Fx.notes(o.el.classList.contains('note') ? o.el.firstElementChild || o.el : o.el, { n: o.big ? 11 : 7 }); }
+    Fx.edge('ok');
+  },
+  wrong(o = {}) {
+    if (o.via !== 'mic') { Haptics.play('wrong'); if (o.sound !== false) Sfx.play('wrong'); }
+    if (o.el) Fx.shake(o.el);
+    Fx.edge('bad');
+  },
+};
+
+// ---------- Oefeningen met de microfoon: het kaartje licht op en telt je reeks ----------
+// Hier geen trillen of foutgeluid: dat zou de microfoon horen.
+const DrillFx = {
+  n: 0, id: null,
+  sync() { const id = current && current.id; if (id !== this.id) { this.id = id; this.n = 0; } },
+  // info: wat er goed ging (fret, tijd); er komt een aanmoediging voor
+  hit(card, info, o = {}) {
+    this.sync(); this.n++;
+    const note = $('.pr-note', card), toast = $('.pr-toast', card), line = this.n >= 3 ? Feedback.streak(this.n) : '';
+    card.classList.remove('nope'); card.classList.add('hit');
+    if (toast && info != null) toast.textContent = `${line || Feedback.word(o.pool || 'play')} ${info}`.trim();
+    Fx.pop(note); Fx.notes(note && (note.firstElementChild || note), { n: line ? 10 : 6 }); Fx.edge('ok');
+    this.badge(card);
+    if (o.via === 'tap') Haptics.play(line ? 'big' : 'right');
+    if (o.sound === 'ding' || o.sound == null) Engine.ding(Math.min(this.n - 1, 7));
+    else if (o.sound) Sfx.play(o.sound);
+  },
+  // foute noot: kaartje schudt even rood, de reeks begint opnieuw
+  miss(card, text, o = {}) {
+    this.sync();
+    this.n = 0; this.badge(card);
+    const toast = $('.pr-toast', card);
+    if (toast && text) toast.textContent = text;
+    card.classList.add('nope');
+    clearTimeout(card._nope); card._nope = setTimeout(() => card.classList.remove('nope'), 650);
+    Fx.shake($('.pr-note', card)); Fx.edge('bad');
+    if (o.via === 'tap') { Haptics.play('wrong'); if (o.sound !== false) Sfx.play('wrong'); }
+  },
+  reset(card) { this.n = 0; if (card) this.badge(card); },
+  badge(card) {
+    let b = $('.pr-streak', card);
+    if (this.n < 3) { if (b) b.classList.remove('show'); return; }
+    if (!b) { b = h('span', { class: 'pr-streak', 'aria-live': 'polite' }); card.append(b); }
+    b.innerHTML = `${ICONS.flame}<b>${this.n} op rij</b>`;
+    Fx.restart(b, 'show');
+  },
+  // hulp bij een foute noot: hoeveel frets je ernaast zat (zelfde snaar)
+  near(midi, pc) {
+    const d = ((mod12(midi) - pc) % 12 + 18) % 12 - 6;
+    if (!d || Math.abs(d) > 2) return '';
+    return ` Net ernaast: ${Math.abs(d) === 1 ? 'één fret' : 'twee frets'} te ${d < 0 ? 'laag' : 'hoog'}.`;
   },
 };
 
@@ -2267,9 +2528,9 @@ registerMode({
     this.next();
     this.renderStats();
   },
-  unmount() { clearTimeout(this.timer); this.focus = null; },
+  unmount() { clearTimeout(this.timer); clearTimeout(this.missT); this.focus = null; },
   next() {
-    clearTimeout(this.timer);
+    clearTimeout(this.timer); clearTimeout(this.missT);
     this.target = NoteGame.pick(this.target, this.focus);
     this.elapsed = 0; this.hinted = false; this.state.hold = 0; this.done = false; this.marks = [];
     const t = this.target;
@@ -2277,7 +2538,7 @@ registerMode({
     $('.pr-note', this.card).setAttribute('aria-label', spoken(t.name));
     $('.pr-where', this.card).innerHTML = `op de <b>${STR_NAME[t.s]}</b><small>snaar ${t.s + 1}</small>`;
     $('.pr-toast', this.card).textContent = Engine.mic ? '' : 'Druk op Start en sta de microfoon toe.';
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     setLeds(this.card, 0);
     this.draw();
   },
@@ -2293,7 +2554,7 @@ registerMode({
     this.draw();
     $('.pr-toast', this.card).textContent = `Hint: fret ${this.target.frets.join(' of ')}`;
   },
-  skip() { if (this.done) return; Store.stats.notes.streak = 0; Store.saveStats(); this.renderStats(); this.next(); },
+  skip() { if (this.done) return; Store.stats.notes.streak = 0; Store.saveStats(); DrillFx.reset(this.card); this.renderStats(); this.next(); },
   onMic(on) { $('.pr-toast', this.card).textContent = on ? '' : 'Gepauzeerd. Druk op Start om verder te gaan.'; },
   onFrame(f, dt) {
     if (this.done) return;
@@ -2303,17 +2564,27 @@ registerMode({
     setLeds(this.card, this.state.hold);
     if (ok) this.success(f.midi);
   },
+  // foute noot: even wachten, want een boventoon kan kort verkeerd klinken voordat de goede noot vastzit
+  onNote(n) {
+    if (this.done || NoteGame.matches(this.target, n.midi)) return;
+    const t = this.target;
+    clearTimeout(this.missT);
+    this.missT = setTimeout(() => {
+      if (this.done || this.target !== t || this.state.hold > 0.3) return;
+      const same = mod12(n.midi) === t.pc;
+      DrillFx.miss(this.card, `Je speelde ${pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps')}.${same ? ' Goede noot, ander octaaf.' : DrillFx.near(n.midi, t.pc)}`);
+    }, 260);
+  },
   success(m) {
     this.done = true;
+    clearTimeout(this.missT);
     const t = this.target, frets = NoteGame.fretsFor(t, m), secs = this.elapsed;
     this.marks = frets.map(f => ({ s: t.s, f, kind: 'found', label: t.name }));
     this.draw();
-    this.card.classList.add('hit');
     setLeds(this.card, 1);
-    $('.pr-toast', this.card).textContent = `Goed! Fret ${frets.join(' en ')} · ${fmt1(secs)} s`;
+    DrillFx.hit(this.card, `Fret ${frets.join(' en ')} · ${fmt1(secs)} s`);
     NoteGame.record(t, secs, this.hinted);
     this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.next(), COOLDOWN);
   },
   renderStats() {
@@ -2338,7 +2609,7 @@ registerMode({
     this.statsEl = h('div', { class: 'card' });
     const L = exLayout(view, {
       prompt: this.card, caption: h('span', { text: rangeCaption() }),
-      actions: [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => this.next() }],
+      actions: [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => { DrillFx.reset(this.card); this.next(); } }],
       options: [field('Volgorde', seg([{ value: 'up', label: 'lage E → hoge e' }, { value: 'down', label: 'hoge e → lage E' }], s.order, v => { s.order = v; Store.saveSettings(); this.next(); }))],
       stats: this.statsEl,
     });
@@ -2370,13 +2641,14 @@ registerMode({
     $('.pr-note', this.card).setAttribute('aria-label', spoken(this.name));
     $('.pr-where', this.card).innerHTML = S.positions.order === 'up' ? 'van de <b>lage E</b> naar de <b>hoge e</b>' : 'van de <b>hoge e</b> naar de <b>lage E</b>';
     $('.pr-leds', this.card).hidden = true;
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     $('.pr-toast', this.card).textContent = Engine.mic ? '' : 'Druk op Start en sta de microfoon toe.';
     this.renderSteps();
     this.draw();
   },
   renderSteps() {
     $('.pr-extra', this.card).innerHTML = `<div class="steps">${this.steps.map((st, i) => `<span class="step${i < this.idx ? ' done' : i === this.idx && !this.done ? ' now' : ''}">${STR_LETTER[st.s]}</span>`).join('')}</div>`;
+    if (this.idx > 0) Fx.pop($$('.step.done', this.card).pop());
   },
   draw() {
     const S = Store.settings, cur = this.steps[this.idx];
@@ -2406,7 +2678,11 @@ registerMode({
     const st = this.steps[this.idx];
     if (this.lastAccepted && n.midi === this.lastAccepted.midi && this.lastOnset === this.lastAccepted.onset) return;
     const ok = Store.settings.strict ? st.midis.some(v => v === n.midi) : mod12(n.midi) === this.pc;
-    if (!ok) { $('.pr-toast', this.card).textContent = `Je speelde ${pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps')}. Zoek ${this.name} op de ${STR_NAME[st.s]}.`; return; }
+    if (!ok) {
+      if (this.idx > 0 && mod12(n.midi) === this.pc) return;   // vorige snaar klinkt nog
+      DrillFx.miss(this.card, `Je speelde ${pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps')}. Zoek ${this.name} op de ${STR_NAME[st.s]}.${mod12(n.midi) === this.pc ? '' : DrillFx.near(n.midi, this.pc)}`);
+      return;
+    }
     this.accept(n.midi);
   },
   accept(midi) {
@@ -2427,10 +2703,8 @@ registerMode({
     ps.done++;
     if (!this.hinted && (ps.best == null || secs < ps.best)) ps.best = secs;
     Store.saveStats();
-    this.card.classList.add('hit');
-    $('.pr-toast', this.card).textContent = `Alle ${this.name}'s gevonden in ${fmt1(secs)} s`;
+    DrillFx.hit(this.card, `Alle ${this.name}'s gevonden in ${fmt1(secs)} s`);
     this.renderSteps(); this.draw(); this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.next(), 1600);
   },
   renderStats() {
@@ -2450,7 +2724,7 @@ registerMode({
     this.statsEl = h('div', { class: 'card' });
     const L = exLayout(view, {
       prompt: this.card,
-      actions: [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => this.next() }],
+      actions: [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => { DrillFx.reset(this.card); this.next(); } }],
       options: [
         field('Welke intervallen', chips(INTERVALS.map(i => ({ value: i.semis, label: i.name })), s.set.map(String), v => { s.set = v.map(Number); Store.saveSettings(); }, 1)),
         field('Richting', seg([{ value: 'up', label: 'omhoog' }, { value: 'down', label: 'omlaag' }, { value: 'both', label: 'beide' }], s.dir, v => { s.dir = v; Store.saveSettings(); this.next(); })),
@@ -2483,7 +2757,7 @@ registerMode({
     $('.pr-note', this.card).setAttribute('aria-label', spoken(rn));
     $('.pr-where', this.card).innerHTML = `<b>${iv.name}</b> ${up ? 'erboven' : 'eronder'}`;
     $('.pr-leds', this.card).hidden = true;
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     $('.pr-toast', this.card).textContent = Engine.mic ? `Speel eerst ${rn}` : 'Druk op Start en sta de microfoon toe.';
     this.renderSteps();
     drawNeck(this.svg, { from: 0, to: 12, marks: [] });
@@ -2528,26 +2802,25 @@ registerMode({
     const toast = $('.pr-toast', this.card);
     const heard = pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps');
     if (this.phase === 'root') {
-      if (mod12(n.midi) !== spPc(this.root)) { toast.textContent = `Je speelde ${heard}. Begin met ${spName(this.root)}.`; return; }
+      if (mod12(n.midi) !== spPc(this.root)) { DrillFx.miss(this.card, `Je speelde ${heard}. Begin met ${spName(this.root)}.${DrillFx.near(n.midi, spPc(this.root))}`); return; }
       this.rootMidi = n.midi; this.phase = 'target';
       toast.textContent = `Nu de ${this.iv.name} ${this.up ? 'erboven' : 'eronder'}`;
       this.renderSteps();
+      Fx.pop($('.step.done', this.card));
       return;
     }
     const want = this.rootMidi + (this.up ? this.iv.semis : -this.iv.semis);
     const octave = this.iv.semis === 12;
     if (!octave && mod12(n.midi) === spPc(this.root)) return;   // grondtoon klinkt nog
     const ok = Store.settings.strict || octave ? n.midi === want : mod12(n.midi) === mod12(want);
-    if (!ok) { toast.textContent = `Je speelde ${heard}. Dat is niet de ${this.iv.name}.`; return; }
+    if (!ok) { DrillFx.miss(this.card, `Je speelde ${heard}. Dat is niet de ${this.iv.name}.${mod12(n.midi) === mod12(want) ? ' Goede noot, ander octaaf.' : DrillFx.near(n.midi, mod12(want))}`); return; }
     this.done = true;
     const st = Store.stats.intervals; st.n++; st.total += this.elapsed; Store.saveStats();
-    this.card.classList.add('hit');
-    toast.textContent = `Goed! ${spName(this.root)} → ${spName(this.target)} · ${this.iv.name}, ${this.iv.semis} halve ${this.iv.semis === 1 ? 'toon' : 'tonen'}`;
+    DrillFx.hit(this.card, `${spName(this.root)} → ${spName(this.target)} · ${this.iv.name}, ${this.iv.semis} halve ${this.iv.semis === 1 ? 'toon' : 'tonen'}`);
     this.renderSteps();
     this.marks = this.example();
     drawNeck(this.svg, { from: 0, to: 12, marks: this.marks });
     this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.next(), 2200);
   },
   renderStats() {
@@ -2567,7 +2840,7 @@ registerMode({
     this.statsEl = h('div', { class: 'card' });
     const L = exLayout(view, {
       prompt: this.card, caption: h('span', { text: 'De gevulde stippen zijn de grondtoon (trap 1)' }),
-      actions: [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => this.advance(true) }],
+      actions: [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => { DrillFx.reset(this.card); this.advance(true); } }],
       options: [
         field('Soort', seg([{ value: 'major', label: 'majeur' }, { value: 'minor', label: 'mineur' }], s.quality, v => { s.quality = v; Store.saveSettings(); this.newKey(); })),
         field('Toonsoorten', seg([{ value: 'easy', label: 'tot 2 ♯/♭' }, { value: 'all', label: 'alle' }], s.keys, v => { s.keys = v; Store.saveSettings(); this.newKey(); })),
@@ -2608,7 +2881,7 @@ registerMode({
     $('.pr-where', this.card).innerHTML = `<span class="muted">${fns[this.deg - 1]}</span>${s2.stay ? `<small>${7 - this.queue.length}/7</small>` : ''}`;
     $('.pr-leds', this.card).hidden = true;
     $('.pr-extra', this.card).innerHTML = '';
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     $('.pr-toast', this.card).textContent = Engine.mic ? '' : 'Druk op Start en sta de microfoon toe.';
     this.draw([]);
   },
@@ -2633,15 +2906,18 @@ registerMode({
   onNote(n) {
     if (this.done) return;
     const t = this.tones[this.deg - 1];
-    if (mod12(n.midi) !== t.pc) { $('.pr-toast', this.card).textContent = `Je speelde ${pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps')}. Dat is niet trap ${this.deg}.`; return; }
+    if (mod12(n.midi) !== t.pc) {
+      // speelde je een andere trap uit deze toonsoort? Dan zeggen we welke
+      const other = this.tones.findIndex(x => x.pc === mod12(n.midi));
+      DrillFx.miss(this.card, `Je speelde ${pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps')}${other >= 0 ? `, dat is trap ${other + 1}` : ''}. Zoek trap ${this.deg}.${other >= 0 ? '' : DrillFx.near(n.midi, t.pc)}`);
+      return;
+    }
     this.done = true;
     const st = Store.stats.degrees; st.n++; st.total += this.elapsed; Store.saveStats();
-    this.card.classList.add('hit');
-    $('.pr-toast', this.card).textContent = `Goed! Trap ${this.deg} in ${this.key} = ${t.name}`;
+    DrillFx.hit(this.card, `Trap ${this.deg} in ${this.key} is ${t.name}.`);
     $('.pr-extra', this.card).innerHTML = `<div class="scale-line">${this.tones.map((x, i) => `<span class="${i === this.deg - 1 ? 'on' : ''}"><small>${i + 1}</small>${x.name}</span>`).join('')}</div>`;
     this.draw(this.targetMarks('found'));
     this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.advance(false), 1800);
   },
   renderStats() {
@@ -2706,7 +2982,7 @@ registerMode({
     $('.pr-note', this.card).setAttribute('aria-label', spoken(s.root));
     $('.pr-where', this.card).innerHTML = `<b>${SCALES[s.scale].short}</b><small>box ${s.box}</small>`;
     $('.pr-leds', this.card).hidden = true;
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     $('.pr-toast', this.card).textContent = Engine.mic ? 'Begin bij de laagste noot' : 'Druk op Start en sta de microfoon toe.';
     this.renderProgress();
     this.draw();
@@ -2742,7 +3018,7 @@ registerMode({
       const prev = this.seq[this.idx - 1];
       if (prev && (n.midi === prev.midi || (!Store.settings.strict && mod12(n.midi) === prev.pc))) return;   // vorige noot klinkt nog
       this.errors++;
-      $('.pr-toast', this.card).textContent = Store.settings.scales.labels === 'none' ? 'Mis. Probeer het nog eens.' : `Je speelde ${pcName(n.midi, 'sharps')}, de volgende is ${exp.name}`;
+      DrillFx.miss(this.card, Store.settings.scales.labels === 'none' ? 'Mis. Probeer het nog eens.' : `Je speelde ${pcName(n.midi, 'sharps')}, de volgende is ${exp.name}.${mod12(n.midi) === exp.pc ? ' Goede noot, ander octaaf.' : DrillFx.near(n.midi, exp.pc)}`);
       this.renderProgress();
       return;
     }
@@ -2763,10 +3039,9 @@ registerMode({
     const rec = !this.errors && (st.best[key] == null || secs < st.best[key]);
     if (rec) st.best[key] = secs;
     Store.saveStats();
-    this.card.classList.add('hit');
-    $('.pr-toast', this.card).textContent = `Klaar in ${fmt1(secs)} s${this.errors ? ` met ${this.errors} mis` : rec ? ' · nieuw record' : ''}. Nog een keer!`;
+    DrillFx.hit(this.card, `Klaar in ${fmt1(secs)} s${this.errors ? ` met ${this.errors} mis` : rec ? ', nieuw record' : ''}. Nog een keer!`);
+    if (rec && !this.errors && st.runs > 1) setTimeout(() => Confetti.burst({ n: 50 }), 150);
     this.renderProgress(); this.draw(); this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.reset(), 2200);
   },
   renderStats() {
@@ -2815,7 +3090,7 @@ registerMode({
     $('.pr-note', this.card).setAttribute('aria-label', `${spoken(root)} ${CHORDS[type].name}`);
     $('.pr-where', this.card).innerHTML = `<span class="muted">${root} ${CHORDS[type].name}</span>`;
     $('.pr-leds', this.card).hidden = true;
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     $('.pr-toast', this.card).textContent = Engine.mic ? 'Speel de tonen, in elke volgorde en octaaf' : 'Druk op Start en sta de microfoon toe.';
     this.renderSlots();
     drawNeck(this.svg, { from: 0, to: 12, marks: [] });
@@ -2844,22 +3119,21 @@ registerMode({
   onNote(n) {
     if (this.done) return;
     const pc = mod12(n.midi), t = this.tones.find(x => x.pc === pc);
-    if (!t) { $('.pr-toast', this.card).textContent = `${pcName(pc, 'sharps')} zit niet in ${this.root}${CHORDS[this.type].sym}`; return; }
+    if (!t) { DrillFx.miss(this.card, `${pcName(pc, 'sharps')} zit niet in ${this.root}${CHORDS[this.type].sym}.`); return; }
     if (this.found.has(pc)) return;
     this.found.add(pc);
     $('.pr-toast', this.card).textContent = `${t.name} is de ${t.label === 'R' ? 'grondtoon' : t.label}`;
     this.renderSlots();
+    Fx.pop($$('.slot', this.card)[this.tones.indexOf(t)]);
     if (this.found.size === this.tones.length) this.success();
   },
   success() {
     this.done = true;
     const st = Store.stats.chords; st.n++; st.total += this.elapsed; Store.saveStats();
-    this.card.classList.add('hit');
-    $('.pr-toast', this.card).textContent = `Goed! ${this.tones.map(t => t.name).join(' ')} in ${fmt1(this.elapsed)} s`;
+    DrillFx.hit(this.card, `${this.tones.map(t => t.name).join(' ')} in ${fmt1(this.elapsed)} s`);
     this.renderSlots();
     drawNeck(this.svg, { from: 0, to: 12, marks: this.mapMarks() });
     this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.next(), 2600);
   },
   renderStats() {
@@ -2961,9 +3235,9 @@ registerMode({
     this.last = cents;
     const r = Store.stats.bends.recent; r.push(cents); while (r.length > 20) r.shift(); Store.saveStats();
     const ok = Math.abs(cents) <= s.tol;
-    this.card.classList.toggle('hit', ok); this.card.classList.toggle('miss', !ok);
-    $('.pr-toast', this.card).textContent = ok ? `Zuiver! ${cents === 0 ? 'Precies goed' : `${Math.abs(cents)} cent ${cents < 0 ? 'te laag' : 'te hoog'}`}` : `${Math.abs(cents)} cent ${cents < 0 ? 'te laag, bend verder door' : 'te hoog, iets minder ver'}`;
-    if (ok) Engine.ding();
+    this.card.classList.toggle('miss', !ok);
+    if (ok) DrillFx.hit(this.card, cents === 0 ? 'Precies goed.' : `${Math.abs(cents)} cent ${cents < 0 ? 'te laag' : 'te hoog'}, binnen de marge.`);
+    else { this.card.classList.remove('hit'); DrillFx.miss(this.card, `${Math.abs(cents)} cent ${cents < 0 ? 'te laag: bend verder door.' : 'te hoog: iets minder ver.'}`); }
     this.renderStats();
   },
   drawGraph() {
@@ -3106,7 +3380,7 @@ registerMode({
     const first = pcName(this.phrase[0], 'sharps');
     $('.pr-note', this.card).innerHTML = lv === 1 ? '<span class="deg">?</span>' : bigNoteHTML(first) + '<span class="sym">…</span>';
     $('.pr-where', this.card).innerHTML = lv === 1 ? 'Zoek de noot die je hoort' : `Het begint op <b>${first}</b>. Zoek de rest op gehoor.`;
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     this.renderSlots();
     if (Engine.mic) this.playTimer = setTimeout(() => this.play(), 500);
     else $('.pr-toast', this.card).textContent = 'Druk op Start. Je hoort dan meteen het eerste fragment.';
@@ -3144,12 +3418,13 @@ registerMode({
         const d = exp - n.midi;
         tip = Math.abs(d) >= 12 && mod12(d) === 0 ? ' Goede noot, ander octaaf.' : d > 0 ? ' Zoek hoger ↑' : ' Zoek lager ↓';
       }
-      $('.pr-toast', this.card).textContent = `Je speelde ${heard}.${tip}`;
+      DrillFx.miss(this.card, `Je speelde ${heard}.${tip}`);
       return;
     }
     this.idx++;
     $('.pr-toast', this.card).textContent = this.idx < this.phrase.length ? `Goed! Nu noot ${this.idx + 1}` : '';
     this.renderSlots();
+    if (this.idx < this.phrase.length) Fx.pop($$('.slot.on', this.card).pop());
     if (this.idx >= this.phrase.length) this.success();
   },
   success() {
@@ -3158,11 +3433,9 @@ registerMode({
     st.tries[lv] = (st.tries[lv] || 0) + 1;
     if (!this.revealed) st.ok[lv] = (st.ok[lv] || 0) + 1;
     Store.saveStats();
-    this.card.classList.add('hit');
     $('.pr-note', this.card).innerHTML = this.phrase.length === 1 ? bigNoteHTML(pcName(this.phrase[0], 'sharps')) : $('.pr-note', this.card).innerHTML.replace('<span class="sym">…</span>', '');
-    $('.pr-toast', this.card).textContent = this.revealed ? 'Gelukt, met hulp.' : this.wrong ? `Goed! Na ${this.wrong} keer zoeken.` : 'In één keer goed!';
+    DrillFx.hit(this.card, this.revealed ? 'Gelukt, met hulp.' : this.wrong ? `Na ${this.wrong} keer zoeken.` : 'In één keer goed.');
     this.renderSlots(); this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.next(false), 1600);
   },
   renderStats() {
@@ -3366,6 +3639,10 @@ registerMode({
       NoteGame.record(this.target, this.elapsed, false);
       Engine.blip();
       this.nextTarget();
+      // de nieuwe noot springt erin, de vorige spat uiteen in noten
+      const note = $('.pr-note', this.card);
+      Fx.notes(note.firstElementChild || note, { n: 5, dist: 40 }); Fx.pop(note); Fx.edge('ok');
+      if ([10, 20, 30, 40].includes(this.score)) { Fx.pop(this.timerEl); $('.pr-toast', this.card).textContent = `${this.score} al! ${Feedback.word('play')}`; }
     }
   },
   end() {
@@ -3384,6 +3661,8 @@ registerMode({
     $('.pr-toast', this.card).textContent = rec && this.score ? 'Nieuw record!' : `Record: ${st.best}. Druk op Begin voor een nieuwe ronde.`;
     setLeds(this.card, 0);
     Engine.chime();
+    Fx.pop($('.pr-note', this.card));
+    if (rec && this.score) setTimeout(() => Confetti.burst({ n: 80 }), 150);
     this.renderStats();
   },
   renderStats() {
@@ -3633,7 +3912,7 @@ registerMode({
     this.want = want; this.target = tone; this.hit = false; this.hinted = false; this.t0 = performance.now();
     const st = Store.stats.targets; st.tries++; st.by[want] = st.by[want] || { h: 0, t: 0 }; st.by[want].t++;
     Store.saveStats();
-    this.card.classList.remove('hit', 'miss');
+    this.card.classList.remove('hit', 'miss', 'nope');
     $('.pr-eyebrow', this.card).textContent = `${P.name} in ${this.key()}${P.minor ? ' mineur' : ''}`;
     $('.pr-note', this.card).innerHTML = `${bigNoteHTML(root)}<span class="sym">${CHORDS[type].sym}</span>`;
     $('.pr-note', this.card).setAttribute('aria-label', `${spoken(root)} ${CHORDS[type].name}`);
@@ -3672,7 +3951,7 @@ registerMode({
     Engine.block(650);
   },
   hint() { if (!this.target || this.hit) return; this.hinted = true; this.renderWhere(); this.drawNeck(); },
-  skip() { if (Store.settings.targets.tempo > 0) return; this.streak = 0; this.next(); },
+  skip() { if (Store.settings.targets.tempo > 0) return; this.streak = 0; DrillFx.reset(this.card); this.next(); },
   expected() { return !this.target || this.hit ? [] : [48 + this.target.pc]; },
   onNote(n) {
     if (!this.target || this.hit) return;
@@ -3684,15 +3963,14 @@ registerMode({
       st.hits++; st.time += secs; if (near) st.near++; st.best = Math.max(st.best || 0, this.streak); st.by[this.want].h++;
       Store.saveStats();
       Quests.bump('targets');
-      this.card.classList.remove('miss'); this.card.classList.add('hit');
-      toast.textContent = near ? 'Raak, en een kleine stap vanaf de vorige. Zo klinkt een solo melodisch.' : `Raak! ${fmt1(secs)} s`;
+      this.card.classList.remove('miss');
+      DrillFx.hit(this.card, near ? 'Een kleine stap vanaf de vorige: zo klinkt een solo melodisch.' : `${fmt1(secs)} s`);
       this.renderWhere(); this.drawNeck(true); this.renderStats();
-      Engine.ding();
       if (!(Store.settings.targets.tempo > 0)) this.timer = setTimeout(() => this.next(), 1100);
       return;
     }
     const t = this.chord.tones.find(x => x.pc === pc), heard = pcName(pc, Store.settings.names === 'flats' ? 'flats' : 'sharps');
-    toast.textContent = t ? `${t.name} is ${degName(t.label)} van ${this.chord.name}. Zoek de ${TARGET_NAME[this.want]}.` : `${heard} zit niet in ${this.chord.name}.`;
+    DrillFx.miss(this.card, t ? `${t.name} is ${degName(t.label)} van ${this.chord.name}. Zoek de ${TARGET_NAME[this.want]}.` : `${heard} zit niet in ${this.chord.name}.${DrillFx.near(n.midi, this.target.pc)}`);
   },
   startTempo() {
     const s = Store.settings.targets;
@@ -3714,7 +3992,7 @@ registerMode({
     if (i === 0) {
       const missed = this.started && !this.hit;
       const msg = missed ? `Te laat: de ${TARGET_NAME[this.want]} van ${this.chord.name} was ${this.target.name}.` : '';
-      if (missed) this.streak = 0;
+      if (missed) { this.streak = 0; DrillFx.reset(this.card); }
       this.started = true;
       this.next();
       if (missed) { this.card.classList.add('miss'); $('.pr-toast', this.card).textContent = msg; }
@@ -3822,20 +4100,30 @@ registerMode({
     st.n[q.key] = (st.n[q.key] || 0) + 1;
     if (ok) st.ok[q.key] = (st.ok[q.key] || 0) + 1;
     Store.saveStats();
-    $$('.opt', this.optsEl).forEach(b => { b.disabled = true; b.classList.toggle('right', b.dataset.k === q.key); b.classList.toggle('wrong', b.dataset.k === key && !ok); if (b.dataset.k === q.key && ok) b.classList.add('pop'); });
+    const mark = (b, good) => b.append(h('span', { class: 'opt-mark' + (good ? '' : ' bad'), html: good ? ICONS.check : ICONS.close }));
+    $$('.opt', this.optsEl).forEach(b => {
+      b.disabled = true;
+      if (b.dataset.k === q.key) { b.classList.add('right'); mark(b, true); if (!ok) b.classList.add('reveal'); }
+      if (b.dataset.k === key && !ok) { b.classList.add('wrong'); mark(b, false); }
+    });
+    // reeks bijhouden; bij goed een tikje, geluidje en noten uit de knop, bij fout twee tikjes en een schudje
+    DrillFx.sync();
+    DrillFx.n = ok ? DrillFx.n + 1 : 0;
+    DrillFx.badge($('.eq-stage', this.card));
+    const line = ok && DrillFx.n >= 3 ? Feedback.streak(DrillFx.n) : '', oops = Feedback.word('wrong');
+    if (ok) Feedback.right({ el: $(`.opt[data-k="${q.key}"]`, this.optsEl), via: 'tap', big: !!line });
+    else Feedback.wrong({ el: $(`.opt[data-k="${key}"]`, this.optsEl), via: 'tap' });
     const hint = q.kind === 'iv' ? (IV_HINT[q.semis] ? `Geheugensteun: ${IV_HINT[q.semis]}.` : '') : `Klinkt ${CHORD_FEEL[q.type] || ''}.`;
     this.fbEl.className = 'eq-fb ' + (ok ? 'ok' : 'bad');
     this.fbEl.innerHTML = '';
-    this.fbEl.append(h('p', {}, h('b', { text: ok ? pick(PRAISE) : `Het was ${q.kind === 'iv' ? 'een ' : ''}${earName(q.key)}.` }), ' ', hint));
+    this.fbEl.append(h('p', {}, h('b', { text: ok ? line || Feedback.word('right') : `${oops}${/[!.?]$/.test(oops) ? '' : '.'} Het was ${q.kind === 'iv' ? 'een ' : ''}${earName(q.key)}.` }), ' ', hint));
     if (!ok) this.fbEl.append(h('div', { class: 'eq-cmp' },
       h('button', { type: 'button', text: `Hoor ${earName(key)}`, onclick: () => this.play(key) }),
       h('button', { type: 'button', class: 'primary', text: `Hoor ${earName(q.key)}`, onclick: () => this.play(q.key) })));
-    if (ok) { Quests.bump('earq'); Sfx.play('right'); this.timer = setTimeout(() => this.next(), 1700); }
-    else { Sfx.play('wrong'); this.shake(); }
+    if (ok) { Quests.bump('earq'); this.timer = setTimeout(() => this.next(), 1700); }
     this.renderStats();
     Activity.ping();
   },
-  shake() { const b = $('.opt.wrong', this.optsEl); if (b) { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); } },
   renderStats() {
     const s = Store.settings.earq, st = Store.stats.earq;
     const keys = s.kind === 'iv' ? s.ivs.map(n => 'iv-' + n) : s.chords.map(t => 'ch-' + t);
@@ -4409,8 +4697,6 @@ function unitMeta(unit) {
 }
 
 // ---------- Lesspeler (één oefening tegelijk, zoals Duolingo) ----------
-const PRAISE = ['Goed!', 'Precies!', 'Klopt!', 'Netjes!', 'Top!'];
-const FIXED = ['Hersteld!', 'Nu wel!', 'Opgelost!', 'Die zit!'];
 const sameSet = (a, b) => a.length === b.length && a.every(x => b.includes(x));
 const KIND = { play: ['pick', 'Speel op je gitaar'], tap: ['note', 'Tik op de hals'], theory: ['book', 'Theorie'] };
 const Lesson = {
@@ -4419,13 +4705,15 @@ const Lesson = {
   mount(view) {
     const sp = this.spec;
     if (!sp) { setTimeout(() => { location.hash = ''; }, 0); return; }
-    this.bin = sp.mode === 'bin';
+    // bin: herstelronde of herhaalronde (review: ook vragen uit de vakjes die vandaag terugkomen)
+    this.bin = sp.mode === 'bin'; this.review = !!sp.review;
     this.cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
     let items = sp.items.map((it, i) => Object.assign({ _id: i }, it));
     if (this.cantPlay && items.some(i => i.type !== 'play')) items = items.filter(i => i.type !== 'play');
     this.queue = items;
     this.total = items.length; this.doneIds = new Set(); this.mistakes = 0; this.skipped = 0; this.hints = 0;
-    this.combo = 0; this.fixed = 0; this.wrongKeys = new Set();
+    this.combo = 0; this.fixed = 0; this.recalled = 0; this.mastered = 0; this.wrongKeys = new Set();
+    this.srsBefore = this.bin ? Srs.snapshot() : null;
     this.t0 = performance.now(); this.finished = false; this.cur = null;
     this.barFill = h('span');
     this.sndBtn = h('button', { class: 'ls-snd', type: 'button', onclick: () => { Store.settings.sound = !Sfx.on(); Store.saveSettings(); this.renderSnd(); } });
@@ -4433,7 +4721,7 @@ const Lesson = {
       h('div', { class: 'ls-top' },
         h('button', { class: 'ls-close', type: 'button', 'aria-label': 'Les stoppen', html: ICONS.close, onclick: () => this.askQuit() }),
         h('div', { class: 'ls-bar', role: 'progressbar', 'aria-label': 'Voortgang in deze les' }, this.barFill),
-        this.bin ? h('span', { class: 'ls-bin', title: 'Vragen in je foutenbak', html: `${ICONS.plaster}<b class="bin-count">${Bin.count()}</b>` }) : null,
+        this.bin ? h('span', { class: 'ls-bin', title: this.review ? 'Nog te herhalen' : 'Vragen in je foutenbak', html: this.review ? `${ICONS.retry}<b class="todo-count">${Srs.todoCount()}</b>` : `${ICONS.plaster}<b class="bin-count">${Bin.count()}</b>` }) : null,
         this.counter = h('span', { class: 'ls-count' }),
         this.sndBtn),
       this.comboEl = h('div', { class: 'combo', 'aria-live': 'polite' }),
@@ -4463,7 +4751,7 @@ const Lesson = {
       h('div', { class: 'sheet center' },
         h('div', { class: 'sheet-mascot', html: Mascot.svg('oeps') }),
         h('h3', { text: 'Wil je stoppen?' }),
-        h('p', { class: 'help', text: this.bin ? 'Wat je al hebt hersteld, is uit je foutenbak. De rest blijft erin staan.' : 'Je voortgang in deze les gaat verloren. Wat je tot nu toe hebt geoefend, telt wel mee voor je dagdoel.' }),
+        h('p', { class: 'help', text: this.review ? 'Wat je al goed had, schuift een vakje door. De rest komt de volgende keer terug.' : this.bin ? 'Wat je al hebt hersteld, is uit je foutenbak. De rest blijft erin staan.' : 'Je voortgang in deze les gaat verloren. Wat je tot nu toe hebt geoefend, telt wel mee voor je dagdoel.' }),
         h('button', { class: 'primary big', type: 'button', text: 'Doorgaan met oefenen', onclick: () => sheet.remove() }),
         h('button', { class: 'big ghost', type: 'button', text: 'Stoppen', onclick: () => { sheet.remove(); this.leave(); } })));
     document.body.append(sheet);
@@ -4488,7 +4776,8 @@ const Lesson = {
     this.foot.className = 'ls-foot';
     this.foot.innerHTML = '';
     const [ico, label] = KIND[it.type === 'play' ? 'play' : it.type === 'tap' ? 'tap' : 'theory'];
-    this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, uit je foutenbak` : label));
+    const from = it._box ? `herhaling na ${SRS_DAYS[it._box]} ${SRS_DAYS[it._box] === 1 ? 'dag' : 'dagen'}` : 'uit je foutenbak';
+    this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, ${from}` : label));
     this.body.append(h('h2', { class: 'ls-prompt', text: it.prompt }));
     if (it.sub && it.type !== 'play') this.body.append(h('p', { class: 'ls-sub', text: it.sub }));
     if (it.type === 'mc') this.renderMC(it);
@@ -4548,84 +4837,107 @@ const Lesson = {
     });
     this.checkFoot();
   },
-  shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); },
   check() {
     const it = this.cur;
     if (!it || this.answered) return;
-    let ok = false, answer = '', wrongEl = null;
+    let ok = false, answer = '', fx = null;
+    const mark = (b, good) => b.append(h('span', { class: 'opt-mark' + (good ? '' : ' bad'), html: good ? ICONS.check : ICONS.close }));
     if (it.type === 'mc') {
       ok = this.sel === it.answer; answer = it.options[it.answer];
       $$('.opt', this.optsEl).forEach((b, i) => {
-        b.classList.toggle('right', i === it.answer); b.classList.toggle('wrong', i === this.sel && !ok); b.disabled = true;
-        if (i === it.answer && ok) b.classList.add('pop');
-        if (i === this.sel && !ok) wrongEl = b;
+        b.disabled = true;
+        if (i === it.answer) { b.classList.add('right'); mark(b, true); if (ok) fx = b; else b.classList.add('reveal'); }
+        if (i === this.sel && !ok) { b.classList.add('wrong'); mark(b, false); fx = b; }
       });
     } else if (it.type === 'multi') {
       const sel = Array.from(this.selSet);
       ok = sameSet(sel, it.correct); answer = it.correct.join(' ');
       $$('.chip-btn', this.chipsEl).forEach(b => { const c = b.textContent; b.classList.toggle('right', it.correct.includes(c)); b.classList.toggle('wrong', this.selSet.has(c) && !it.correct.includes(c)); b.disabled = true; });
-      wrongEl = ok ? null : this.chipsEl;
-      if (ok) this.chipsEl.classList.add('pop');
+      fx = this.chipsEl;
     } else if (it.type === 'tap') {
       ok = it.valid.some(p => p.s === this.tapSel.s && p.f === this.tapSel.f);
       answer = it.valid.map(p => `${STR_LETTER[p.s]}-snaar fret ${p.f}`).join(' of ');
       this.answered = true;
       this.drawTap(it.valid.map(p => ({ s: p.s, f: p.f, kind: 'found', label: '' })).concat(ok ? [] : [{ s: this.tapSel.s, f: this.tapSel.f, kind: 'wrong', label: '' }]));
-      wrongEl = ok ? null : this.tapFig;
+      fx = ok ? $('.mk.found circle', this.tapSvg) || this.tapFig : this.tapFig;
     }
+    this.fxEl = fx; this.via = 'tap';
     if (ok) {
       this.doneIds.add(it._id);
       this.right(it);
     } else {
       this.mistakes++;
-      this.shake(wrongEl);
       if (!it._again) this.queue.push(Object.assign({}, it, { _again: true }));
       else this.doneIds.add(it._id);
-      this.wrong(it, 'Niet helemaal', `Het goede antwoord: ${answer}. ${it.explain || ''}`);
+      this.wrong(it, null, `Het goede antwoord: ${answer}. ${it.explain || ''}`);
     }
     this.updateBar();
   },
-  // goed beantwoord: in de herstelronde gaat de vraag uit de foutenbak
+  // goed beantwoord. In een herstel- of herhaalronde schuift de vraag een vakje door:
+  // uit de foutenbak naar morgen, daarna over 3 en over 7 dagen, en dan heb je hem onder de knie.
   right(it, title, auto) {
-    let fixedNow = false;
-    if (this.bin && it._bin && Bin.remove(it._bin)) {
-      fixedNow = true; this.fixed++;
-      const b = $('.ls-bin', this.el);
-      if (b) { b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
+    let note = '', icon = ICONS.retry, pool = it.type === 'play' ? 'play' : 'right', sound = 'right';
+    if (this.bin && it._bin) {
+      const r = Srs.correct(it._bin);
+      if (r && r.from === 0) {
+        this.fixed++; pool = 'fixed'; sound = 'fixed';
+        note = 'Uit je foutenbak. Morgen komt hij nog eens terug, om te kijken of hij blijft hangen.';
+        Quests.bump('fixed');
+      } else if (r) {
+        this.recalled++; pool = 'recall'; sound = 'fixed';
+        if (r.mastered) { this.mastered++; icon = ICONS.star; note = 'Onder de knie! Deze vraag komt niet meer terug.'; }
+        else note = `Een vakje verder: je ziet hem over ${r.days} dagen terug.`;
+      }
+      // telt voor de opdracht "herhaal vragen die vandaag terugkomen", ook als het pas de tweede keer lukt
+      if (r && it._box) Quests.bump('srs');
+      if (r) Fx.pop($('.ls-bin', this.el));
     }
+    if (it._again && (pool === 'right' || pool === 'play')) pool = 'again';
     this.combo++;
-    if ([3, 5, 8, 12].includes(this.combo)) this.showCombo(this.combo);
+    const milestone = [3, 5, 8, 12].includes(this.combo) || (this.combo > 12 && this.combo % 5 === 0);
+    if (milestone) this.showCombo(this.combo);
     Track.answer(it, true, this.spec && this.spec.topic);
     Quests.max('combo', this.combo);
-    if (fixedNow) Quests.bump('fixed');
-    Sfx.play(fixedNow ? 'fixed' : 'right');
-    this.feedback(true, title || (fixedNow ? pick(FIXED) : pick(PRAISE)), it.explain || '', auto, fixedNow ? 'Uit je foutenbak.' : '');
+    Fx.restart(this.barFill.parentElement, 'glow');
+    Feedback.right({ el: this.fxEl, via: this.via, sound, big: milestone });
+    this.feedback(true, title || (milestone && Feedback.streak(this.combo)) || Feedback.word(pool), it.explain || '', auto, note, '', icon);
   },
+  // fout: de vraag gaat (terug) naar de foutenbak en komt in deze les nog een keer
   wrong(it, title, text) {
+    const lost = this.combo;
     this.combo = 0;
     Track.answer(it, false, this.spec && this.spec.topic);
-    let note = '';
-    if (this.bin) { Bin.add(it); note = 'Hij blijft in je foutenbak.'; }
-    else { this.wrongKeys.add(Bin.add(it, this.spec && this.spec.title, (this.spec && this.spec.topic) || it._topic)); note = 'In je foutenbak gezet. Herstel hem later voor bonus-XP.'; }
-    Sfx.play('wrong');
-    this.feedback(false, title, text, 0, note);
+    const again = !it._again && this.queue.some(q => q._id === it._id);
+    let note;
+    if (this.bin) {
+      const prev = it._bin ? Srs.entry(it._bin) : null, back = prev && prev.box > 0;
+      Bin.add(it);
+      note = back ? `Terug naar de foutenbak.${again ? ' Je krijgt hem zo nog een keer.' : ''}` : again ? 'Hij blijft in je foutenbak. Je krijgt hem zo nog een keer.' : 'Hij blijft in je foutenbak.';
+    } else {
+      this.wrongKeys.add(Bin.add(it, this.spec && this.spec.title, (this.spec && this.spec.topic) || it._topic));
+      note = again ? 'In je foutenbak gezet. Je krijgt hem straks nog een keer.' : 'In je foutenbak gezet. Herstel hem voor bonus-XP.';
+    }
+    Feedback.wrong({ el: this.fxEl, via: this.via });
+    const lift = lost >= 3 ? `Jammer van je ${lost} op rij. Je pakt de draad zo weer op.` : this.mistakes <= 1 || Math.random() < 0.35 ? Feedback.word('lift') : '';
+    this.feedback(false, title || Feedback.word(it._again ? 'wrongAgain' : 'wrong'), text, 0, note, lift, ICONS.plaster);
   },
   showCombo(n) {
     clearTimeout(this.comboT);
     this.comboEl.innerHTML = `${ICONS.flame}<b>${n} op rij!</b>`;
-    this.comboEl.classList.remove('show'); void this.comboEl.offsetWidth; this.comboEl.classList.add('show');
+    Fx.restart(this.comboEl, 'show');
     this.comboT = setTimeout(() => this.comboEl.classList.remove('show'), 1600);
   },
-  feedback(ok, title, text, auto, note) {
+  feedback(ok, title, text, auto, note, lift, icon) {
     this.answered = true;
     clearTimeout(this.autoT);
     this.foot.innerHTML = '';
     this.foot.className = 'ls-foot ' + (ok ? 'ok' : 'bad');
     this.foot.append(
-      h('div', { class: 'fb' },
-        h('span', { class: 'fb-fret', html: Mascot.svg(ok ? 'blij' : 'oeps', { crop: 'head' }) }),
-        h('div', {}, h('b', { text: title }), text ? h('p', { text: text.trim() }) : null,
-          note ? h('p', { class: 'fb-note' }, h('span', { html: ICONS.plaster }), note) : null)),
+      h('div', { class: 'fb', role: 'status' },
+        h('span', { class: 'fb-fret', html: Mascot.svg(ok ? (this.combo >= 5 ? 'juich' : 'blij') : 'oeps', { crop: 'head' }) }),
+        h('div', {}, h('b', { class: 'fb-title', text: title }), text ? h('p', { text: text.trim() }) : null,
+          note ? h('p', { class: 'fb-note' }, h('span', { html: icon || ICONS.plaster }), note) : null,
+          lift ? h('p', { class: 'fb-lift', text: lift }) : null)),
       h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => this.next() }));
     if (auto) this.autoT = setTimeout(() => { if (this.answered) this.next(); }, auto);
     Activity.ping();
@@ -4701,6 +5013,7 @@ const Lesson = {
     this.mistakes++; this.skipped++;
     this.doneIds.add(it._id); this.updateBar();
     const ans = it.steps.map(st => st.k === 'set' ? st.names.join(' ') : st.name).join(' → ');
+    this.fxEl = $('.ls-big', this.body); this.via = 'tap';
     this.wrong(it, 'Overgeslagen', `${ans ? `Het antwoord: ${ans}. ` : ''}${it.hint || ''}`);
   },
   cantPlayNow() {
@@ -4718,33 +5031,37 @@ const Lesson = {
     const ps = this.ps, st = it.steps[ps.idx], toast = $('.ls-toast', this.body);
     const heard = pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps');
     Activity.ping();
+    const miss = text => { toast.textContent = text; Fx.shake($('.ls-big', this.body)); Fx.edge('bad'); };
     if (st.k === 'set') {
       const pc = mod12(n.midi);
       if (st.pcs.includes(pc)) {
-        if (!ps.found.has(pc)) { ps.found.add(pc); toast.textContent = ''; this.renderSteps(); if (ps.found.size === st.pcs.length) this.playDone(); }
-      } else toast.textContent = `${heard} hoort er niet bij`;
+        if (!ps.found.has(pc)) { ps.found.add(pc); toast.textContent = ''; this.renderSteps(); Fx.pop($$('.slots .slot.on', this.body).pop()); if (ps.found.size === st.pcs.length) this.playDone(); }
+      } else miss(`${heard} hoort er niet bij`);
       return;
     }
-    let ok;
+    let ok, wantPc = st.pc;
     if (st.k === 'rel') {
       if (ps.last == null) return;
       const want = ps.last + st.semis;
+      wantPc = mod12(want);
       ok = Store.settings.strict || Math.abs(st.semis) === 12 ? n.midi === want : mod12(n.midi) === mod12(want);
     } else ok = mod12(n.midi) === st.pc;
     if (ok) {
       ps.last = n.midi; ps.idx++;
       toast.textContent = ps.idx < it.steps.length ? 'Goed, verder' : '';
       this.renderSteps();
+      if (ps.idx < it.steps.length) Fx.pop($$('.slots .slot.on', this.body).pop());
       if (ps.idx >= it.steps.length) this.playDone();
       return;
     }
     if (ps.last != null && mod12(n.midi) === mod12(ps.last)) return;   // vorige noot klinkt nog
-    toast.textContent = `Je speelde ${heard}`;
+    miss(`Je speelde ${heard}.${mod12(n.midi) === wantPc ? ' Goede noot, ander octaaf.' : DrillFx.near(n.midi, wantPc)}`);
   },
   playDone() {
     const it = this.cur;
     this.doneIds.add(it._id); this.updateBar();
-    this.right(it, 'Goed gespeeld!', 1500);
+    this.fxEl = $('.ls-big', this.body); this.via = 'mic';
+    this.right(it, null, 1500);
   },
 
   finish() {
@@ -4755,19 +5072,24 @@ const Lesson = {
     const accuracy = this.total ? Math.max(0, (this.total - this.mistakes) / this.total) : 1;
     const perfect = this.mistakes === 0 && this.skipped === 0;
     const passed = !sp.test || accuracy >= 0.8;
-    let xp, title, sub, mood, party = false, extra = null;
+    let xp, title, sub, mood, party = false, how = '';
     if (this.bin) {
-      xp = 2 * this.fixed + (this.fixed && this.fixed === this.total ? 5 : 0);
-      const left = Bin.count();
-      if (this.fixed && !left) {
+      const good = this.fixed + this.recalled, left = Bin.count(), todo = Srs.todoCount();
+      xp = 2 * good + (good && !this.mistakes ? 5 : 0) + 5 * this.mastered;
+      if (this.fixed && this.srsBefore[0] && !left) {
         Bin.reward(); xp += 10; party = true;
         title = 'Foutenbak leeg!'; mood = 'juich';
         sub = 'Alles hersteld. Je krijgt 10 XP extra en 2 minuten voor je dagdoel.';
+      } else if (this.review && good && !todo) {
+        title = this.mastered ? 'Onder de knie!' : 'Alles herhaald!'; mood = 'juich'; party = !this.mistakes || this.mastered > 0;
+        sub = this.mastered ? `${this.mastered === 1 ? 'Eén vraag komt' : `${this.mastered} vragen komen`} niet meer terug. Voor vandaag is alles herhaald.` : 'Wat je goed had, schuift een vakje door.';
       } else {
-        title = this.fixed ? `${this.fixed} van ${this.total} hersteld` : 'Nog niet hersteld';
-        mood = this.fixed ? 'ehbo' : 'oeps';
+        title = good ? `${good} van ${this.total} goed` : this.review ? 'Nog niet onthouden' : 'Nog niet hersteld';
+        mood = good ? 'ehbo' : 'oeps';
         sub = left ? `Er ${left === 1 ? 'staat' : 'staan'} nog ${left} ${left === 1 ? 'vraag' : 'vragen'} in je foutenbak.` : '';
       }
+      // zo werkt herhalen: uitleg op het moment dat het gebeurt
+      how = this.fixed ? 'Wat je herstelde, komt morgen terug. Weet je het dan nog, dan zie je het na 3 en daarna na 7 dagen nog één keer.' : '';
       if (xp) Progress.addXP(xp);
     } else {
       xp = passed ? (sp.xp || 10) + (perfect ? 5 : 0) : 5;
@@ -4791,8 +5113,9 @@ const Lesson = {
       sub ? h('p', { class: 'help', text: sub }) : null,
       h('div', { class: 'end-stats' },
         h('div', {}, h('small', { text: 'XP' }), xpEl),
-        this.bin ? h('div', {}, h('small', { text: 'Hersteld' }), h('b', { text: `${this.fixed}/${this.total}` })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
+        this.bin ? h('div', {}, h('small', { text: this.review ? 'Goed' : 'Hersteld' }), h('b', { text: `${this.fixed + this.recalled}/${this.total}` })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
         h('div', {}, h('small', { text: 'Tijd' }), h('b', { text: mm }))),
+      this.bin ? h('div', { class: 'end-srs' }, Srs.row({ delta: Srs.delta(this.srsBefore) }), how ? h('p', { class: 'help', text: how }) : null) : null,
       fresh.length ? h('div', { class: 'end-badges' }, fresh.map(b => h('div', { class: 'end-badge' },
         h('span', { class: 'b-pick', html: pickBadge(b, true) }),
         h('div', {}, h('small', { text: 'Nieuwe mijlpaal' }), h('b', { text: b.title }), h('span', { text: b.desc }))))) : null,
@@ -4807,9 +5130,9 @@ const Lesson = {
     if (fixable.length && Bin.items(fixable).length) {
       this.foot.append(h('button', { class: 'primary big fix-btn', type: 'button', html: `${ICONS.plaster}<span>Herstel je fouten (+${Bin.bonusXP(fixable.length)} XP)</span>`, onclick: () => { const s = this.spec; this.spec = null; Bin.start({ keys: fixable, after: () => { if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; } }); } }),
         h('button', { class: 'big', type: 'button', text: 'Verder', onclick: done }));
-    } else if (this.bin && Bin.count() && Bin.items().length) {
+    } else if (this.bin && Srs.items().length) {
       this.foot.append(h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: done }),
-        h('button', { class: 'big', type: 'button', text: 'Nog een ronde', onclick: () => { const s = this.spec; this.spec = null; Bin.start({ after: s && s.onDone ? () => s.onDone({ passed: true }) : null }); } }));
+        h('button', { class: 'big', type: 'button', text: 'Nog een ronde', onclick: () => { const s = this.spec; this.spec = null; Srs.start({ after: s && s.onDone ? () => s.onDone({ passed: true }) : null }); } }));
     } else this.foot.append(h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: done }));
     Sfx.play('done');
     if (party) setTimeout(() => Confetti.burst({ n: this.bin ? 70 : 90 }), 200);
@@ -4817,9 +5140,12 @@ const Lesson = {
 };
 
 // ---------- Foutenbak: vragen die je fout had, tot je ze goed beantwoordt ----------
+// Elke vraag staat in een vak (box). Vak 0 is de foutenbak. Herstel je hem, dan gaat hij naar vak 1 en
+// komt hij later terug om te herhalen (zie Srs hieronder). Een fout zet hem altijd terug in vak 0.
 const Bin = {
-  MAX: 40,
-  list() { const s = Store.stats; if (!Array.isArray(s.bin)) s.bin = []; return s.bin; },
+  MAX: 40, MAX_ALL: 150,
+  all() { const s = Store.stats; if (!Array.isArray(s.bin)) s.bin = []; return s.bin; },
+  list() { return this.all().filter(x => !x.box); },
   count() { return this.list().length; },
   key(it) {
     if (it.type === 'mc') return `mc|${it.prompt}|${it.sub || ''}|${it.options[it.answer]}`;
@@ -4833,12 +5159,15 @@ const Bin = {
     return JSON.parse(JSON.stringify(o));
   },
   add(it, from, topic) {
-    const k = it._bin || this.key(it), list = this.list(), ex = list.find(x => x.k === k);
+    const k = it._bin || this.key(it), all = this.all(), ex = all.find(x => x.k === k);
     const first = !this.list().length && !(Store.stats.binSeen);
-    if (ex) { ex.n++; ex.t = Date.now(); }
+    if (ex) { ex.n++; ex.t = Date.now(); ex.box = 0; ex.due = ''; }
     else {
-      list.push({ k, it: this.clean(it), n: 1, t: Date.now(), from: from || '', topic: topic || it._topic || '' });
-      while (list.length > this.MAX) list.shift();
+      all.push({ k, it: this.clean(it), n: 1, t: Date.now(), from: from || '', topic: topic || it._topic || '', box: 0 });
+      // maximaal 40 in de foutenbak en 150 in totaal: de oudste gaan eruit
+      const b0 = all.filter(x => !x.box);
+      for (let i = 0; i < b0.length - this.MAX; i++) all.splice(all.indexOf(b0[i]), 1);
+      while (all.length > this.MAX_ALL) { const i = all.findIndex(x => x.box); all.splice(i >= 0 ? i : 0, 1); }
     }
     if (first) Store.stats.binSeen = true;
     Store.saveStats();
@@ -4846,40 +5175,30 @@ const Bin = {
     return k;
   },
   has(k) { return this.list().some(x => x.k === k); },
-  remove(k) {
-    const list = this.list(), i = list.findIndex(x => x.k === k);
-    if (i < 0) return false;
-    list.splice(i, 1);
-    Store.saveStats();
-    this.changed();
-    return true;
-  },
   canPlay() { return !((Store.settings.cantPlayUntil || 0) > Date.now()); },
-  // verse kopieën om opnieuw te stellen; meerkeuze-opties opnieuw geschud
+  playable(x) { return x.it.type !== 'play' || this.canPlay(); },
+  // verse kopie om opnieuw te stellen; meerkeuze-opties opnieuw geschud
+  copy(x) {
+    const it = JSON.parse(JSON.stringify(x.it));
+    if (it.type === 'mc') { const right = it.options[it.answer]; it.options = shuffle(it.options); it.answer = it.options.indexOf(right); }
+    it._bin = x.k; it._topic = x.topic || ''; if (x.box) it._box = x.box;
+    return it;
+  },
   items(keys, max) {
     let src = this.list().slice();
     if (keys) src = src.filter(x => keys.includes(x.k));
     else src.sort((a, b) => b.n - a.n || a.t - b.t);
-    if (!this.canPlay()) src = src.filter(x => x.it.type !== 'play');
-    return src.slice(0, max || 10).map(x => {
-      const it = JSON.parse(JSON.stringify(x.it));
-      if (it.type === 'mc') { const right = it.options[it.answer]; it.options = shuffle(it.options); it.answer = it.options.indexOf(right); }
-      it._bin = x.k; it._topic = x.topic || '';
-      return it;
-    });
+    return src.filter(x => this.playable(x)).slice(0, max || 10).map(x => this.copy(x));
   },
   bonusXP(n) { return 2 * n + 5; },
-  // start een herstelronde. o.keys: alleen deze vragen (bijvoorbeeld uit de les die je net deed).
+  // start een herstelronde met alleen deze vragen (bijvoorbeeld uit de les die je net deed).
   // o.after: na afloop, o.exit: bij tussentijds stoppen. Standaard terug naar waar je vandaan kwam.
   start(o = {}) {
+    if (!o.keys) return Srs.start(o);
     const from = location.hash === '#les' ? '' : location.hash;
     const back = () => { if (location.hash === from) Router.render(); else location.hash = from; };
     const items = this.items(o.keys, 10);
-    if (!items.length) {
-      UI.flash(ICONS.plaster, this.count() ? 'Alleen speelvragen over' : 'Je foutenbak is leeg', this.count() ? 'Zet speelopdrachten weer aan om ze te herstellen.' : 'Fouten uit je lessen komen hier terecht.', 'badge');
-      (o.after || back)();
-      return;
-    }
+    if (!items.length) { (o.after || back)(); return; }
     const needMic = items.some(x => x.type === 'play') && !Engine.mic;
     Loader.run({ title: 'Herstel je fouten', sub: `${items.length} ${items.length === 1 ? 'vraag' : 'vragen'} uit je foutenbak`, mood: 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
       Lesson.open({ mode: 'bin', title: 'Herstel je fouten', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
@@ -4891,9 +5210,129 @@ const Bin = {
     Progress.addBonus(120);
   },
   changed() {
-    const n = this.count();
+    const n = this.count(), todo = Srs.todoCount();
     $$('.bin-count').forEach(el => { el.textContent = String(n); });
-    $$('.bin-btn').forEach(el => { el.hidden = !n; });
+    $$('.todo-count').forEach(el => { el.textContent = String(todo); });
+    $$('.bin-btn').forEach(el => { el.hidden = !todo; });
+    Srs.badge();
+  },
+};
+
+// ---------- Herhalen: fouten komen terug na 1, 3 en 7 dagen (Leitner) ----------
+// Herstel je een fout, dan gaat hij naar vak 1 en zie je hem morgen terug. Weet je hem dan nog,
+// dan gaat hij een vak verder: over 3 dagen, daarna over 7 dagen. Na vak 3 heb je hem onder de knie.
+// Een fout zet hem terug in de foutenbak, en dan begint het opnieuw.
+const SRS_DAYS = [0, 1, 3, 7];
+const SRS_LABELS = ['Fouten\u00ADbak', '1 dag', '3 dagen', '7 dagen', 'Onder de knie'];
+const addDays = (key, n) => { const d = new Date(key + 'T12:00:00'); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const Srs = {
+  entry(k) { return Bin.all().find(x => x.k === k) || null; },
+  isDue(x, t) { return x.box > 0 && (x.due || '') <= (t || todayKey()); },
+  dueList() { const t = todayKey(); return Bin.all().filter(x => this.isDue(x, t)); },
+  dueCount() { return this.dueList().length; },
+  todoCount() { return Bin.count() + this.dueCount(); },
+  // aantallen per vak, plus wat je onder de knie hebt
+  snapshot() {
+    const c = [0, 0, 0, 0, Store.stats.srsDone || 0];
+    for (const x of Bin.all()) c[Math.min(3, x.box || 0)]++;
+    return c;
+  },
+  delta(before) { const now = this.snapshot(); return now.map((v, i) => v - (before ? before[i] : v)); },
+  dueBy() { const c = [0, 0, 0, 0], t = todayKey(); for (const x of Bin.all()) if (this.isDue(x, t)) c[x.box]++; return c; },
+  // de eerstvolgende dag waarop er iets terugkomt
+  next() {
+    const t = todayKey(), fut = Bin.all().filter(x => x.box > 0 && x.due > t).map(x => x.due).sort();
+    return fut.length ? { date: fut[0], n: fut.filter(d => d === fut[0]).length } : null;
+  },
+  when(date) {
+    const t = todayKey();
+    if (date === addDays(t, 1)) return 'morgen';
+    if (date === addDays(t, 2)) return 'overmorgen';
+    return 'op ' + new Date(date + 'T12:00:00').toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'short' });
+  },
+  comes(nx) { const w = this.when(nx.date); return `${w[0].toUpperCase() + w.slice(1)} ${nx.n === 1 ? 'komt er een vraag' : `komen er ${nx.n} vragen`} terug.`; },
+  // goed beantwoord in een herstel- of herhaalronde: een vak verder
+  correct(k) {
+    const x = this.entry(k);
+    if (!x) return null;
+    const t = todayKey(), from = x.box || 0;
+    if (from > 0 && !this.isDue(x, t)) return null;
+    let res;
+    if (from >= 3) {
+      Bin.all().splice(Bin.all().indexOf(x), 1);
+      Store.stats.srsDone = (Store.stats.srsDone || 0) + 1;
+      res = { from, to: 4, mastered: true };
+    } else {
+      x.box = from + 1; x.due = addDays(t, SRS_DAYS[x.box]); x.seen = t;
+      res = { from, to: x.box, mastered: false, days: SRS_DAYS[x.box] };
+    }
+    Store.saveStats();
+    Bin.changed();
+    return res;
+  },
+  // wat vandaag aan de beurt is (oudste eerst), daarna de foutenbak
+  items(max) {
+    const due = this.dueList().filter(x => Bin.playable(x)).sort((a, b) => (a.due < b.due ? -1 : a.due > b.due ? 1 : a.box - b.box));
+    const bin = Bin.list().filter(x => Bin.playable(x)).sort((a, b) => b.n - a.n || a.t - b.t);
+    return due.concat(bin).slice(0, max || 10).map(x => Bin.copy(x));
+  },
+  start(o = {}) {
+    const from = location.hash === '#les' ? '' : location.hash;
+    const back = () => { if (location.hash === from) Router.render(); else location.hash = from; };
+    const items = this.items(10);
+    if (!items.length) {
+      const nx = this.next();
+      UI.flash(ICONS.retry, Bin.count() ? 'Alleen speelvragen over' : 'Niets te herhalen', Bin.count() ? 'Zet speelopdrachten weer aan om ze te herstellen.' : nx ? this.comes(nx) : 'Fouten uit je lessen komen hier terug.', 'badge');
+      (o.after || back)();
+      return;
+    }
+    const due = items.filter(x => x._box).length, fix = items.length - due;
+    const needMic = items.some(x => x.type === 'play') && !Engine.mic;
+    const sub = [due ? `${due} ${due === 1 ? 'vraag' : 'vragen'} uit je vakjes` : '', fix ? `${fix} uit je foutenbak` : ''].filter(Boolean).join(' en ');
+    Loader.run({ title: 'Herhalen', sub, mood: due ? 'denk' : 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
+      Lesson.open({ mode: 'bin', review: true, title: 'Herhalen', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
+  },
+  // teller op het tabblad Oefenen
+  badge() {
+    const b = $('.tabbar a[data-tab="practice"] .tb-badge');
+    if (!b) return;
+    const n = this.todoCount();
+    b.hidden = !n; b.textContent = n > 9 ? '9+' : String(n);
+    b.closest('a').setAttribute('aria-label', n ? `Oefenen, ${n} te herhalen` : 'Oefenen');
+  },
+  // de vakjes naast elkaar; o.delta laat zien wat er in deze ronde verschoof
+  row(o = {}) {
+    const c = this.snapshot(), due = this.dueBy(), d = o.delta || [];
+    return h('div', { class: 'lb-row', role: 'list', 'aria-label': 'Herhaalvakjes' }, SRS_LABELS.map((label, k) => {
+      const n = c[k], cards = Math.min(3, n);
+      return h('div', { class: `lb b${k}${n ? ' has' : ''}${due[k] ? ' due' : ''}`, role: 'listitem', 'aria-label': `${label}: ${n}${due[k] ? `, ${due[k]} vandaag aan de beurt` : ''}` },
+        h('span', { class: 'lb-cards', 'aria-hidden': 'true' }, Array.from({ length: cards }, () => h('i'))),
+        h('b', { class: 'lb-n', text: String(n) }),
+        h('small', { class: 'lb-l', text: label }),
+        due[k] ? h('em', { class: 'lb-due', text: `${due[k]} nu` }) : null,
+        d[k] ? h('span', { class: 'lb-d ' + (d[k] > 0 ? 'up' : 'down'), text: (d[k] > 0 ? '+' : '−') + Math.abs(d[k]) }) : null);
+    }));
+  },
+  // kaart bovenaan Oefenen
+  card() {
+    const c = this.snapshot(), nb = c[0], due = this.dueCount(), todo = nb + due, total = c.reduce((a, b) => a + b, 0), nx = this.next();
+    let title, text, mood;
+    if (!total) {
+      title = 'Nog niets te herhalen'; mood = 'boek';
+      text = 'Een fout uit je lessen komt hier terecht. Herstel je hem, dan komt hij terug na 1, 3 en 7 dagen. Zo blijft het hangen.';
+    } else if (todo) {
+      title = `${todo} ${todo === 1 ? 'vraag' : 'vragen'} om te herhalen`; mood = due ? 'denk' : 'ehbo';
+      text = [due ? `${due} ${due === 1 ? 'komt' : 'komen'} vandaag terug uit je vakjes` : '', nb ? `${nb} ${nb === 1 ? 'staat' : 'staan'} in je foutenbak` : ''].filter(Boolean).join(' en ') + '. Goed is een vakje verder, fout is terug naar de foutenbak.';
+    } else {
+      title = 'Vandaag niets te herhalen'; mood = 'slaap';
+      text = nx ? this.comes(nx) : `Je hebt ${c[4]} ${c[4] === 1 ? 'vraag' : 'vragen'} onder de knie.`;
+    }
+    return h('section', { class: 'srs-card' + (todo ? ' todo' : '') + (!total ? ' none' : ''), id: 'srsCard' },
+      h('div', { class: 'srs-head' },
+        h('div', { class: 'srs-fret', html: Mascot.svg(mood) }),
+        h('div', { class: 'srs-text' }, h('p', { class: 'srs-eyebrow', text: 'Herhalen' }), h('h2', { text: title }), h('p', { class: 'srs-sub', text: text }))),
+      this.row(),
+      todo ? h('button', { class: 'primary big srs-go', type: 'button', onclick: () => this.start() }, h('span', { html: ICONS.retry }), h('span', { text: 'Herhaal nu' }), h('b', { class: 'todo-count', text: String(todo) })) : null);
   },
 };
 
@@ -5046,10 +5485,10 @@ function renderPath(view) {
   }
   wrap.append(h('div', { class: 'path-end', text: 'Na elke les van maandag en donderdag komt hier een nieuwe unit bij.' }));
   view.append(wrap);
-  const remaining = Math.max(0, Progress.goalSecs() - Progress.day().secs), nb = Bin.count();
+  const remaining = Math.max(0, Progress.goalSecs() - Progress.day().secs), todo = Srs.todoCount();
   const cta = h('div', { class: 'cta-bar' },
-    h('button', { class: 'bin-btn', type: 'button', hidden: !nb, 'aria-label': `Herstel je fouten (${nb})`, title: 'Herstel je fouten', onclick: () => Bin.start() },
-      h('span', { html: ICONS.plaster }), h('b', { class: 'bin-count', text: String(nb) }), h('small', { text: 'fouten' })),
+    h('button', { class: 'bin-btn', type: 'button', hidden: !todo, 'aria-label': `Herhaal fouten (${todo})`, title: 'Herhaal fouten', onclick: () => Srs.start() },
+      h('span', { html: ICONS.plaster }), h('b', { class: 'todo-count', text: String(todo) }), h('small', { text: 'herhaal' })),
     h('button', { class: 'primary big', type: 'button', id: 'todayBtn', onclick: () => Daily.showPlan() },
       h('span', { text: Daily.active ? 'Ga verder met vandaag' : remaining ? 'Oefen vandaag' : 'Extra oefenen' }),
       h('small', { text: remaining ? `nog ${Math.ceil(remaining / 60)} min voor je dagdoel` : 'dagdoel gehaald' })));
@@ -5070,7 +5509,7 @@ function nodeSheet(u, i, nodes, unitNo) {
   document.body.append(sheet);
 }
 
-// ---------- Herhalen: vragen uit afgeronde lessen, zwakke eerst ----------
+// ---------- Opfrissen: vragen uit afgeronde lessen, zwakke eerst ----------
 const Review = {
   candidates() {
     const out = [];
@@ -5207,6 +5646,7 @@ const BADGES = [
   { id: 'perfect', icon: 'check', pick: 'pearl', title: 'Zuiver', desc: 'Een les zonder fouten', test: s => Object.values(s.path.nodes).some(n => n.perfect) },
   { id: 'unit', icon: 'trophy', pick: '#2B1A14', title: 'Eerste plaat', desc: 'Een unittoets gehaald', test: s => Object.values(s.path.nodes).some(n => n.test && n.done) },
   { id: 'bin', icon: 'plaster', pick: 'pearl', title: 'Pleister erop', desc: 'Je foutenbak helemaal leeggemaakt', test: s => (s.binCleared || 0) >= 1 },
+  { id: 'srs10', icon: 'retry', pick: '#1F6FA8', title: 'Uit het hoofd', desc: '10 fouten onder de knie gekregen', test: s => (s.srsDone || 0) >= 10 },
   { id: 'xp100', icon: 'bolt', pick: '#0B7D72', title: 'Demo', desc: '100 XP verdiend', test: s => (s.xp || 0) >= 100 },
   { id: 'xp500', icon: 'bolt', pick: '#B4520E', title: 'Single', desc: '500 XP verdiend', test: s => (s.xp || 0) >= 500 },
   { id: 'xp1000', icon: 'bolt', pick: 'gold', title: 'Album', desc: '1000 XP verdiend', test: s => (s.xp || 0) >= 1000 },
@@ -5312,27 +5752,50 @@ function renderWeekChart(infoEl) {
   el.addEventListener('pointerover', show); el.addEventListener('pointerdown', show); el.addEventListener('focusin', show);
   return el;
 }
+// mijlpalen als plectrums (ook in de lege staat: als doelen)
+function badgesCard() {
+  const got = Store.stats.badges || {}, n = Object.keys(got).length;
+  return h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Mijlpalen' }), h('p', { class: 'help', text: n ? `${n} van de ${BADGES.length} plectrums verzameld.` : `Nog geen plectrums. Je eerste verdien je met je eerste les; er zijn er ${BADGES.length} te verzamelen.` }),
+    h('div', { class: 'badges' }, BADGES.map(b => h('div', { class: 'badge' + (got[b.id] ? ' got' : '') }, h('span', { class: 'b-pick', html: pickBadge(b, !!got[b.id]) }), h('b', { text: b.title }), h('small', { text: got[b.id] ? `${b.desc}. ${niceDate(got[b.id])}` : b.desc })))));
+}
+// nog nooit geoefend: één grote uitnodiging, en wat je hier straks ziet
+function renderProgressEmpty(view) {
+  view.append(emptyHero('progress'));
+  const li = (icon, b, t) => h('li', {}, h('span', { class: 'pv-ico', html: icon }), h('span', {}, h('b', { text: b }), h('small', { text: t })));
+  view.append(h('div', { class: 'card preview' }, h('h2', { class: 'card-h', text: 'Wat je hier straks ziet' }),
+    h('ul', { class: 'pv-list' },
+      li(ICONS.flame, 'Je reeks', `elke dag dat je ${Math.round(Progress.goalSecs() / 60)} minuten oefent`),
+      li(ICONS.chart, 'Je oefenkalender', 'hoe vaak en hoe lang je speelt'),
+      li(ICONS.retry, 'Herhalen', 'fouten komen terug na 1, 3 en 7 dagen'),
+      li(ICONS.book, 'Voor je les', 'je zwakke plekken, klaar om te kopiëren'))));
+  view.append(badgesCard());
+  view.append(h('div', { class: 'row links' }, h('a', { class: 'link', href: '#instellingen', text: 'Instellingen' })));
+}
 function renderProgress(view) {
   Badges.check();
+  if (isFresh()) return renderProgressEmpty(view);
   const st = Store.stats, sk = Progress.streak(), goalMin = Math.round(Progress.goalSecs() / 60);
-  const left = Math.max(0, Math.ceil((Progress.goalSecs() - Progress.day().secs) / 60));
+  const left = Math.max(0, Math.ceil((Progress.goalSecs() - Progress.day().secs) / 60)), idle = Progress.day().secs <= 0;
   const fz = Store.stats.freezes || 0, yest = new Date(); yest.setDate(yest.getDate() - 1);
-  const mood = (Store.stats.frozen || {})[dayKeyOf(yest)] ? 'ijs' : sk.today ? 'juich' : sk.n ? 'blij' : 'slaap';
-  const msg = sk.today ? `Vandaag gehaald. Morgen weer ${goalMin} minuten om je reeks te houden.` : sk.n ? `Nog ${left} ${left === 1 ? 'minuut' : 'minuten'} vandaag, anders begint je reeks morgen opnieuw.` : `Oefen vandaag ${goalMin} minuten om een reeks te beginnen.`;
-  view.append(h('section', { class: 'streak-card' },
+  const mood = (Store.stats.frozen || {})[dayKeyOf(yest)] ? 'ijs' : sk.today ? 'juich' : idle ? 'slaap' : sk.n ? 'blij' : 'slaap';
+  const msg = sk.today ? `Vandaag gehaald. Morgen weer ${goalMin} minuten om je reeks te houden.`
+    : idle ? `Je hebt vandaag nog geen oefensessies gedaan. ${sk.n ? `Met ${goalMin} minuten houd je je reeks vast.` : `Met ${goalMin} minuten begin je een nieuwe reeks.`}`
+    : sk.n ? `Nog ${left} ${left === 1 ? 'minuut' : 'minuten'} vandaag, anders begint je reeks morgen opnieuw.` : `Nog ${left} ${left === 1 ? 'minuut' : 'minuten'} vandaag om een reeks te beginnen.`;
+  view.append(h('section', { class: 'streak-card' + (idle ? ' idle' : '') },
     h('div', { class: 'sc-fret', html: Mascot.svg(mood) }),
     h('div', { class: 'sc-text' },
       h('p', { class: 'sc-n' }, h('span', { html: ICONS.flame }), h('b', { text: String(sk.n) }), h('span', { text: sk.n === 1 ? 'dag op rij' : 'dagen op rij' })),
       h('p', { class: 'help', text: msg }),
+      idle ? h('button', { class: 'sc-go', type: 'button', onclick: () => Daily.showPlan() }, h('span', { html: ICONS.play }), h('span', { text: 'Oefen vandaag' })) : null,
       h('p', { class: 'sc-freeze' }, h('span', { html: ICONS.ice }), fz ? `${fz} ${fz === 1 ? 'reeksbevriezer' : 'reeksbevriezers'} op voorraad` : 'Nog geen reeksbevriezer. Doe de drie opdrachten van een dag.'))));
   const tile = (label, value, sub, icon, onclick) => h(onclick ? 'button' : 'div', { class: 'tile' + (onclick ? ' tap' : ''), type: onclick ? 'button' : null, onclick },
     h('span', { class: 'tile-l' }, icon ? h('span', { class: 'tile-ico', html: icon }) : null, label), h('b', { class: 'tile-v', text: value }), sub ? h('small', { text: sub }) : null);
-  const wk = Math.round(Progress.weekSecs() / 60), nb = Bin.count();
+  const wk = Math.round(Progress.weekSecs() / 60), todo = Srs.todoCount(), known = st.srsDone || 0, nxt = Srs.next();
   view.append(h('section', { class: 'kpis' },
     tile('XP', String(st.xp || 0), 'totaal', ICONS.bolt),
     tile('Deze week', `${wk}`, 'minuten', ICONS.clock),
     tile('Beste reeks', String(Progress.bestStreak()), Progress.bestStreak() === 1 ? 'dag' : 'dagen', ICONS.flame),
-    tile('Foutenbak', String(nb), nb ? 'tik om te herstellen' : 'leeg', ICONS.plaster, nb ? () => Bin.start() : null)));
+    tile('Herhalen', String(todo), todo ? 'tik om te herhalen' : nxt ? `${Srs.when(nxt.date)} ${nxt.n} terug` : known ? `${known} onder de knie` : 'niets vandaag', ICONS.retry, todo ? () => Srs.start() : null)));
   const sumOut = h('pre', { class: 'cc-out', hidden: true });
   view.append(h('div', { class: 'card course-card' },
     h('div', { class: 'cc-fret', html: Mascot.svg('boek') }),
@@ -5344,17 +5807,17 @@ function renderProgress(view) {
   const calInfo = h('p', { class: 'chart-info', text: 'Tik op een dag voor de minuten' });
   view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Oefenkalender' }), h('p', { class: 'help', text: 'De laatste 16 weken. Hoe donkerder, hoe langer je oefende. De donkerste kleur is je dagdoel gehaald.' }), renderCalendar(calInfo),
     h('div', { class: 'cal-legend', html: `<span>minder</span>${[0, 1, 2, 3, 4].map(l => `<i class="l${l}"></i>`).join('')}<span>dagdoel</span>` }), calInfo));
-  const wkInfo = h('p', { class: 'chart-info', text: 'Tik op een dag voor de minuten' });
-  view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Deze week' }), h('p', { class: 'help', text: `Minuten per dag. De lijn is je dagdoel van ${goalMin} minuten.` }), renderWeekChart(wkInfo), wkInfo));
+  const wkInfo = h('p', { class: 'chart-info', text: wk ? 'Tik op een dag voor de minuten' : '' });
+  const wkChart = renderWeekChart(wkInfo);
+  if (!wk) wkChart.append(h('p', { class: 'chart-empty', text: 'Nog geen minuten deze week. Je eerste balkje verschijnt zodra je gaat spelen.' }));
+  view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Deze week' }), h('p', { class: 'help', text: `Minuten per dag. De lijn is je dagdoel van ${goalMin} minuten.` }), wkChart, wkInfo));
   const units = PathData.units();
   view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Leerpad' }),
     units.length ? h('div', { class: 'unit-list' }, units.map((u, i) => {
       const nodes = unitNodes(u), done = nodes.filter((n, k) => nodeDone(u, k)).length, test = nodeDone(u, nodes.length - 1);
       return h('div', { class: `ul-row c-${UNIT_COLORS[i % UNIT_COLORS.length]}` }, h('div', { class: 'ul-t' }, h('b', { text: `Unit ${i + 1}: ${unitMeta(u).title}` }), h('span', { class: 'help', text: test ? 'unittoets gehaald' : `${done} van ${nodes.length} stappen` })), h('div', { class: 'progress' }, h('span', { style: `width:${(100 * done / nodes.length).toFixed(0)}%` })));
     })) : h('p', { class: 'help', text: 'Na les 1 verschijnt hier je eerste unit.' })));
-  const got = st.badges || {};
-  view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Mijlpalen' }), h('p', { class: 'help', text: `${Object.keys(got).length} van de ${BADGES.length} plectrums verzameld.` }),
-    h('div', { class: 'badges' }, BADGES.map(b => h('div', { class: 'badge' + (got[b.id] ? ' got' : '') }, h('span', { class: 'b-pick', html: pickBadge(b, !!got[b.id]) }), h('b', { text: b.title }), h('small', { text: got[b.id] ? `${b.desc}. ${niceDate(got[b.id])}` : b.desc }))))));
+  view.append(badgesCard());
   const r = st.bends.recent, bendAvg = r.length ? Math.round(r.reduce((a, b) => a + Math.abs(b), 0) / r.length) : null;
   const earOk = Object.values(st.ear.ok).reduce((a, b) => a + b, 0);
   const rows = [
@@ -5375,6 +5838,7 @@ const QUESTS = [
   { id: 'node', cat: 'a', icon: 'path', target: () => 1, text: () => 'Rond een stap in je leerpad af', value: d => qc(d, 'nodes'), ok: () => !!nextNode() },
   { id: 'fix', cat: 'a', icon: 'plaster', target: () => Math.min(3, Bin.count()), text: n => (n === 1 ? 'Herstel een fout uit je foutenbak' : `Herstel ${n} fouten uit je foutenbak`), value: d => qc(d, 'fixed'), ok: () => Bin.items().length > 0 },
   { id: 'combo', cat: 'a', icon: 'flame', target: () => 6, text: n => `Beantwoord ${n} vragen op rij goed`, value: d => qc(d, 'combo'), ok: () => PathData.units().length > 0 },
+  { id: 'srs', cat: 'a', icon: 'retry', target: () => Math.min(5, Srs.dueList().filter(x => Bin.playable(x)).length), text: n => (n === 1 ? 'Herhaal de vraag die vandaag terugkomt' : `Herhaal ${n} vragen die vandaag terugkomen`), value: d => qc(d, 'srs'), ok: () => Srs.dueList().some(x => Bin.playable(x)) },
   { id: 'notes', cat: 'b', icon: 'note', target: () => 25, text: n => `Vind ${n} noten op de hals`, value: d => qc(d, 'notes') },
   { id: 'challenge', cat: 'b', icon: 'bolt', target: () => clamp(Math.round((Store.stats.challenge.best || 12) * 0.8), 8, 40), text: n => `Haal ${n} of meer bij 60 seconden`, value: d => qc(d, 'challenge') },
   { id: 'scales', cat: 'b', icon: 'pick', target: () => 2, text: n => `Speel ${n} toonladderboxen helemaal`, value: d => qc(d, 'scales') },
@@ -5503,6 +5967,10 @@ function courseSummary() {
   if (weakSk.length) L.push(`- Vaak fout: ${weakSk.map(v => `“${shorten(v.p)}” (${v.w} van ${v.r + v.w} fout)`).join(', ')}.`);
   const bin = Bin.list();
   if (bin.length) L.push(`- Nog in de foutenbak (${bin.length}): ${bin.slice(-4).map(x => `“${shorten(x.it.prompt)}”`).join(', ')}.`);
+  const sc = Srs.snapshot(), inBoxes = sc[1] + sc[2] + sc[3];
+  if (inBoxes || sc[4]) L.push(`- Herhalen na 1, 3 en 7 dagen: ${inBoxes} ${inBoxes === 1 ? 'vraag' : 'vragen'} onderweg, ${sc[4]} onder de knie.`);
+  const sticky = Bin.all().filter(x => x.n >= 3).sort((a, b) => b.n - a.n).slice(0, 3);
+  if (sticky.length) L.push(`- Blijft lastig: ${sticky.map(x => `“${shorten(x.it.prompt)}” (${x.n} keer fout)`).join(', ')}.`);
   const rows = Object.entries(st.notes.items).filter(([, v]) => v.n > 0).map(([k, v]) => { const [s, pc] = k.split('-').map(Number); return { s, pc, avg: v.total / v.n }; }).sort((a, b) => b.avg - a.avg).slice(0, 3);
   if (rows.length) L.push(`- Traagst op de hals: ${rows.map(r => `${pcLabel(r.pc, 'sharps')} op de ${STR_NAME[r.s]} (${fmt1(r.avg)} s)`).join(', ')}.`);
   const eq = st.earq || { ok: {}, n: {} };
@@ -5542,9 +6010,10 @@ const Daily = {
     if (!((Store.settings.cantPlayUntil || 0) > Date.now())) add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
     const nx = nextNode();
     if (nx) add({ kind: 'node', ref: nx, minutes: 4, title: 'Leerpad', sub: `Unit ${nx.unitNo}: ${nx.node.title}` });
-    const nb = Bin.count();
-    if (nb && Bin.items().length) add({ kind: 'bin', minutes: 3, title: 'Herstel je fouten', sub: `${nb} ${nb === 1 ? 'vraag' : 'vragen'} uit je foutenbak` });
-    else if (Review.available()) add({ kind: 'review', minutes: 3, title: 'Herhalen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst' });
+    // herhalen wat vandaag terugkomt en de foutenbak; anders vragen uit eerdere lessen opfrissen
+    const rv = Srs.items(), due = rv.filter(x => x._box).length, nb = rv.length - due;
+    if (rv.length) add({ kind: 'bin', minutes: 3, title: 'Herhalen', sub: [due ? `${due} ${due === 1 ? 'vraag komt' : 'vragen komen'} terug` : '', nb ? `${nb} uit je foutenbak` : ''].filter(Boolean).join(', ') });
+    else if (Review.available()) add({ kind: 'review', minutes: 3, title: 'Opfrissen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst' });
     const cu = nx ? nx.unit : PathData.units().slice(-1)[0];
     if (cu) {
       const d = unitMeta(cu).drill;
@@ -5585,12 +6054,12 @@ const Daily = {
       const nodes2 = unitNodes(st.ref.unit);
       startNode(st.ref.unit, st.ref.index, nodes2, () => this.advance());
     } else if (st.kind === 'bin') {
-      if (!Bin.items().length) return this.advance();
-      Bin.start({ after: () => this.advance(), exit: () => { location.hash = ''; } });
+      if (!Srs.items().length) return this.advance();
+      Srs.start({ after: () => this.advance(), exit: () => { location.hash = ''; } });
     } else if (st.kind === 'review') {
       const items = Review.build(8);
       if (!items.length) return this.advance();
-      Lesson.open({ title: 'Herhalen', items, xp: 10, onDone: () => this.advance(), onExit: () => { location.hash = ''; } });
+      Lesson.open({ title: 'Opfrissen', items, xp: 10, onDone: () => this.advance(), onExit: () => { location.hash = ''; } });
     } else {
       // instellingen die bij de les horen gelden alleen tijdens deze stap
       if (st.set) TempSettings.apply(st.mode, st.set);
@@ -5709,20 +6178,45 @@ function pedal(id, o = {}) {
       h('span', { class: 'pd-stat', html: today ? `Vandaag gespeeld${stat ? ', ' + stat : ''}` : stat || 'Nog niet gespeeld' })),
     h('span', { class: 'pd-switch', 'aria-hidden': 'true', html: ICONS.play }));
 }
+// ---------- Lege staten: nog nooit geoefend, of vandaag nog niet ----------
+function isFresh() {
+  const st = Store.stats;
+  return !(st.xp > 0) && !Object.values(st.days).some(d => d.secs > 0) && !Object.keys(st.path.nodes).length && !Bin.all().length;
+}
+function startFirst() {
+  const nx = nextNode();
+  if (nx) startNode(nx.unit, nx.index, unitNodes(nx.unit));
+  else location.hash = '#m-notes';
+}
+// grote kaart met de fret en één duidelijke knop; null als je vandaag al geoefend hebt
+function emptyHero(where) {
+  const fresh = isFresh(), goal = Math.round(Progress.goalSecs() / 60);
+  if (!fresh && Progress.day().secs > 0) return null;
+  if (fresh) {
+    const nx = nextNode();
+    return h('section', { class: 'hero-empty fresh' },
+      h('div', { class: 'he-fret', html: Mascot.svg(where === 'progress' ? 'zwaai' : 'gitaar') }),
+      h('div', { class: 'he-text' },
+        h('h2', { text: where === 'progress' ? 'Hier groeit je voortgang' : 'Nog geen oefensessies' }),
+        h('p', { text: where === 'progress' ? 'Je hebt nog geen oefensessies gedaan. Start je eerste les en zie hier je reeks, je XP en je plectrums groeien.' : 'Je hebt nog niet geoefend. Start je eerste les: een paar minuten, en je merkt meteen hoe de app meeluistert.' })),
+      h('button', { class: 'primary big he-go', type: 'button', onclick: startFirst }, h('span', { text: nx ? 'Start je eerste les' : 'Begin met Noten zoeken' }), h('small', { text: nx ? `Unit ${nx.unitNo}: ${nx.node.title}` : 'Speel de noot die je ziet' })),
+      where === 'progress' ? h('a', { class: 'he-alt', href: '#oefenen', text: 'Of kies zelf een oefening' }) : null);
+  }
+  const sk = Progress.streak();
+  return h('section', { class: 'hero-empty today' },
+    h('div', { class: 'he-fret', html: Mascot.svg('slaap') }),
+    h('div', { class: 'he-text' },
+      h('h2', { text: 'De fret slaapt nog' }),
+      h('p', { text: `Je hebt vandaag nog geen oefensessies gedaan. ${sk.n ? `Je reeks staat op ${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'}: met ${goal} minuten houd je hem vast.` : `Met ${goal} minuten begin je een nieuwe reeks.`}` })),
+    h('button', { class: 'primary big he-go', type: 'button', onclick: () => Daily.showPlan() }, h('span', { text: 'Oefen vandaag' }), h('small', { text: `${goal} minuten, alles staat voor je klaar` })));
+}
+
 function renderPractice(view) {
   const wrap = h('section', { class: 'hub' });
-  wrap.append(h('p', { class: 'hub-intro', text: 'Trap een pedaal in om te beginnen. Brandt het lampje, dan heb je die oefening vandaag al gespeeld.' }));
-  const nb = Bin.count();
-  wrap.append(nb
-    ? h('div', { class: 'bin-card' },
-      h('div', { class: 'bc-fret', html: Mascot.svg('ehbo') }),
-      h('div', { class: 'bc-text' },
-        h('h2', {}, 'Je foutenbak ', h('span', { class: 'bc-n bin-count', text: String(nb) })),
-        h('p', { text: `${nb === 1 ? 'Eén vraag' : nb + ' vragen'} om te herstellen. Elke goede geeft bonus-XP, een lege bak 2 minuten extra voor je dagdoel.` }),
-        h('button', { class: 'primary', type: 'button', html: `${ICONS.plaster}<span>Herstel je fouten</span>`, onclick: () => Bin.start() })))
-    : h('div', { class: 'bin-card empty' },
-      h('div', { class: 'bc-fret', html: Mascot.svg('blij', { crop: 'head' }) }),
-      h('div', { class: 'bc-text' }, h('h2', { text: 'Je foutenbak is leeg' }), h('p', { text: 'Vragen die je in een les fout hebt, komen hier terecht. Herstel ze voor bonus-XP.' }))));
+  const hero = emptyHero('practice');
+  if (hero) wrap.append(hero);
+  wrap.append(Srs.card());
+  wrap.append(h('p', { class: 'hub-intro', text: hero ? 'Of trap zelf een pedaal in. Brandt het lampje, dan heb je die oefening vandaag al gespeeld.' : 'Trap een pedaal in om te beginnen. Brandt het lampje, dan heb je die oefening vandaag al gespeeld.' }));
   const units = PathData.units(), cu = units[units.length - 1];
   if (cu) {
     const meta = unitMeta(cu), d = meta.drill;
@@ -5776,7 +6270,7 @@ window.__fj = {
     }
     return current && current.expected ? current.expected() : [];
   },
-  lesson: () => (current === Lesson && Lesson.cur ? { type: Lesson.cur.type, answer: Lesson.cur.answer, options: Lesson.cur.options, correct: Lesson.cur.correct, valid: Lesson.cur.valid, answered: Lesson.answered, done: Lesson.doneIds.size, total: Lesson.total, finished: Lesson.finished, bin: Lesson.bin } : (current === Lesson ? { finished: Lesson.finished, bin: Lesson.bin } : null)),
+  lesson: () => (current === Lesson && Lesson.cur ? { type: Lesson.cur.type, answer: Lesson.cur.answer, options: Lesson.cur.options, correct: Lesson.cur.correct, valid: Lesson.cur.valid, answered: Lesson.answered, done: Lesson.doneIds.size, total: Lesson.total, finished: Lesson.finished, bin: Lesson.bin, review: Lesson.review, box: Lesson.cur._box || 0 } : (current === Lesson ? { finished: Lesson.finished, bin: Lesson.bin, review: Lesson.review } : null)),
   loading: () => !!document.querySelector('.loader'),
   onsets: () => Engine.onsetLog.slice(),
   latency: () => Engine.latency(),
@@ -5784,6 +6278,9 @@ window.__fj = {
   daily: () => ({ active: Daily.active, idx: Daily.idx, steps: Daily.steps.map(s => s.kind + ':' + (s.mode || '')) }),
   progress: () => ({ secs: Progress.day().secs, xp: Store.stats.xp, streak: Progress.streak(), nodes: Store.stats.path.nodes, badges: Store.stats.badges, bin: Bin.count(), binCleared: Store.stats.binCleared || 0 }),
   bin: () => Bin.list().map(x => ({ k: x.k, n: x.n, type: x.it.type })),
+  // herhalen: alle vragen met hun vak en dag; srsShift(n) doet alsof er n dagen voorbij zijn
+  srs: () => ({ items: Bin.all().map(x => ({ k: x.k, box: x.box || 0, due: x.due || '', type: x.it.type })), counts: Srs.snapshot(), due: Srs.dueCount(), todo: Srs.todoCount(), done: Store.stats.srsDone || 0 }),
+  srsShift: n => { for (const x of Bin.all()) if (x.due) x.due = addDays(x.due, -n); Store.saveStats(); Bin.changed(); },
   settings: () => JSON.parse(JSON.stringify(Store.settings)),
   quests: () => Quests.today().map(q => ({ id: q.id, target: q.target, v: Quests.progress(q), done: !!(Progress.day().qd || {})[q.id] })),
   questBump: (k, n) => (k === 'combo' || k === 'challenge' ? Quests.max(k, n) : Quests.bump(k, n)),
@@ -5800,6 +6297,8 @@ $('#micPill .chip-ico').innerHTML = ICONS.mic;
 $('#logo').innerHTML = Mascot.svg('blij', { crop: 'head' });
 const TAB_ICONS = { path: ICONS.path, practice: ICONS.pedal, progress: ICONS.chart };
 $$('.tabbar a').forEach(a => { $('.tb-ico', a).innerHTML = TAB_ICONS[a.dataset.tab]; });
+// teller op Oefenen: wat er vandaag te herhalen is
+$('.tabbar a[data-tab="practice"] .tb-ico').append(h('b', { class: 'tb-badge', hidden: true }));
 Router.render();
 PathData.load();
 setTimeout(() => Badges.check(), 1500);

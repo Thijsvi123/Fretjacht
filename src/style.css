@@ -834,3 +834,114 @@ button.tile.tap .tile-ico .ico { color: var(--bad); }
 @keyframes sway { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(3deg); } }
 
 .mode-targets-own .pr-leds { display: none; }
+
+/* ===================== Feedback, herhalen en lege staten ===================== */
+/* trillen op een iPhone: een onzichtbare schakelaar */
+.hx { position: fixed; left: -200px; top: 0; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+
+/* noten en plectrums die uit een knop springen */
+.fx-notes { position: fixed; z-index: 75; width: 0; height: 0; pointer-events: none; }
+.fx-notes i { position: absolute; left: -10px; top: -10px; width: 20px; height: 20px; color: var(--c); animation: fx-note .85s var(--t, 0ms) cubic-bezier(.15, .7, .3, 1) both; }
+.fx-notes svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .2)); }
+@keyframes fx-note { 0% { transform: translate(0, 0) scale(.2); opacity: 0; } 18% { opacity: 1; } 65% { opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(1) rotate(var(--r)); opacity: 0; } }
+/* gloed langs de schermrand: ook uit je ooghoek te zien */
+.fx-edge { position: fixed; inset: 0; z-index: 74; pointer-events: none; opacity: 0; }
+.fx-edge.ok { box-shadow: inset 0 0 0 3px var(--ok), inset 0 0 44px color-mix(in srgb, var(--ok) 40%, transparent); animation: fx-edge .75s ease-out; }
+.fx-edge.bad { box-shadow: inset 0 0 0 3px var(--bad), inset 0 0 36px color-mix(in srgb, var(--bad) 30%, transparent); animation: fx-edge .6s ease-out; }
+@keyframes fx-edge { 0% { opacity: 0; } 18% { opacity: 1; } 100% { opacity: 0; } }
+.fx-pop { animation: fx-pop .48s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes fx-pop { 40% { transform: scale(1.12); } }
+.pr-note.fx-pop, .ls-big.fx-pop { transform-origin: 12% 60%; }
+svg .fx-pop { transform-box: fill-box; transform-origin: center; }
+
+/* les: vinkje of kruisje op het antwoord, balk kleurt even groen */
+.opt { position: relative; }
+.opt-mark { position: absolute; top: -10px; right: -8px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--ok); color: var(--ok-ink); border: 3px solid var(--surface); animation: stamp .45s cubic-bezier(.3, 1.6, .5, 1) both; }
+.opt-mark.bad { background: var(--bad); color: #FFFFFF; }
+.opt-mark .ico { width: 14px; height: 14px; stroke-width: 3.2; }
+.opt.reveal { animation: reveal .9s .3s ease-in-out 2; }
+@keyframes reveal { 50% { box-shadow: 0 3px 0 var(--ok), 0 0 0 6px color-mix(in srgb, var(--ok) 28%, transparent); } }
+.ls-bar.glow { animation: bar-glow .7s ease-out; }
+.ls-bar.glow span { animation: bar-flash .7s ease-out; }
+@keyframes bar-glow { 30% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 28%, transparent); } }
+@keyframes bar-flash { 30% { background: var(--ok); } }
+.fb p.fb-lift { margin-top: 6px; font: 500 13.5px/1.4 var(--body); color: var(--muted); }
+.ls-foot.ok .fb-note .ico { color: var(--ok); }
+
+/* oefeningen: het kaartje licht groen op of schudt even rood, met een reeksteller */
+.prompt { transition: box-shadow .2s; }
+.prompt.hit { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 45%, transparent); }
+.prompt.nope { box-shadow: 0 0 0 3px color-mix(in srgb, var(--bad) 40%, transparent); }
+.prompt.nope .note, .prompt.nope .note .deg, .prompt.nope .toast { color: var(--bad); }
+.pr-streak { position: absolute; top: 12px; right: 14px; z-index: 2; display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px 6px 8px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font: 800 semi-condensed 15px/1 var(--display); box-shadow: 0 3px 0 var(--accent-deep); opacity: 0; transform: scale(.6); transition: opacity .25s, transform .25s; pointer-events: none; }
+.pr-streak.show { opacity: 1; transform: none; animation: chip-bump .45s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes chip-bump { 0% { transform: scale(.7); } 60% { transform: scale(1.14); } 100% { transform: none; } }
+.pr-streak .ico { width: 16px; height: 16px; }
+.prompt:has(.timer) .pr-streak { display: none; }
+.eq-stage { position: relative; }
+.eq-stage .pr-streak { top: 2px; right: 0; }
+
+/* herhalen: kaart met de vakjes */
+.srs-card { display: grid; gap: 14px; padding: 14px 16px 16px; border-radius: 18px; background: var(--surface); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
+.srs-card.todo { border-color: color-mix(in srgb, var(--accent) 60%, var(--line)); box-shadow: 0 4px 0 color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.srs-card.none { border-style: dashed; box-shadow: none; }
+.bin-mode .ls-bin:has(.todo-count) { color: var(--accent-text); }
+.srs-head { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; align-items: center; }
+.srs-fret svg { width: 84px; height: 84px; display: block; }
+.srs-eyebrow { margin: 0; font: 700 13px/1.2 var(--body); color: var(--accent-text); }
+.srs-card h2 { margin: 2px 0 4px; font: 800 semi-condensed 23px/1.08 var(--display); letter-spacing: -.01em; text-wrap: balance; }
+.srs-sub { margin: 0; font-size: 14px; line-height: 1.42; color: var(--muted); }
+.srs-go { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.srs-go .ico { width: 21px; height: 21px; }
+.srs-go b { min-width: 26px; height: 26px; padding: 0 8px; border-radius: 13px; background: var(--accent-ink); color: var(--accent); font: 700 14px/26px var(--body); }
+.srs-fret .m-eyes, .he-fret .m-eyes { transform-box: fill-box; transform-origin: center; animation: blink 5.5s infinite; }
+.he-fret .m-gitaar .m-strum { transform-box: fill-box; transform-origin: 20% 20%; animation: strum 3.2s ease-in-out infinite; }
+.lb-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; padding: 8px 0 8px; }
+.lb { --lb: var(--accent); position: relative; display: grid; justify-items: center; align-content: start; gap: 2px; min-height: 74px; padding: 13px 2px 12px; border-radius: 8px 8px 12px 12px; background: var(--surface-2); border: 1.5px solid var(--line); text-align: center; min-width: 0; }
+.lb.b0 { --lb: var(--bad); }
+.lb.b4 { --lb: var(--ok); }
+.lb.has { background: color-mix(in srgb, var(--lb) 11%, var(--surface)); border-color: color-mix(in srgb, var(--lb) 50%, var(--line)); }
+.lb-cards { position: absolute; left: 20%; right: 20%; top: -8px; height: 12px; }
+.lb-cards i { position: absolute; left: 0; right: 0; top: 3px; height: 10px; border-radius: 3px 3px 0 0; background: var(--surface); border: 1.5px solid color-mix(in srgb, var(--lb) 55%, var(--line)); border-bottom: 0; box-shadow: inset 0 2px 0 color-mix(in srgb, var(--lb) 55%, transparent); }
+.lb-cards i:nth-child(2) { top: 0; transform: rotate(4deg) translateX(3px); }
+.lb-cards i:nth-child(3) { top: -2px; transform: rotate(-5deg) translateX(-3px); }
+.lb-n { font: 800 semi-condensed 26px/1 var(--display); }
+.lb:not(.has) .lb-n { color: var(--muted); opacity: .55; }
+.lb-l { font: 600 11px/1.15 var(--body); color: var(--muted); hyphens: manual; }
+.lb.due { border-color: var(--accent); }
+.lb-due { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); padding: 3px 7px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font: 700 10.5px/1 var(--body); font-style: normal; white-space: nowrap; box-shadow: 0 2px 0 var(--accent-deep); }
+.lb-d { position: absolute; top: -11px; right: -5px; min-width: 24px; padding: 3px 6px; border-radius: 999px; background: var(--surface); color: var(--muted); border: 1px solid var(--line); font: 800 11.5px/1 var(--body); animation: stamp .5s .45s cubic-bezier(.3, 1.6, .5, 1) both; }
+.lb.b1 .lb-d.up, .lb.b2 .lb-d.up, .lb.b3 .lb-d.up { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.lb.b0 .lb-d.down, .lb.b4 .lb-d.up { background: var(--ok); border-color: var(--ok); color: var(--ok-ink); }
+.lb.b0 .lb-d.up { background: var(--bad); border-color: var(--bad); color: #FFFFFF; }
+.end-srs { width: 100%; max-width: 420px; display: grid; gap: 8px; }
+.end-srs .help { margin: 0; }
+
+/* teller op het tabblad Oefenen */
+.tb-ico { position: relative; display: block; }
+.tb-badge { position: absolute; top: -7px; left: calc(100% - 9px); min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--bad); color: #FFFFFF; font: 700 11.5px/16px var(--body); text-align: center; border: 2px solid var(--surface); }
+
+/* lege staten: grote kaart met de fret en één duidelijke knop */
+.hero-empty { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 6px 14px; align-items: center; padding: 14px 16px 16px 8px; border-radius: 20px; background: var(--accent-soft); border: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); }
+.he-fret svg { width: 112px; height: 112px; display: block; }
+.hero-empty .he-fret { animation: he-bob 3.4s ease-in-out infinite; }
+@keyframes he-bob { 50% { transform: translateY(-4px) rotate(-2deg); } }
+.he-text h2 { margin: 0 0 4px; font: 800 semi-condensed 26px/1.05 var(--display); letter-spacing: -.01em; text-wrap: balance; }
+.he-text p { margin: 0; font-size: 14.5px; line-height: 1.45; }
+.he-go { grid-column: 1 / -1; display: grid; gap: 5px; margin: 8px 0 0 8px; width: calc(100% - 8px); }
+.he-go small { font: 500 12.5px/1.2 var(--body); opacity: .8; }
+.he-alt { grid-column: 1 / -1; justify-self: center; color: var(--accent-text); font: 600 14px/1.2 var(--body); text-decoration: none; padding: 6px; }
+.sc-go { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 12px 18px 12px 14px; border-radius: 12px; border: 0; background: var(--accent-ink); color: var(--accent); font: 700 15px/1 var(--body); box-shadow: 0 4px 0 rgba(0, 0, 0, .28); }
+.sc-go .ico { width: 16px; height: 16px; }
+.sc-go:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, .28); }
+.pv-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 12px; }
+.pv-list li { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 12px; align-items: center; }
+.pv-ico { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text); }
+.pv-ico .ico { width: 19px; height: 19px; }
+.pv-list b { display: block; font-size: 15px; line-height: 1.3; }
+.pv-list small { color: var(--muted); font-size: 13px; line-height: 1.35; }
+.week-wrap { position: relative; }
+.chart-empty { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); margin: 0; width: max-content; max-width: 78%; padding: 10px 14px; border-radius: 12px; background: var(--surface); border: 1.5px dashed var(--line); color: var(--muted); font: 600 13.5px/1.35 var(--body); text-align: center; }
+/* donker: tekst op het lichte rood donker houden */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ls-foot.bad button.primary, :root:not([data-theme="light"]) .opt-mark.bad, :root:not([data-theme="light"]) .tb-badge, :root:not([data-theme="light"]) .lb.b0 .lb-d.up { color: #1F0B07; } }
+:root[data-theme="dark"] .ls-foot.bad button.primary, :root[data-theme="dark"] .opt-mark.bad, :root[data-theme="dark"] .tb-badge, :root[data-theme="dark"] .lb.b0 .lb-d.up { color: #1F0B07; }

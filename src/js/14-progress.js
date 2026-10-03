@@ -109,6 +109,7 @@ const BADGES = [
   { id: 'perfect', icon: 'check', pick: 'pearl', title: 'Zuiver', desc: 'Een les zonder fouten', test: s => Object.values(s.path.nodes).some(n => n.perfect) },
   { id: 'unit', icon: 'trophy', pick: '#2B1A14', title: 'Eerste plaat', desc: 'Een unittoets gehaald', test: s => Object.values(s.path.nodes).some(n => n.test && n.done) },
   { id: 'bin', icon: 'plaster', pick: 'pearl', title: 'Pleister erop', desc: 'Je foutenbak helemaal leeggemaakt', test: s => (s.binCleared || 0) >= 1 },
+  { id: 'srs10', icon: 'retry', pick: '#1F6FA8', title: 'Uit het hoofd', desc: '10 fouten onder de knie gekregen', test: s => (s.srsDone || 0) >= 10 },
   { id: 'xp100', icon: 'bolt', pick: '#0B7D72', title: 'Demo', desc: '100 XP verdiend', test: s => (s.xp || 0) >= 100 },
   { id: 'xp500', icon: 'bolt', pick: '#B4520E', title: 'Single', desc: '500 XP verdiend', test: s => (s.xp || 0) >= 500 },
   { id: 'xp1000', icon: 'bolt', pick: 'gold', title: 'Album', desc: '1000 XP verdiend', test: s => (s.xp || 0) >= 1000 },
@@ -214,27 +215,50 @@ function renderWeekChart(infoEl) {
   el.addEventListener('pointerover', show); el.addEventListener('pointerdown', show); el.addEventListener('focusin', show);
   return el;
 }
+// mijlpalen als plectrums (ook in de lege staat: als doelen)
+function badgesCard() {
+  const got = Store.stats.badges || {}, n = Object.keys(got).length;
+  return h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Mijlpalen' }), h('p', { class: 'help', text: n ? `${n} van de ${BADGES.length} plectrums verzameld.` : `Nog geen plectrums. Je eerste verdien je met je eerste les; er zijn er ${BADGES.length} te verzamelen.` }),
+    h('div', { class: 'badges' }, BADGES.map(b => h('div', { class: 'badge' + (got[b.id] ? ' got' : '') }, h('span', { class: 'b-pick', html: pickBadge(b, !!got[b.id]) }), h('b', { text: b.title }), h('small', { text: got[b.id] ? `${b.desc}. ${niceDate(got[b.id])}` : b.desc })))));
+}
+// nog nooit geoefend: één grote uitnodiging, en wat je hier straks ziet
+function renderProgressEmpty(view) {
+  view.append(emptyHero('progress'));
+  const li = (icon, b, t) => h('li', {}, h('span', { class: 'pv-ico', html: icon }), h('span', {}, h('b', { text: b }), h('small', { text: t })));
+  view.append(h('div', { class: 'card preview' }, h('h2', { class: 'card-h', text: 'Wat je hier straks ziet' }),
+    h('ul', { class: 'pv-list' },
+      li(ICONS.flame, 'Je reeks', `elke dag dat je ${Math.round(Progress.goalSecs() / 60)} minuten oefent`),
+      li(ICONS.chart, 'Je oefenkalender', 'hoe vaak en hoe lang je speelt'),
+      li(ICONS.retry, 'Herhalen', 'fouten komen terug na 1, 3 en 7 dagen'),
+      li(ICONS.book, 'Voor je les', 'je zwakke plekken, klaar om te kopiëren'))));
+  view.append(badgesCard());
+  view.append(h('div', { class: 'row links' }, h('a', { class: 'link', href: '#instellingen', text: 'Instellingen' })));
+}
 function renderProgress(view) {
   Badges.check();
+  if (isFresh()) return renderProgressEmpty(view);
   const st = Store.stats, sk = Progress.streak(), goalMin = Math.round(Progress.goalSecs() / 60);
-  const left = Math.max(0, Math.ceil((Progress.goalSecs() - Progress.day().secs) / 60));
+  const left = Math.max(0, Math.ceil((Progress.goalSecs() - Progress.day().secs) / 60)), idle = Progress.day().secs <= 0;
   const fz = Store.stats.freezes || 0, yest = new Date(); yest.setDate(yest.getDate() - 1);
-  const mood = (Store.stats.frozen || {})[dayKeyOf(yest)] ? 'ijs' : sk.today ? 'juich' : sk.n ? 'blij' : 'slaap';
-  const msg = sk.today ? `Vandaag gehaald. Morgen weer ${goalMin} minuten om je reeks te houden.` : sk.n ? `Nog ${left} ${left === 1 ? 'minuut' : 'minuten'} vandaag, anders begint je reeks morgen opnieuw.` : `Oefen vandaag ${goalMin} minuten om een reeks te beginnen.`;
-  view.append(h('section', { class: 'streak-card' },
+  const mood = (Store.stats.frozen || {})[dayKeyOf(yest)] ? 'ijs' : sk.today ? 'juich' : idle ? 'slaap' : sk.n ? 'blij' : 'slaap';
+  const msg = sk.today ? `Vandaag gehaald. Morgen weer ${goalMin} minuten om je reeks te houden.`
+    : idle ? `Je hebt vandaag nog geen oefensessies gedaan. ${sk.n ? `Met ${goalMin} minuten houd je je reeks vast.` : `Met ${goalMin} minuten begin je een nieuwe reeks.`}`
+    : sk.n ? `Nog ${left} ${left === 1 ? 'minuut' : 'minuten'} vandaag, anders begint je reeks morgen opnieuw.` : `Nog ${left} ${left === 1 ? 'minuut' : 'minuten'} vandaag om een reeks te beginnen.`;
+  view.append(h('section', { class: 'streak-card' + (idle ? ' idle' : '') },
     h('div', { class: 'sc-fret', html: Mascot.svg(mood) }),
     h('div', { class: 'sc-text' },
       h('p', { class: 'sc-n' }, h('span', { html: ICONS.flame }), h('b', { text: String(sk.n) }), h('span', { text: sk.n === 1 ? 'dag op rij' : 'dagen op rij' })),
       h('p', { class: 'help', text: msg }),
+      idle ? h('button', { class: 'sc-go', type: 'button', onclick: () => Daily.showPlan() }, h('span', { html: ICONS.play }), h('span', { text: 'Oefen vandaag' })) : null,
       h('p', { class: 'sc-freeze' }, h('span', { html: ICONS.ice }), fz ? `${fz} ${fz === 1 ? 'reeksbevriezer' : 'reeksbevriezers'} op voorraad` : 'Nog geen reeksbevriezer. Doe de drie opdrachten van een dag.'))));
   const tile = (label, value, sub, icon, onclick) => h(onclick ? 'button' : 'div', { class: 'tile' + (onclick ? ' tap' : ''), type: onclick ? 'button' : null, onclick },
     h('span', { class: 'tile-l' }, icon ? h('span', { class: 'tile-ico', html: icon }) : null, label), h('b', { class: 'tile-v', text: value }), sub ? h('small', { text: sub }) : null);
-  const wk = Math.round(Progress.weekSecs() / 60), nb = Bin.count();
+  const wk = Math.round(Progress.weekSecs() / 60), todo = Srs.todoCount(), known = st.srsDone || 0, nxt = Srs.next();
   view.append(h('section', { class: 'kpis' },
     tile('XP', String(st.xp || 0), 'totaal', ICONS.bolt),
     tile('Deze week', `${wk}`, 'minuten', ICONS.clock),
     tile('Beste reeks', String(Progress.bestStreak()), Progress.bestStreak() === 1 ? 'dag' : 'dagen', ICONS.flame),
-    tile('Foutenbak', String(nb), nb ? 'tik om te herstellen' : 'leeg', ICONS.plaster, nb ? () => Bin.start() : null)));
+    tile('Herhalen', String(todo), todo ? 'tik om te herhalen' : nxt ? `${Srs.when(nxt.date)} ${nxt.n} terug` : known ? `${known} onder de knie` : 'niets vandaag', ICONS.retry, todo ? () => Srs.start() : null)));
   const sumOut = h('pre', { class: 'cc-out', hidden: true });
   view.append(h('div', { class: 'card course-card' },
     h('div', { class: 'cc-fret', html: Mascot.svg('boek') }),
@@ -246,17 +270,17 @@ function renderProgress(view) {
   const calInfo = h('p', { class: 'chart-info', text: 'Tik op een dag voor de minuten' });
   view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Oefenkalender' }), h('p', { class: 'help', text: 'De laatste 16 weken. Hoe donkerder, hoe langer je oefende. De donkerste kleur is je dagdoel gehaald.' }), renderCalendar(calInfo),
     h('div', { class: 'cal-legend', html: `<span>minder</span>${[0, 1, 2, 3, 4].map(l => `<i class="l${l}"></i>`).join('')}<span>dagdoel</span>` }), calInfo));
-  const wkInfo = h('p', { class: 'chart-info', text: 'Tik op een dag voor de minuten' });
-  view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Deze week' }), h('p', { class: 'help', text: `Minuten per dag. De lijn is je dagdoel van ${goalMin} minuten.` }), renderWeekChart(wkInfo), wkInfo));
+  const wkInfo = h('p', { class: 'chart-info', text: wk ? 'Tik op een dag voor de minuten' : '' });
+  const wkChart = renderWeekChart(wkInfo);
+  if (!wk) wkChart.append(h('p', { class: 'chart-empty', text: 'Nog geen minuten deze week. Je eerste balkje verschijnt zodra je gaat spelen.' }));
+  view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Deze week' }), h('p', { class: 'help', text: `Minuten per dag. De lijn is je dagdoel van ${goalMin} minuten.` }), wkChart, wkInfo));
   const units = PathData.units();
   view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Leerpad' }),
     units.length ? h('div', { class: 'unit-list' }, units.map((u, i) => {
       const nodes = unitNodes(u), done = nodes.filter((n, k) => nodeDone(u, k)).length, test = nodeDone(u, nodes.length - 1);
       return h('div', { class: `ul-row c-${UNIT_COLORS[i % UNIT_COLORS.length]}` }, h('div', { class: 'ul-t' }, h('b', { text: `Unit ${i + 1}: ${unitMeta(u).title}` }), h('span', { class: 'help', text: test ? 'unittoets gehaald' : `${done} van ${nodes.length} stappen` })), h('div', { class: 'progress' }, h('span', { style: `width:${(100 * done / nodes.length).toFixed(0)}%` })));
     })) : h('p', { class: 'help', text: 'Na les 1 verschijnt hier je eerste unit.' })));
-  const got = st.badges || {};
-  view.append(h('div', { class: 'card' }, h('h2', { class: 'card-h', text: 'Mijlpalen' }), h('p', { class: 'help', text: `${Object.keys(got).length} van de ${BADGES.length} plectrums verzameld.` }),
-    h('div', { class: 'badges' }, BADGES.map(b => h('div', { class: 'badge' + (got[b.id] ? ' got' : '') }, h('span', { class: 'b-pick', html: pickBadge(b, !!got[b.id]) }), h('b', { text: b.title }), h('small', { text: got[b.id] ? `${b.desc}. ${niceDate(got[b.id])}` : b.desc }))))));
+  view.append(badgesCard());
   const r = st.bends.recent, bendAvg = r.length ? Math.round(r.reduce((a, b) => a + Math.abs(b), 0) / r.length) : null;
   const earOk = Object.values(st.ear.ok).reduce((a, b) => a + b, 0);
   const rows = [

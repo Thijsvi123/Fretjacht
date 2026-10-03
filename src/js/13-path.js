@@ -147,10 +147,10 @@ function renderPath(view) {
   }
   wrap.append(h('div', { class: 'path-end', text: 'Na elke les van maandag en donderdag komt hier een nieuwe unit bij.' }));
   view.append(wrap);
-  const remaining = Math.max(0, Progress.goalSecs() - Progress.day().secs), nb = Bin.count();
+  const remaining = Math.max(0, Progress.goalSecs() - Progress.day().secs), todo = Srs.todoCount();
   const cta = h('div', { class: 'cta-bar' },
-    h('button', { class: 'bin-btn', type: 'button', hidden: !nb, 'aria-label': `Herstel je fouten (${nb})`, title: 'Herstel je fouten', onclick: () => Bin.start() },
-      h('span', { html: ICONS.plaster }), h('b', { class: 'bin-count', text: String(nb) }), h('small', { text: 'fouten' })),
+    h('button', { class: 'bin-btn', type: 'button', hidden: !todo, 'aria-label': `Herhaal fouten (${todo})`, title: 'Herhaal fouten', onclick: () => Srs.start() },
+      h('span', { html: ICONS.plaster }), h('b', { class: 'todo-count', text: String(todo) }), h('small', { text: 'herhaal' })),
     h('button', { class: 'primary big', type: 'button', id: 'todayBtn', onclick: () => Daily.showPlan() },
       h('span', { text: Daily.active ? 'Ga verder met vandaag' : remaining ? 'Oefen vandaag' : 'Extra oefenen' }),
       h('small', { text: remaining ? `nog ${Math.ceil(remaining / 60)} min voor je dagdoel` : 'dagdoel gehaald' })));
@@ -171,7 +171,7 @@ function nodeSheet(u, i, nodes, unitNo) {
   document.body.append(sheet);
 }
 
-// ---------- Herhalen: vragen uit afgeronde lessen, zwakke eerst ----------
+// ---------- Opfrissen: vragen uit afgeronde lessen, zwakke eerst ----------
 const Review = {
   candidates() {
     const out = [];

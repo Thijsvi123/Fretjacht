@@ -9,9 +9,10 @@ const Daily = {
     if (!((Store.settings.cantPlayUntil || 0) > Date.now())) add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
     const nx = nextNode();
     if (nx) add({ kind: 'node', ref: nx, minutes: 4, title: 'Leerpad', sub: `Unit ${nx.unitNo}: ${nx.node.title}` });
-    const nb = Bin.count();
-    if (nb && Bin.items().length) add({ kind: 'bin', minutes: 3, title: 'Herstel je fouten', sub: `${nb} ${nb === 1 ? 'vraag' : 'vragen'} uit je foutenbak` });
-    else if (Review.available()) add({ kind: 'review', minutes: 3, title: 'Herhalen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst' });
+    // herhalen wat vandaag terugkomt en de foutenbak; anders vragen uit eerdere lessen opfrissen
+    const rv = Srs.items(), due = rv.filter(x => x._box).length, nb = rv.length - due;
+    if (rv.length) add({ kind: 'bin', minutes: 3, title: 'Herhalen', sub: [due ? `${due} ${due === 1 ? 'vraag komt' : 'vragen komen'} terug` : '', nb ? `${nb} uit je foutenbak` : ''].filter(Boolean).join(', ') });
+    else if (Review.available()) add({ kind: 'review', minutes: 3, title: 'Opfrissen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst' });
     const cu = nx ? nx.unit : PathData.units().slice(-1)[0];
     if (cu) {
       const d = unitMeta(cu).drill;
@@ -52,12 +53,12 @@ const Daily = {
       const nodes2 = unitNodes(st.ref.unit);
       startNode(st.ref.unit, st.ref.index, nodes2, () => this.advance());
     } else if (st.kind === 'bin') {
-      if (!Bin.items().length) return this.advance();
-      Bin.start({ after: () => this.advance(), exit: () => { location.hash = ''; } });
+      if (!Srs.items().length) return this.advance();
+      Srs.start({ after: () => this.advance(), exit: () => { location.hash = ''; } });
     } else if (st.kind === 'review') {
       const items = Review.build(8);
       if (!items.length) return this.advance();
-      Lesson.open({ title: 'Herhalen', items, xp: 10, onDone: () => this.advance(), onExit: () => { location.hash = ''; } });
+      Lesson.open({ title: 'Opfrissen', items, xp: 10, onDone: () => this.advance(), onExit: () => { location.hash = ''; } });
     } else {
       // instellingen die bij de les horen gelden alleen tijdens deze stap
       if (st.set) TempSettings.apply(st.mode, st.set);

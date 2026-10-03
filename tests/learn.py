@@ -135,19 +135,19 @@ async def main():
                 done_nodes += 1
             R['done_nodes'] = done_nodes
             R['nodes_after'] = await ev("Array.from(document.querySelectorAll('.node')).map(n => n.className.replace('node ', '').replace(' just-done', '').replace(' just-next', ''))")
-            R['bin_btn'] = await ev("({hidden: document.querySelector('.bin-btn').hidden, n: document.querySelector('.bin-btn .bin-count').textContent})")
+            R['bin_btn'] = await ev("({hidden: document.querySelector('.bin-btn').hidden, n: document.querySelector('.bin-btn .todo-count').textContent})")
             await page.wait_for_timeout(1300); await shot('path_bin')
 
-            # --- Oefenen: pedalboard met foutenbak-kaart ---
+            # --- Oefenen: pedalboard met herhaalkaart ---
             await ev("location.hash = '#oefenen'"); await page.wait_for_timeout(500)
-            R['hub'] = await ev("({pedals: document.querySelectorAll('.pedal').length, wide: document.querySelectorAll('.pedal.wide').length, bin: !!document.querySelector('.bin-card:not(.empty)'), on: document.querySelectorAll('.pedal.on').length})")
+            R['hub'] = await ev("({pedals: document.querySelectorAll('.pedal').length, wide: document.querySelectorAll('.pedal.wide').length, bin: !!document.querySelector('.srs-card.todo'), on: document.querySelectorAll('.pedal.on').length})")
             await shot('hub'); await shot('hub_full', full_page=True)
-            await page.click('.bin-card button'); st = await wait_lesson()
+            await page.click('.srs-card .srs-go'); st = await wait_lesson()
             await run_lesson(); await page.wait_for_timeout(500)
             R['hub_fix_end'] = await ev("document.querySelector('.end-title').textContent")
             await click_text('.ls-foot button', 'Verder'); await page.wait_for_timeout(500)
             R['hash_after_hub_fix'] = await ev('location.hash')
-            R['hub_bin_after'] = await ev("!!document.querySelector('.bin-card.empty')")
+            R['hub_bin_after'] = await ev("!!document.querySelector('.srs-card:not(.todo)')")
             # pedaal intrappen
             await page.click('.pedal[data-mode="notes"]'); await page.wait_for_timeout(120)
             R['stomp'] = await ev("!!document.querySelector('.pedal.stomp')")

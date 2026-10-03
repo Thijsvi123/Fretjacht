@@ -78,9 +78,9 @@ registerMode({
     this.next();
     this.renderStats();
   },
-  unmount() { clearTimeout(this.timer); this.focus = null; },
+  unmount() { clearTimeout(this.timer); clearTimeout(this.missT); this.focus = null; },
   next() {
-    clearTimeout(this.timer);
+    clearTimeout(this.timer); clearTimeout(this.missT);
     this.target = NoteGame.pick(this.target, this.focus);
     this.elapsed = 0; this.hinted = false; this.state.hold = 0; this.done = false; this.marks = [];
     const t = this.target;
@@ -88,7 +88,7 @@ registerMode({
     $('.pr-note', this.card).setAttribute('aria-label', spoken(t.name));
     $('.pr-where', this.card).innerHTML = `op de <b>${STR_NAME[t.s]}</b><small>snaar ${t.s + 1}</small>`;
     $('.pr-toast', this.card).textContent = Engine.mic ? '' : 'Druk op Start en sta de microfoon toe.';
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     setLeds(this.card, 0);
     this.draw();
   },
@@ -104,7 +104,7 @@ registerMode({
     this.draw();
     $('.pr-toast', this.card).textContent = `Hint: fret ${this.target.frets.join(' of ')}`;
   },
-  skip() { if (this.done) return; Store.stats.notes.streak = 0; Store.saveStats(); this.renderStats(); this.next(); },
+  skip() { if (this.done) return; Store.stats.notes.streak = 0; Store.saveStats(); DrillFx.reset(this.card); this.renderStats(); this.next(); },
   onMic(on) { $('.pr-toast', this.card).textContent = on ? '' : 'Gepauzeerd. Druk op Start om verder te gaan.'; },
   onFrame(f, dt) {
     if (this.done) return;
@@ -114,17 +114,27 @@ registerMode({
     setLeds(this.card, this.state.hold);
     if (ok) this.success(f.midi);
   },
+  // foute noot: even wachten, want een boventoon kan kort verkeerd klinken voordat de goede noot vastzit
+  onNote(n) {
+    if (this.done || NoteGame.matches(this.target, n.midi)) return;
+    const t = this.target;
+    clearTimeout(this.missT);
+    this.missT = setTimeout(() => {
+      if (this.done || this.target !== t || this.state.hold > 0.3) return;
+      const same = mod12(n.midi) === t.pc;
+      DrillFx.miss(this.card, `Je speelde ${pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps')}.${same ? ' Goede noot, ander octaaf.' : DrillFx.near(n.midi, t.pc)}`);
+    }, 260);
+  },
   success(m) {
     this.done = true;
+    clearTimeout(this.missT);
     const t = this.target, frets = NoteGame.fretsFor(t, m), secs = this.elapsed;
     this.marks = frets.map(f => ({ s: t.s, f, kind: 'found', label: t.name }));
     this.draw();
-    this.card.classList.add('hit');
     setLeds(this.card, 1);
-    $('.pr-toast', this.card).textContent = `Goed! Fret ${frets.join(' en ')} · ${fmt1(secs)} s`;
+    DrillFx.hit(this.card, `Fret ${frets.join(' en ')} · ${fmt1(secs)} s`);
     NoteGame.record(t, secs, this.hinted);
     this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.next(), COOLDOWN);
   },
   renderStats() {
@@ -149,7 +159,7 @@ registerMode({
     this.statsEl = h('div', { class: 'card' });
     const L = exLayout(view, {
       prompt: this.card, caption: h('span', { text: rangeCaption() }),
-      actions: [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => this.next() }],
+      actions: [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => { DrillFx.reset(this.card); this.next(); } }],
       options: [field('Volgorde', seg([{ value: 'up', label: 'lage E → hoge e' }, { value: 'down', label: 'hoge e → lage E' }], s.order, v => { s.order = v; Store.saveSettings(); this.next(); }))],
       stats: this.statsEl,
     });
@@ -181,13 +191,14 @@ registerMode({
     $('.pr-note', this.card).setAttribute('aria-label', spoken(this.name));
     $('.pr-where', this.card).innerHTML = S.positions.order === 'up' ? 'van de <b>lage E</b> naar de <b>hoge e</b>' : 'van de <b>hoge e</b> naar de <b>lage E</b>';
     $('.pr-leds', this.card).hidden = true;
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     $('.pr-toast', this.card).textContent = Engine.mic ? '' : 'Druk op Start en sta de microfoon toe.';
     this.renderSteps();
     this.draw();
   },
   renderSteps() {
     $('.pr-extra', this.card).innerHTML = `<div class="steps">${this.steps.map((st, i) => `<span class="step${i < this.idx ? ' done' : i === this.idx && !this.done ? ' now' : ''}">${STR_LETTER[st.s]}</span>`).join('')}</div>`;
+    if (this.idx > 0) Fx.pop($$('.step.done', this.card).pop());
   },
   draw() {
     const S = Store.settings, cur = this.steps[this.idx];
@@ -217,7 +228,11 @@ registerMode({
     const st = this.steps[this.idx];
     if (this.lastAccepted && n.midi === this.lastAccepted.midi && this.lastOnset === this.lastAccepted.onset) return;
     const ok = Store.settings.strict ? st.midis.some(v => v === n.midi) : mod12(n.midi) === this.pc;
-    if (!ok) { $('.pr-toast', this.card).textContent = `Je speelde ${pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps')}. Zoek ${this.name} op de ${STR_NAME[st.s]}.`; return; }
+    if (!ok) {
+      if (this.idx > 0 && mod12(n.midi) === this.pc) return;   // vorige snaar klinkt nog
+      DrillFx.miss(this.card, `Je speelde ${pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps')}. Zoek ${this.name} op de ${STR_NAME[st.s]}.${mod12(n.midi) === this.pc ? '' : DrillFx.near(n.midi, this.pc)}`);
+      return;
+    }
     this.accept(n.midi);
   },
   accept(midi) {
@@ -238,10 +253,8 @@ registerMode({
     ps.done++;
     if (!this.hinted && (ps.best == null || secs < ps.best)) ps.best = secs;
     Store.saveStats();
-    this.card.classList.add('hit');
-    $('.pr-toast', this.card).textContent = `Alle ${this.name}'s gevonden in ${fmt1(secs)} s`;
+    DrillFx.hit(this.card, `Alle ${this.name}'s gevonden in ${fmt1(secs)} s`);
     this.renderSteps(); this.draw(); this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.next(), 1600);
   },
   renderStats() {
@@ -261,7 +274,7 @@ registerMode({
     this.statsEl = h('div', { class: 'card' });
     const L = exLayout(view, {
       prompt: this.card,
-      actions: [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => this.next() }],
+      actions: [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => { DrillFx.reset(this.card); this.next(); } }],
       options: [
         field('Welke intervallen', chips(INTERVALS.map(i => ({ value: i.semis, label: i.name })), s.set.map(String), v => { s.set = v.map(Number); Store.saveSettings(); }, 1)),
         field('Richting', seg([{ value: 'up', label: 'omhoog' }, { value: 'down', label: 'omlaag' }, { value: 'both', label: 'beide' }], s.dir, v => { s.dir = v; Store.saveSettings(); this.next(); })),
@@ -294,7 +307,7 @@ registerMode({
     $('.pr-note', this.card).setAttribute('aria-label', spoken(rn));
     $('.pr-where', this.card).innerHTML = `<b>${iv.name}</b> ${up ? 'erboven' : 'eronder'}`;
     $('.pr-leds', this.card).hidden = true;
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     $('.pr-toast', this.card).textContent = Engine.mic ? `Speel eerst ${rn}` : 'Druk op Start en sta de microfoon toe.';
     this.renderSteps();
     drawNeck(this.svg, { from: 0, to: 12, marks: [] });
@@ -339,26 +352,25 @@ registerMode({
     const toast = $('.pr-toast', this.card);
     const heard = pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps');
     if (this.phase === 'root') {
-      if (mod12(n.midi) !== spPc(this.root)) { toast.textContent = `Je speelde ${heard}. Begin met ${spName(this.root)}.`; return; }
+      if (mod12(n.midi) !== spPc(this.root)) { DrillFx.miss(this.card, `Je speelde ${heard}. Begin met ${spName(this.root)}.${DrillFx.near(n.midi, spPc(this.root))}`); return; }
       this.rootMidi = n.midi; this.phase = 'target';
       toast.textContent = `Nu de ${this.iv.name} ${this.up ? 'erboven' : 'eronder'}`;
       this.renderSteps();
+      Fx.pop($('.step.done', this.card));
       return;
     }
     const want = this.rootMidi + (this.up ? this.iv.semis : -this.iv.semis);
     const octave = this.iv.semis === 12;
     if (!octave && mod12(n.midi) === spPc(this.root)) return;   // grondtoon klinkt nog
     const ok = Store.settings.strict || octave ? n.midi === want : mod12(n.midi) === mod12(want);
-    if (!ok) { toast.textContent = `Je speelde ${heard}. Dat is niet de ${this.iv.name}.`; return; }
+    if (!ok) { DrillFx.miss(this.card, `Je speelde ${heard}. Dat is niet de ${this.iv.name}.${mod12(n.midi) === mod12(want) ? ' Goede noot, ander octaaf.' : DrillFx.near(n.midi, mod12(want))}`); return; }
     this.done = true;
     const st = Store.stats.intervals; st.n++; st.total += this.elapsed; Store.saveStats();
-    this.card.classList.add('hit');
-    toast.textContent = `Goed! ${spName(this.root)} → ${spName(this.target)} · ${this.iv.name}, ${this.iv.semis} halve ${this.iv.semis === 1 ? 'toon' : 'tonen'}`;
+    DrillFx.hit(this.card, `${spName(this.root)} → ${spName(this.target)} · ${this.iv.name}, ${this.iv.semis} halve ${this.iv.semis === 1 ? 'toon' : 'tonen'}`);
     this.renderSteps();
     this.marks = this.example();
     drawNeck(this.svg, { from: 0, to: 12, marks: this.marks });
     this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.next(), 2200);
   },
   renderStats() {
@@ -378,7 +390,7 @@ registerMode({
     this.statsEl = h('div', { class: 'card' });
     const L = exLayout(view, {
       prompt: this.card, caption: h('span', { text: 'De gevulde stippen zijn de grondtoon (trap 1)' }),
-      actions: [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => this.advance(true) }],
+      actions: [{ id: 'hintBtn', label: 'Hint', key: 'h', onClick: () => this.hint() }, { id: 'skipBtn', label: 'Overslaan', key: 's', onClick: () => { DrillFx.reset(this.card); this.advance(true); } }],
       options: [
         field('Soort', seg([{ value: 'major', label: 'majeur' }, { value: 'minor', label: 'mineur' }], s.quality, v => { s.quality = v; Store.saveSettings(); this.newKey(); })),
         field('Toonsoorten', seg([{ value: 'easy', label: 'tot 2 ♯/♭' }, { value: 'all', label: 'alle' }], s.keys, v => { s.keys = v; Store.saveSettings(); this.newKey(); })),
@@ -419,7 +431,7 @@ registerMode({
     $('.pr-where', this.card).innerHTML = `<span class="muted">${fns[this.deg - 1]}</span>${s2.stay ? `<small>${7 - this.queue.length}/7</small>` : ''}`;
     $('.pr-leds', this.card).hidden = true;
     $('.pr-extra', this.card).innerHTML = '';
-    this.card.classList.remove('hit');
+    this.card.classList.remove('hit', 'nope');
     $('.pr-toast', this.card).textContent = Engine.mic ? '' : 'Druk op Start en sta de microfoon toe.';
     this.draw([]);
   },
@@ -444,15 +456,18 @@ registerMode({
   onNote(n) {
     if (this.done) return;
     const t = this.tones[this.deg - 1];
-    if (mod12(n.midi) !== t.pc) { $('.pr-toast', this.card).textContent = `Je speelde ${pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps')}. Dat is niet trap ${this.deg}.`; return; }
+    if (mod12(n.midi) !== t.pc) {
+      // speelde je een andere trap uit deze toonsoort? Dan zeggen we welke
+      const other = this.tones.findIndex(x => x.pc === mod12(n.midi));
+      DrillFx.miss(this.card, `Je speelde ${pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps')}${other >= 0 ? `, dat is trap ${other + 1}` : ''}. Zoek trap ${this.deg}.${other >= 0 ? '' : DrillFx.near(n.midi, t.pc)}`);
+      return;
+    }
     this.done = true;
     const st = Store.stats.degrees; st.n++; st.total += this.elapsed; Store.saveStats();
-    this.card.classList.add('hit');
-    $('.pr-toast', this.card).textContent = `Goed! Trap ${this.deg} in ${this.key} = ${t.name}`;
+    DrillFx.hit(this.card, `Trap ${this.deg} in ${this.key} is ${t.name}.`);
     $('.pr-extra', this.card).innerHTML = `<div class="scale-line">${this.tones.map((x, i) => `<span class="${i === this.deg - 1 ? 'on' : ''}"><small>${i + 1}</small>${x.name}</span>`).join('')}</div>`;
     this.draw(this.targetMarks('found'));
     this.renderStats();
-    Engine.ding();
     this.timer = setTimeout(() => this.advance(false), 1800);
   },
   renderStats() {

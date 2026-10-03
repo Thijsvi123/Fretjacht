@@ -1,6 +1,6 @@
 // ---------- Opslag ----------
 const DEFAULT_SETTINGS = {
-  gateDb: -48, strict: false, sound: true, names: 'sharps', goal: 15, cantPlayUntil: 0,
+  gateDb: -48, strict: false, sound: true, haptics: true, names: 'sharps', goal: 15, cantPlayUntil: 0,
   strings: [0, 1, 2, 3, 4, 5], minFret: 0, maxFret: 12, naturalsOnly: false, autoHint: 0,
   positions: { order: 'up' },
   intervals: { set: [3, 4, 5, 7, 10, 12], dir: 'up', naturalRoots: true },
@@ -25,7 +25,7 @@ const DEFAULT_STATS = () => ({
   ear: { ok: {}, tries: {} },
   bends: { recent: [] },
   rhythm: { recent: [], sessions: 0 },
-  xp: 0, days: {}, path: { nodes: {} }, badges: {}, bin: [], binCleared: 0, modeDays: {},
+  xp: 0, days: {}, path: { nodes: {} }, badges: {}, bin: [], binCleared: 0, srsDone: 0, modeDays: {},
   topics: {}, skills: {}, freezes: 0, frozen: {},
   targets: { hits: 0, tries: 0, time: 0, near: 0, best: 0, by: {} },
   earq: { ok: {}, n: {} },

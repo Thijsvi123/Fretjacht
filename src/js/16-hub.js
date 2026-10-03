@@ -59,20 +59,45 @@ function pedal(id, o = {}) {
       h('span', { class: 'pd-stat', html: today ? `Vandaag gespeeld${stat ? ', ' + stat : ''}` : stat || 'Nog niet gespeeld' })),
     h('span', { class: 'pd-switch', 'aria-hidden': 'true', html: ICONS.play }));
 }
+// ---------- Lege staten: nog nooit geoefend, of vandaag nog niet ----------
+function isFresh() {
+  const st = Store.stats;
+  return !(st.xp > 0) && !Object.values(st.days).some(d => d.secs > 0) && !Object.keys(st.path.nodes).length && !Bin.all().length;
+}
+function startFirst() {
+  const nx = nextNode();
+  if (nx) startNode(nx.unit, nx.index, unitNodes(nx.unit));
+  else location.hash = '#m-notes';
+}
+// grote kaart met de fret en één duidelijke knop; null als je vandaag al geoefend hebt
+function emptyHero(where) {
+  const fresh = isFresh(), goal = Math.round(Progress.goalSecs() / 60);
+  if (!fresh && Progress.day().secs > 0) return null;
+  if (fresh) {
+    const nx = nextNode();
+    return h('section', { class: 'hero-empty fresh' },
+      h('div', { class: 'he-fret', html: Mascot.svg(where === 'progress' ? 'zwaai' : 'gitaar') }),
+      h('div', { class: 'he-text' },
+        h('h2', { text: where === 'progress' ? 'Hier groeit je voortgang' : 'Nog geen oefensessies' }),
+        h('p', { text: where === 'progress' ? 'Je hebt nog geen oefensessies gedaan. Start je eerste les en zie hier je reeks, je XP en je plectrums groeien.' : 'Je hebt nog niet geoefend. Start je eerste les: een paar minuten, en je merkt meteen hoe de app meeluistert.' })),
+      h('button', { class: 'primary big he-go', type: 'button', onclick: startFirst }, h('span', { text: nx ? 'Start je eerste les' : 'Begin met Noten zoeken' }), h('small', { text: nx ? `Unit ${nx.unitNo}: ${nx.node.title}` : 'Speel de noot die je ziet' })),
+      where === 'progress' ? h('a', { class: 'he-alt', href: '#oefenen', text: 'Of kies zelf een oefening' }) : null);
+  }
+  const sk = Progress.streak();
+  return h('section', { class: 'hero-empty today' },
+    h('div', { class: 'he-fret', html: Mascot.svg('slaap') }),
+    h('div', { class: 'he-text' },
+      h('h2', { text: 'De fret slaapt nog' }),
+      h('p', { text: `Je hebt vandaag nog geen oefensessies gedaan. ${sk.n ? `Je reeks staat op ${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'}: met ${goal} minuten houd je hem vast.` : `Met ${goal} minuten begin je een nieuwe reeks.`}` })),
+    h('button', { class: 'primary big he-go', type: 'button', onclick: () => Daily.showPlan() }, h('span', { text: 'Oefen vandaag' }), h('small', { text: `${goal} minuten, alles staat voor je klaar` })));
+}
+
 function renderPractice(view) {
   const wrap = h('section', { class: 'hub' });
-  wrap.append(h('p', { class: 'hub-intro', text: 'Trap een pedaal in om te beginnen. Brandt het lampje, dan heb je die oefening vandaag al gespeeld.' }));
-  const nb = Bin.count();
-  wrap.append(nb
-    ? h('div', { class: 'bin-card' },
-      h('div', { class: 'bc-fret', html: Mascot.svg('ehbo') }),
-      h('div', { class: 'bc-text' },
-        h('h2', {}, 'Je foutenbak ', h('span', { class: 'bc-n bin-count', text: String(nb) })),
-        h('p', { text: `${nb === 1 ? 'Eén vraag' : nb + ' vragen'} om te herstellen. Elke goede geeft bonus-XP, een lege bak 2 minuten extra voor je dagdoel.` }),
-        h('button', { class: 'primary', type: 'button', html: `${ICONS.plaster}<span>Herstel je fouten</span>`, onclick: () => Bin.start() })))
-    : h('div', { class: 'bin-card empty' },
-      h('div', { class: 'bc-fret', html: Mascot.svg('blij', { crop: 'head' }) }),
-      h('div', { class: 'bc-text' }, h('h2', { text: 'Je foutenbak is leeg' }), h('p', { text: 'Vragen die je in een les fout hebt, komen hier terecht. Herstel ze voor bonus-XP.' }))));
+  const hero = emptyHero('practice');
+  if (hero) wrap.append(hero);
+  wrap.append(Srs.card());
+  wrap.append(h('p', { class: 'hub-intro', text: hero ? 'Of trap zelf een pedaal in. Brandt het lampje, dan heb je die oefening vandaag al gespeeld.' : 'Trap een pedaal in om te beginnen. Brandt het lampje, dan heb je die oefening vandaag al gespeeld.' }));
   const units = PathData.units(), cu = units[units.length - 1];
   if (cu) {
     const meta = unitMeta(cu), d = meta.drill;

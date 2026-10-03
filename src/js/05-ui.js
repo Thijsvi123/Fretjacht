@@ -228,6 +228,7 @@ const Router = {
     UI.updateLevel(-120);
     Progress.renderTop();
     Daily.renderBar();
+    Srs.badge();
     window.scrollTo(0, 0);
   },
   back() {
@@ -262,7 +263,8 @@ function renderSettings(view) {
     h('div', { class: 'set-grid' },
       h('div', { class: 'field' },
         checkEl('strict', 'Octaaf moet kloppen', s.strict, v => { s.strict = v; save(); }, 'Alleen de precieze toonhoogte telt. Werkt het best met een goede microfoon of via een versterker; een telefoon hoort lage noten soms een octaaf te hoog.'),
-        checkEl('sound', 'Geluidjes', s.sound, v => { s.sound = v; save(); }, 'Bij goede antwoorden en noten, als je een fout herstelt en als je je dagdoel haalt. In een les zet je ze ook aan of uit met het luidsprekertje.')),
+        checkEl('sound', 'Geluidjes', s.sound, v => { s.sound = v; save(); }, 'Bij goede antwoorden en noten, als je een fout herstelt en als je je dagdoel haalt. In een les zet je ze ook aan of uit met het luidsprekertje.'),
+        checkEl('haptics', 'Trillen bij goed en fout', s.haptics, v => { s.haptics = v; save(); if (v) Haptics.play('right'); }, 'Eén tikje bij een goed antwoord, twee bij een fout. Werkt op Android en op een iPhone met iOS 18 of nieuwer. Terwijl je speelt trilt de app niet, anders hoort de microfoon je telefoon.')),
       field('Notenamen', seg([{ value: 'sharps', label: 'met ♯' }, { value: 'flats', label: 'met ♭' }, { value: 'both', label: '♯ en ♭' }], s.names, v => { s.names = v; save(); }), 'Met ♯ en ♭ wisselt het af, zodat je leert dat F♯ en G♭ dezelfde toets zijn.'),
       field('Automatische hint bij Noten zoeken', selectEl('autoHint', [{ value: 0, label: 'Uit' }, { value: 5, label: 'Na 5 seconden' }, { value: 10, label: 'Na 10 seconden' }, { value: 20, label: 'Na 20 seconden' }], s.autoHint, v => { s.autoHint = Number(v); save(); }))));
   let armed = 0;

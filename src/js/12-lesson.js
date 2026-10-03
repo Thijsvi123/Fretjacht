@@ -1,6 +1,4 @@
 // ---------- Lesspeler (één oefening tegelijk, zoals Duolingo) ----------
-const PRAISE = ['Goed!', 'Precies!', 'Klopt!', 'Netjes!', 'Top!'];
-const FIXED = ['Hersteld!', 'Nu wel!', 'Opgelost!', 'Die zit!'];
 const sameSet = (a, b) => a.length === b.length && a.every(x => b.includes(x));
 const KIND = { play: ['pick', 'Speel op je gitaar'], tap: ['note', 'Tik op de hals'], theory: ['book', 'Theorie'] };
 const Lesson = {
@@ -9,13 +7,15 @@ const Lesson = {
   mount(view) {
     const sp = this.spec;
     if (!sp) { setTimeout(() => { location.hash = ''; }, 0); return; }
-    this.bin = sp.mode === 'bin';
+    // bin: herstelronde of herhaalronde (review: ook vragen uit de vakjes die vandaag terugkomen)
+    this.bin = sp.mode === 'bin'; this.review = !!sp.review;
     this.cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
     let items = sp.items.map((it, i) => Object.assign({ _id: i }, it));
     if (this.cantPlay && items.some(i => i.type !== 'play')) items = items.filter(i => i.type !== 'play');
     this.queue = items;
     this.total = items.length; this.doneIds = new Set(); this.mistakes = 0; this.skipped = 0; this.hints = 0;
-    this.combo = 0; this.fixed = 0; this.wrongKeys = new Set();
+    this.combo = 0; this.fixed = 0; this.recalled = 0; this.mastered = 0; this.wrongKeys = new Set();
+    this.srsBefore = this.bin ? Srs.snapshot() : null;
     this.t0 = performance.now(); this.finished = false; this.cur = null;
     this.barFill = h('span');
     this.sndBtn = h('button', { class: 'ls-snd', type: 'button', onclick: () => { Store.settings.sound = !Sfx.on(); Store.saveSettings(); this.renderSnd(); } });
@@ -23,7 +23,7 @@ const Lesson = {
       h('div', { class: 'ls-top' },
         h('button', { class: 'ls-close', type: 'button', 'aria-label': 'Les stoppen', html: ICONS.close, onclick: () => this.askQuit() }),
         h('div', { class: 'ls-bar', role: 'progressbar', 'aria-label': 'Voortgang in deze les' }, this.barFill),
-        this.bin ? h('span', { class: 'ls-bin', title: 'Vragen in je foutenbak', html: `${ICONS.plaster}<b class="bin-count">${Bin.count()}</b>` }) : null,
+        this.bin ? h('span', { class: 'ls-bin', title: this.review ? 'Nog te herhalen' : 'Vragen in je foutenbak', html: this.review ? `${ICONS.retry}<b class="todo-count">${Srs.todoCount()}</b>` : `${ICONS.plaster}<b class="bin-count">${Bin.count()}</b>` }) : null,
         this.counter = h('span', { class: 'ls-count' }),
         this.sndBtn),
       this.comboEl = h('div', { class: 'combo', 'aria-live': 'polite' }),
@@ -53,7 +53,7 @@ const Lesson = {
       h('div', { class: 'sheet center' },
         h('div', { class: 'sheet-mascot', html: Mascot.svg('oeps') }),
         h('h3', { text: 'Wil je stoppen?' }),
-        h('p', { class: 'help', text: this.bin ? 'Wat je al hebt hersteld, is uit je foutenbak. De rest blijft erin staan.' : 'Je voortgang in deze les gaat verloren. Wat je tot nu toe hebt geoefend, telt wel mee voor je dagdoel.' }),
+        h('p', { class: 'help', text: this.review ? 'Wat je al goed had, schuift een vakje door. De rest komt de volgende keer terug.' : this.bin ? 'Wat je al hebt hersteld, is uit je foutenbak. De rest blijft erin staan.' : 'Je voortgang in deze les gaat verloren. Wat je tot nu toe hebt geoefend, telt wel mee voor je dagdoel.' }),
         h('button', { class: 'primary big', type: 'button', text: 'Doorgaan met oefenen', onclick: () => sheet.remove() }),
         h('button', { class: 'big ghost', type: 'button', text: 'Stoppen', onclick: () => { sheet.remove(); this.leave(); } })));
     document.body.append(sheet);
@@ -78,7 +78,8 @@ const Lesson = {
     this.foot.className = 'ls-foot';
     this.foot.innerHTML = '';
     const [ico, label] = KIND[it.type === 'play' ? 'play' : it.type === 'tap' ? 'tap' : 'theory'];
-    this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, uit je foutenbak` : label));
+    const from = it._box ? `herhaling na ${SRS_DAYS[it._box]} ${SRS_DAYS[it._box] === 1 ? 'dag' : 'dagen'}` : 'uit je foutenbak';
+    this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, ${from}` : label));
     this.body.append(h('h2', { class: 'ls-prompt', text: it.prompt }));
     if (it.sub && it.type !== 'play') this.body.append(h('p', { class: 'ls-sub', text: it.sub }));
     if (it.type === 'mc') this.renderMC(it);
@@ -138,84 +139,107 @@ const Lesson = {
     });
     this.checkFoot();
   },
-  shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); },
   check() {
     const it = this.cur;
     if (!it || this.answered) return;
-    let ok = false, answer = '', wrongEl = null;
+    let ok = false, answer = '', fx = null;
+    const mark = (b, good) => b.append(h('span', { class: 'opt-mark' + (good ? '' : ' bad'), html: good ? ICONS.check : ICONS.close }));
     if (it.type === 'mc') {
       ok = this.sel === it.answer; answer = it.options[it.answer];
       $$('.opt', this.optsEl).forEach((b, i) => {
-        b.classList.toggle('right', i === it.answer); b.classList.toggle('wrong', i === this.sel && !ok); b.disabled = true;
-        if (i === it.answer && ok) b.classList.add('pop');
-        if (i === this.sel && !ok) wrongEl = b;
+        b.disabled = true;
+        if (i === it.answer) { b.classList.add('right'); mark(b, true); if (ok) fx = b; else b.classList.add('reveal'); }
+        if (i === this.sel && !ok) { b.classList.add('wrong'); mark(b, false); fx = b; }
       });
     } else if (it.type === 'multi') {
       const sel = Array.from(this.selSet);
       ok = sameSet(sel, it.correct); answer = it.correct.join(' ');
       $$('.chip-btn', this.chipsEl).forEach(b => { const c = b.textContent; b.classList.toggle('right', it.correct.includes(c)); b.classList.toggle('wrong', this.selSet.has(c) && !it.correct.includes(c)); b.disabled = true; });
-      wrongEl = ok ? null : this.chipsEl;
-      if (ok) this.chipsEl.classList.add('pop');
+      fx = this.chipsEl;
     } else if (it.type === 'tap') {
       ok = it.valid.some(p => p.s === this.tapSel.s && p.f === this.tapSel.f);
       answer = it.valid.map(p => `${STR_LETTER[p.s]}-snaar fret ${p.f}`).join(' of ');
       this.answered = true;
       this.drawTap(it.valid.map(p => ({ s: p.s, f: p.f, kind: 'found', label: '' })).concat(ok ? [] : [{ s: this.tapSel.s, f: this.tapSel.f, kind: 'wrong', label: '' }]));
-      wrongEl = ok ? null : this.tapFig;
+      fx = ok ? $('.mk.found circle', this.tapSvg) || this.tapFig : this.tapFig;
     }
+    this.fxEl = fx; this.via = 'tap';
     if (ok) {
       this.doneIds.add(it._id);
       this.right(it);
     } else {
       this.mistakes++;
-      this.shake(wrongEl);
       if (!it._again) this.queue.push(Object.assign({}, it, { _again: true }));
       else this.doneIds.add(it._id);
-      this.wrong(it, 'Niet helemaal', `Het goede antwoord: ${answer}. ${it.explain || ''}`);
+      this.wrong(it, null, `Het goede antwoord: ${answer}. ${it.explain || ''}`);
     }
     this.updateBar();
   },
-  // goed beantwoord: in de herstelronde gaat de vraag uit de foutenbak
+  // goed beantwoord. In een herstel- of herhaalronde schuift de vraag een vakje door:
+  // uit de foutenbak naar morgen, daarna over 3 en over 7 dagen, en dan heb je hem onder de knie.
   right(it, title, auto) {
-    let fixedNow = false;
-    if (this.bin && it._bin && Bin.remove(it._bin)) {
-      fixedNow = true; this.fixed++;
-      const b = $('.ls-bin', this.el);
-      if (b) { b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
+    let note = '', icon = ICONS.retry, pool = it.type === 'play' ? 'play' : 'right', sound = 'right';
+    if (this.bin && it._bin) {
+      const r = Srs.correct(it._bin);
+      if (r && r.from === 0) {
+        this.fixed++; pool = 'fixed'; sound = 'fixed';
+        note = 'Uit je foutenbak. Morgen komt hij nog eens terug, om te kijken of hij blijft hangen.';
+        Quests.bump('fixed');
+      } else if (r) {
+        this.recalled++; pool = 'recall'; sound = 'fixed';
+        if (r.mastered) { this.mastered++; icon = ICONS.star; note = 'Onder de knie! Deze vraag komt niet meer terug.'; }
+        else note = `Een vakje verder: je ziet hem over ${r.days} dagen terug.`;
+      }
+      // telt voor de opdracht "herhaal vragen die vandaag terugkomen", ook als het pas de tweede keer lukt
+      if (r && it._box) Quests.bump('srs');
+      if (r) Fx.pop($('.ls-bin', this.el));
     }
+    if (it._again && (pool === 'right' || pool === 'play')) pool = 'again';
     this.combo++;
-    if ([3, 5, 8, 12].includes(this.combo)) this.showCombo(this.combo);
+    const milestone = [3, 5, 8, 12].includes(this.combo) || (this.combo > 12 && this.combo % 5 === 0);
+    if (milestone) this.showCombo(this.combo);
     Track.answer(it, true, this.spec && this.spec.topic);
     Quests.max('combo', this.combo);
-    if (fixedNow) Quests.bump('fixed');
-    Sfx.play(fixedNow ? 'fixed' : 'right');
-    this.feedback(true, title || (fixedNow ? pick(FIXED) : pick(PRAISE)), it.explain || '', auto, fixedNow ? 'Uit je foutenbak.' : '');
+    Fx.restart(this.barFill.parentElement, 'glow');
+    Feedback.right({ el: this.fxEl, via: this.via, sound, big: milestone });
+    this.feedback(true, title || (milestone && Feedback.streak(this.combo)) || Feedback.word(pool), it.explain || '', auto, note, '', icon);
   },
+  // fout: de vraag gaat (terug) naar de foutenbak en komt in deze les nog een keer
   wrong(it, title, text) {
+    const lost = this.combo;
     this.combo = 0;
     Track.answer(it, false, this.spec && this.spec.topic);
-    let note = '';
-    if (this.bin) { Bin.add(it); note = 'Hij blijft in je foutenbak.'; }
-    else { this.wrongKeys.add(Bin.add(it, this.spec && this.spec.title, (this.spec && this.spec.topic) || it._topic)); note = 'In je foutenbak gezet. Herstel hem later voor bonus-XP.'; }
-    Sfx.play('wrong');
-    this.feedback(false, title, text, 0, note);
+    const again = !it._again && this.queue.some(q => q._id === it._id);
+    let note;
+    if (this.bin) {
+      const prev = it._bin ? Srs.entry(it._bin) : null, back = prev && prev.box > 0;
+      Bin.add(it);
+      note = back ? `Terug naar de foutenbak.${again ? ' Je krijgt hem zo nog een keer.' : ''}` : again ? 'Hij blijft in je foutenbak. Je krijgt hem zo nog een keer.' : 'Hij blijft in je foutenbak.';
+    } else {
+      this.wrongKeys.add(Bin.add(it, this.spec && this.spec.title, (this.spec && this.spec.topic) || it._topic));
+      note = again ? 'In je foutenbak gezet. Je krijgt hem straks nog een keer.' : 'In je foutenbak gezet. Herstel hem voor bonus-XP.';
+    }
+    Feedback.wrong({ el: this.fxEl, via: this.via });
+    const lift = lost >= 3 ? `Jammer van je ${lost} op rij. Je pakt de draad zo weer op.` : this.mistakes <= 1 || Math.random() < 0.35 ? Feedback.word('lift') : '';
+    this.feedback(false, title || Feedback.word(it._again ? 'wrongAgain' : 'wrong'), text, 0, note, lift, ICONS.plaster);
   },
   showCombo(n) {
     clearTimeout(this.comboT);
     this.comboEl.innerHTML = `${ICONS.flame}<b>${n} op rij!</b>`;
-    this.comboEl.classList.remove('show'); void this.comboEl.offsetWidth; this.comboEl.classList.add('show');
+    Fx.restart(this.comboEl, 'show');
     this.comboT = setTimeout(() => this.comboEl.classList.remove('show'), 1600);
   },
-  feedback(ok, title, text, auto, note) {
+  feedback(ok, title, text, auto, note, lift, icon) {
     this.answered = true;
     clearTimeout(this.autoT);
     this.foot.innerHTML = '';
     this.foot.className = 'ls-foot ' + (ok ? 'ok' : 'bad');
     this.foot.append(
-      h('div', { class: 'fb' },
-        h('span', { class: 'fb-fret', html: Mascot.svg(ok ? 'blij' : 'oeps', { crop: 'head' }) }),
-        h('div', {}, h('b', { text: title }), text ? h('p', { text: text.trim() }) : null,
-          note ? h('p', { class: 'fb-note' }, h('span', { html: ICONS.plaster }), note) : null)),
+      h('div', { class: 'fb', role: 'status' },
+        h('span', { class: 'fb-fret', html: Mascot.svg(ok ? (this.combo >= 5 ? 'juich' : 'blij') : 'oeps', { crop: 'head' }) }),
+        h('div', {}, h('b', { class: 'fb-title', text: title }), text ? h('p', { text: text.trim() }) : null,
+          note ? h('p', { class: 'fb-note' }, h('span', { html: icon || ICONS.plaster }), note) : null,
+          lift ? h('p', { class: 'fb-lift', text: lift }) : null)),
       h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => this.next() }));
     if (auto) this.autoT = setTimeout(() => { if (this.answered) this.next(); }, auto);
     Activity.ping();
@@ -291,6 +315,7 @@ const Lesson = {
     this.mistakes++; this.skipped++;
     this.doneIds.add(it._id); this.updateBar();
     const ans = it.steps.map(st => st.k === 'set' ? st.names.join(' ') : st.name).join(' → ');
+    this.fxEl = $('.ls-big', this.body); this.via = 'tap';
     this.wrong(it, 'Overgeslagen', `${ans ? `Het antwoord: ${ans}. ` : ''}${it.hint || ''}`);
   },
   cantPlayNow() {
@@ -308,33 +333,37 @@ const Lesson = {
     const ps = this.ps, st = it.steps[ps.idx], toast = $('.ls-toast', this.body);
     const heard = pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps');
     Activity.ping();
+    const miss = text => { toast.textContent = text; Fx.shake($('.ls-big', this.body)); Fx.edge('bad'); };
     if (st.k === 'set') {
       const pc = mod12(n.midi);
       if (st.pcs.includes(pc)) {
-        if (!ps.found.has(pc)) { ps.found.add(pc); toast.textContent = ''; this.renderSteps(); if (ps.found.size === st.pcs.length) this.playDone(); }
-      } else toast.textContent = `${heard} hoort er niet bij`;
+        if (!ps.found.has(pc)) { ps.found.add(pc); toast.textContent = ''; this.renderSteps(); Fx.pop($$('.slots .slot.on', this.body).pop()); if (ps.found.size === st.pcs.length) this.playDone(); }
+      } else miss(`${heard} hoort er niet bij`);
       return;
     }
-    let ok;
+    let ok, wantPc = st.pc;
     if (st.k === 'rel') {
       if (ps.last == null) return;
       const want = ps.last + st.semis;
+      wantPc = mod12(want);
       ok = Store.settings.strict || Math.abs(st.semis) === 12 ? n.midi === want : mod12(n.midi) === mod12(want);
     } else ok = mod12(n.midi) === st.pc;
     if (ok) {
       ps.last = n.midi; ps.idx++;
       toast.textContent = ps.idx < it.steps.length ? 'Goed, verder' : '';
       this.renderSteps();
+      if (ps.idx < it.steps.length) Fx.pop($$('.slots .slot.on', this.body).pop());
       if (ps.idx >= it.steps.length) this.playDone();
       return;
     }
     if (ps.last != null && mod12(n.midi) === mod12(ps.last)) return;   // vorige noot klinkt nog
-    toast.textContent = `Je speelde ${heard}`;
+    miss(`Je speelde ${heard}.${mod12(n.midi) === wantPc ? ' Goede noot, ander octaaf.' : DrillFx.near(n.midi, wantPc)}`);
   },
   playDone() {
     const it = this.cur;
     this.doneIds.add(it._id); this.updateBar();
-    this.right(it, 'Goed gespeeld!', 1500);
+    this.fxEl = $('.ls-big', this.body); this.via = 'mic';
+    this.right(it, null, 1500);
   },
 
   finish() {
@@ -345,19 +374,24 @@ const Lesson = {
     const accuracy = this.total ? Math.max(0, (this.total - this.mistakes) / this.total) : 1;
     const perfect = this.mistakes === 0 && this.skipped === 0;
     const passed = !sp.test || accuracy >= 0.8;
-    let xp, title, sub, mood, party = false, extra = null;
+    let xp, title, sub, mood, party = false, how = '';
     if (this.bin) {
-      xp = 2 * this.fixed + (this.fixed && this.fixed === this.total ? 5 : 0);
-      const left = Bin.count();
-      if (this.fixed && !left) {
+      const good = this.fixed + this.recalled, left = Bin.count(), todo = Srs.todoCount();
+      xp = 2 * good + (good && !this.mistakes ? 5 : 0) + 5 * this.mastered;
+      if (this.fixed && this.srsBefore[0] && !left) {
         Bin.reward(); xp += 10; party = true;
         title = 'Foutenbak leeg!'; mood = 'juich';
         sub = 'Alles hersteld. Je krijgt 10 XP extra en 2 minuten voor je dagdoel.';
+      } else if (this.review && good && !todo) {
+        title = this.mastered ? 'Onder de knie!' : 'Alles herhaald!'; mood = 'juich'; party = !this.mistakes || this.mastered > 0;
+        sub = this.mastered ? `${this.mastered === 1 ? 'Eén vraag komt' : `${this.mastered} vragen komen`} niet meer terug. Voor vandaag is alles herhaald.` : 'Wat je goed had, schuift een vakje door.';
       } else {
-        title = this.fixed ? `${this.fixed} van ${this.total} hersteld` : 'Nog niet hersteld';
-        mood = this.fixed ? 'ehbo' : 'oeps';
+        title = good ? `${good} van ${this.total} goed` : this.review ? 'Nog niet onthouden' : 'Nog niet hersteld';
+        mood = good ? 'ehbo' : 'oeps';
         sub = left ? `Er ${left === 1 ? 'staat' : 'staan'} nog ${left} ${left === 1 ? 'vraag' : 'vragen'} in je foutenbak.` : '';
       }
+      // zo werkt herhalen: uitleg op het moment dat het gebeurt
+      how = this.fixed ? 'Wat je herstelde, komt morgen terug. Weet je het dan nog, dan zie je het na 3 en daarna na 7 dagen nog één keer.' : '';
       if (xp) Progress.addXP(xp);
     } else {
       xp = passed ? (sp.xp || 10) + (perfect ? 5 : 0) : 5;
@@ -381,8 +415,9 @@ const Lesson = {
       sub ? h('p', { class: 'help', text: sub }) : null,
       h('div', { class: 'end-stats' },
         h('div', {}, h('small', { text: 'XP' }), xpEl),
-        this.bin ? h('div', {}, h('small', { text: 'Hersteld' }), h('b', { text: `${this.fixed}/${this.total}` })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
+        this.bin ? h('div', {}, h('small', { text: this.review ? 'Goed' : 'Hersteld' }), h('b', { text: `${this.fixed + this.recalled}/${this.total}` })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
         h('div', {}, h('small', { text: 'Tijd' }), h('b', { text: mm }))),
+      this.bin ? h('div', { class: 'end-srs' }, Srs.row({ delta: Srs.delta(this.srsBefore) }), how ? h('p', { class: 'help', text: how }) : null) : null,
       fresh.length ? h('div', { class: 'end-badges' }, fresh.map(b => h('div', { class: 'end-badge' },
         h('span', { class: 'b-pick', html: pickBadge(b, true) }),
         h('div', {}, h('small', { text: 'Nieuwe mijlpaal' }), h('b', { text: b.title }), h('span', { text: b.desc }))))) : null,
@@ -397,9 +432,9 @@ const Lesson = {
     if (fixable.length && Bin.items(fixable).length) {
       this.foot.append(h('button', { class: 'primary big fix-btn', type: 'button', html: `${ICONS.plaster}<span>Herstel je fouten (+${Bin.bonusXP(fixable.length)} XP)</span>`, onclick: () => { const s = this.spec; this.spec = null; Bin.start({ keys: fixable, after: () => { if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; } }); } }),
         h('button', { class: 'big', type: 'button', text: 'Verder', onclick: done }));
-    } else if (this.bin && Bin.count() && Bin.items().length) {
+    } else if (this.bin && Srs.items().length) {
       this.foot.append(h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: done }),
-        h('button', { class: 'big', type: 'button', text: 'Nog een ronde', onclick: () => { const s = this.spec; this.spec = null; Bin.start({ after: s && s.onDone ? () => s.onDone({ passed: true }) : null }); } }));
+        h('button', { class: 'big', type: 'button', text: 'Nog een ronde', onclick: () => { const s = this.spec; this.spec = null; Srs.start({ after: s && s.onDone ? () => s.onDone({ passed: true }) : null }); } }));
     } else this.foot.append(h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: done }));
     Sfx.play('done');
     if (party) setTimeout(() => Confetti.burst({ n: this.bin ? 70 : 90 }), 200);

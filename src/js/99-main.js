@@ -35,7 +35,7 @@ window.__fj = {
     }
     return current && current.expected ? current.expected() : [];
   },
-  lesson: () => (current === Lesson && Lesson.cur ? { type: Lesson.cur.type, answer: Lesson.cur.answer, options: Lesson.cur.options, correct: Lesson.cur.correct, valid: Lesson.cur.valid, answered: Lesson.answered, done: Lesson.doneIds.size, total: Lesson.total, finished: Lesson.finished, bin: Lesson.bin } : (current === Lesson ? { finished: Lesson.finished, bin: Lesson.bin } : null)),
+  lesson: () => (current === Lesson && Lesson.cur ? { type: Lesson.cur.type, answer: Lesson.cur.answer, options: Lesson.cur.options, correct: Lesson.cur.correct, valid: Lesson.cur.valid, answered: Lesson.answered, done: Lesson.doneIds.size, total: Lesson.total, finished: Lesson.finished, bin: Lesson.bin, review: Lesson.review, box: Lesson.cur._box || 0 } : (current === Lesson ? { finished: Lesson.finished, bin: Lesson.bin, review: Lesson.review } : null)),
   loading: () => !!document.querySelector('.loader'),
   onsets: () => Engine.onsetLog.slice(),
   latency: () => Engine.latency(),
@@ -43,6 +43,9 @@ window.__fj = {
   daily: () => ({ active: Daily.active, idx: Daily.idx, steps: Daily.steps.map(s => s.kind + ':' + (s.mode || '')) }),
   progress: () => ({ secs: Progress.day().secs, xp: Store.stats.xp, streak: Progress.streak(), nodes: Store.stats.path.nodes, badges: Store.stats.badges, bin: Bin.count(), binCleared: Store.stats.binCleared || 0 }),
   bin: () => Bin.list().map(x => ({ k: x.k, n: x.n, type: x.it.type })),
+  // herhalen: alle vragen met hun vak en dag; srsShift(n) doet alsof er n dagen voorbij zijn
+  srs: () => ({ items: Bin.all().map(x => ({ k: x.k, box: x.box || 0, due: x.due || '', type: x.it.type })), counts: Srs.snapshot(), due: Srs.dueCount(), todo: Srs.todoCount(), done: Store.stats.srsDone || 0 }),
+  srsShift: n => { for (const x of Bin.all()) if (x.due) x.due = addDays(x.due, -n); Store.saveStats(); Bin.changed(); },
   settings: () => JSON.parse(JSON.stringify(Store.settings)),
   quests: () => Quests.today().map(q => ({ id: q.id, target: q.target, v: Quests.progress(q), done: !!(Progress.day().qd || {})[q.id] })),
   questBump: (k, n) => (k === 'combo' || k === 'challenge' ? Quests.max(k, n) : Quests.bump(k, n)),
@@ -59,6 +62,8 @@ $('#micPill .chip-ico').innerHTML = ICONS.mic;
 $('#logo').innerHTML = Mascot.svg('blij', { crop: 'head' });
 const TAB_ICONS = { path: ICONS.path, practice: ICONS.pedal, progress: ICONS.chart };
 $$('.tabbar a').forEach(a => { $('.tb-ico', a).innerHTML = TAB_ICONS[a.dataset.tab]; });
+// teller op Oefenen: wat er vandaag te herhalen is
+$('.tabbar a[data-tab="practice"] .tb-ico').append(h('b', { class: 'tb-badge', hidden: true }));
 Router.render();
 PathData.load();
 setTimeout(() => Badges.check(), 1500);

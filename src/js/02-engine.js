@@ -284,10 +284,11 @@ const Engine = {
     s.connect(bp); bp.connect(g); g.connect(ctx.destination);
     s.start(when);
   },
-  ding() {
+  // step: per noot op rij een halve toon hoger, zodat een reeks hoorbaar oploopt
+  ding(step) {
     if (!Store.settings.sound || !this.ctx) return;
-    const ctx = this.ctx, t0 = ctx.currentTime;
-    [1568, 2093].forEach((f, i) => {
+    const ctx = this.ctx, t0 = ctx.currentTime, up = Math.pow(2, (step || 0) / 12);
+    [1568 * up, 2093 * up].forEach((f, i) => {
       const o = ctx.createOscillator(), g = ctx.createGain(), t = t0 + i * 0.07;
       o.type = 'sine'; o.frequency.value = f;
       g.gain.setValueAtTime(0.0001, t);
