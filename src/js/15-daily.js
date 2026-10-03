@@ -12,10 +12,10 @@ const Daily = {
     // de volgende stap in de Halsjacht: zonder gitaar, dus altijd mogelijk
     const hx = nextHals();
     if (hx) add({ kind: 'node', ref: hx, minutes: 3, title: 'Halsjacht', sub: `Niveau ${hx.unitNo}, ${hx.unit.title}: ${hx.node.title.toLowerCase()}` });
-    // herhalen wat vandaag terugkomt en de foutenbak; anders vragen uit eerdere lessen opfrissen
+    // herhalen: nieuwe fouten en wat vandaag terugkomt; staat er niets klaar, dan vragen uit eerdere lessen
     const rv = Srs.items(), due = rv.filter(x => x._box).length, nb = rv.length - due;
-    if (rv.length) add({ kind: 'bin', minutes: 3, title: 'Herhalen', sub: [due ? `${due} ${due === 1 ? 'vraag komt' : 'vragen komen'} terug` : '', nb ? `${nb} uit je foutenbak` : ''].filter(Boolean).join(', ') });
-    else if (Review.available()) add({ kind: 'review', minutes: 3, title: 'Opfrissen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst' });
+    if (rv.length) add({ kind: 'bin', minutes: 3, title: 'Herhalen', sub: Srs.what(nb, due).replace(/^./, c => c.toUpperCase()) });
+    else if (Review.available()) add({ kind: 'review', minutes: 3, title: 'Herhalen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst' });
     const cu = nx ? nx.unit : PathData.units().slice(-1)[0];
     if (cu) {
       const d = unitMeta(cu).drill;
@@ -42,6 +42,8 @@ const Daily = {
   start(steps) {
     this.steps = steps; this.idx = 0; this.active = true;
     this.startXP = Store.stats.xp || 0; this.startSecs = Progress.day().secs;
+    // alles wat je in deze sessie verdient, komt aan het eind in één overzicht
+    Moments.session = [];
     const needMic = !Engine.mic && !((Store.settings.cantPlayUntil || 0) > Date.now());
     Loader.run({ title: 'Oefen vandaag', sub: needMic ? 'Microfoon aanzetten…' : `${steps.length} stappen`, mood: 'luister', wait: needMic ? Engine.startMic() : null }, () => this.run());
   },
@@ -59,9 +61,7 @@ const Daily = {
       if (!Srs.items().length) return this.advance();
       Srs.start({ after: () => this.advance(), exit: () => { location.hash = ''; } });
     } else if (st.kind === 'review') {
-      const items = Review.build(8);
-      if (!items.length) return this.advance();
-      Lesson.open({ title: 'Opfrissen', items, xp: 10, onDone: () => this.advance(), onExit: () => { location.hash = ''; } });
+      if (!Review.start({ after: () => this.advance(), exit: () => { location.hash = ''; } })) return this.advance();
     } else {
       // instellingen die bij de les horen gelden alleen tijdens deze stap
       if (st.set) TempSettings.apply(st.mode, st.set);
@@ -83,23 +83,32 @@ const Daily = {
   },
   restore() { TempSettings.restore(); },
   advance() { clearInterval(this.timer); this.restore(); this.idx++; if (this.idx >= this.steps.length) return this.finish(); this.run(); },
-  stop() { this.active = false; clearInterval(this.timer); this.restore(); this.renderBar(); if (location.hash.startsWith('#m-')) location.hash = ''; },
+  stop() {
+    this.active = false; clearInterval(this.timer); this.restore(); this.renderBar();
+    Moments.session = null;
+    if (location.hash.startsWith('#m-')) location.hash = ''; else Moments.later(300);
+  },
   finish() {
     this.active = false; clearInterval(this.timer); this.restore(); this.renderBar();
     const min = Math.max(0, Math.round((Progress.day().secs - this.startSecs) / 60)), xp = Math.max(0, (Store.stats.xp || 0) - this.startXP);
+    // alles uit deze sessie, ook wat al op het eindscherm van een les stond
+    const got = Moments.session || [];
+    Moments.session = null; Moments.take();
     if (location.hash === '' || location.hash === '#') Router.render(); else location.hash = '';
-    setTimeout(() => this.celebrate(min, xp), 60);
+    setTimeout(() => this.celebrate(min, xp, got), 60);
   },
-  celebrate(min, xp) {
+  celebrate(min, xp, got = []) {
     const sk = Progress.streak();
     const sheet = h('div', { class: 'sheet-wrap', onclick: e => { if (e.target === sheet) sheet.remove(); } },
       h('div', { class: 'sheet center' },
         h('div', { class: 'sheet-mascot party', html: Mascot.svg(sk.today ? 'juich' : 'blij') }),
         h('h3', { text: 'Sessie klaar!' }),
         h('p', { class: 'help', text: `${min} ${min === 1 ? 'minuut' : 'minuten'} geoefend en ${xp} XP verdiend.${sk.today ? ` Je reeks staat op ${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'}.` : ''}` }),
+        got.length ? Moments.list(got, 'Dit heb je verdiend') : null,
         Progress.goalLine(),
         h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => sheet.remove() })));
     document.body.append(sheet);
+    Moments.cheer(got.filter(m => m.big), innerHeight * 0.25, 250);
   },
   renderBar() {
     const bar = $('#sessionBar');

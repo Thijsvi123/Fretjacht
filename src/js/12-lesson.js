@@ -1,5 +1,19 @@
 // ---------- Lesspeler (één oefening tegelijk, zoals Duolingo) ----------
 const sameSet = (a, b) => a.length === b.length && a.every(x => b.includes(x));
+// tikvraag met een gemarkeerde noot: welk stuk van de hals de telefoon laat zien (7 frets rond die noot,
+// genoeg voor de vormen van intervallen, met minstens één goede plek erin). Op een groot scherm blijft
+// de hele hals staan.
+function tapZoom(it) {
+  const root = (it.marks || [])[0];
+  if (!root) return null;
+  let a = Math.max(0, root.f - 2), b = a + 6;
+  if (b > 12) { b = 12; a = 6; }
+  if (!(it.valid || []).some(p => p.f >= a && p.f <= b) && (it.valid || []).length) {
+    const near = it.valid.slice().sort((p, q) => Math.abs(p.f - root.f) - Math.abs(q.f - root.f))[0];
+    a = Math.min(a, near.f); b = Math.max(b, near.f);
+  }
+  return { from: a, to: b };
+}
 const KIND = { play: ['pick', 'Speel op je gitaar'], tap: ['note', 'Tik op de hals'], theory: ['book', 'Theorie'], learn: ['book', 'Leren'], name: ['eye', 'Herkennen'], tapall: ['target', 'Toepassen'] };
 const Lesson = {
   spec: null,
@@ -7,8 +21,8 @@ const Lesson = {
   mount(view) {
     const sp = this.spec;
     if (!sp) { setTimeout(() => { location.hash = ''; }, 0); return; }
-    // bin: herstelronde of herhaalronde (review: ook vragen uit de vakjes die vandaag terugkomen)
-    this.bin = sp.mode === 'bin'; this.review = !!sp.review;
+    // bin: een herhaalronde (nieuwe fouten en vragen die vandaag terugkomen)
+    this.bin = sp.mode === 'bin'; this.review = this.bin;
     this.cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
     let items = sp.items.map((it, i) => Object.assign({ _id: i }, it));
     if (this.cantPlay && items.some(i => i.type !== 'play')) items = items.filter(i => i.type !== 'play');
@@ -23,7 +37,7 @@ const Lesson = {
       h('div', { class: 'ls-top' },
         h('button', { class: 'ls-close', type: 'button', 'aria-label': 'Les stoppen', html: ICONS.close, onclick: () => this.askQuit() }),
         h('div', { class: 'ls-bar', role: 'progressbar', 'aria-label': 'Voortgang in deze les' }, this.barFill),
-        this.bin ? h('span', { class: 'ls-bin', title: this.review ? 'Nog te herhalen' : 'Vragen in je foutenbak', html: this.review ? `${ICONS.retry}<b class="todo-count">${Srs.todoCount()}</b>` : `${ICONS.plaster}<b class="bin-count">${Bin.count()}</b>` }) : null,
+        this.bin ? h('span', { class: 'ls-bin', title: 'Nog te herhalen', html: `${ICONS.retry}<b class="todo-count">${Srs.todoCount()}</b>` }) : null,
         this.counter = h('span', { class: 'ls-count' }),
         this.sndBtn),
       this.comboEl = h('div', { class: 'combo', 'aria-live': 'polite' }),
@@ -53,7 +67,7 @@ const Lesson = {
       h('div', { class: 'sheet center' },
         h('div', { class: 'sheet-mascot', html: Mascot.svg('oeps') }),
         h('h3', { text: 'Wil je stoppen?' }),
-        h('p', { class: 'help', text: this.review ? 'Wat je al goed had, schuift een vakje door. De rest komt de volgende keer terug.' : this.bin ? 'Wat je al hebt hersteld, is uit je foutenbak. De rest blijft erin staan.' : 'Je voortgang in deze les gaat verloren. Wat je tot nu toe hebt geoefend, telt wel mee voor je dagdoel.' }),
+        h('p', { class: 'help', text: this.bin ? 'Wat je al goed had, schuift een vakje door. De rest komt de volgende keer terug.' : 'Je voortgang in deze les gaat verloren. Wat je tot nu toe hebt geoefend, telt wel mee voor je dagdoel.' }),
         h('button', { class: 'primary big', type: 'button', text: 'Doorgaan met oefenen', onclick: () => sheet.remove() }),
         h('button', { class: 'big ghost', type: 'button', text: 'Stoppen', onclick: () => { sheet.remove(); this.leave(); } })));
     document.body.append(sheet);
@@ -78,7 +92,7 @@ const Lesson = {
     this.foot.className = 'ls-foot';
     this.foot.innerHTML = '';
     const [ico, label] = KIND[KIND[it.type] ? it.type : 'theory'];
-    const from = it._box ? `herhaling na ${SRS_DAYS[it._box]} ${SRS_DAYS[it._box] === 1 ? 'dag' : 'dagen'}` : 'uit je foutenbak';
+    const from = it._box ? `herhaling na ${SRS_DAYS[it._box]} ${SRS_DAYS[it._box] === 1 ? 'dag' : 'dagen'}` : 'eerder fout';
     this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, ${from}` : label));
     this.body.append(h('h2', { class: 'ls-prompt', text: it.prompt }));
     if (it.sub && it.type !== 'play') this.body.append(h('p', { class: 'ls-sub', text: it.sub }));
@@ -129,7 +143,9 @@ const Lesson = {
     const fig = h('figure', { class: 'card neck tapneck' }, svg);
     this.body.append(fig);
     this.tapSvg = svg; this.tapFig = fig;
-    const draw = extra => drawNeck(svg, { from: it.from, to: it.to, marks: it.marks.concat(extra || []), tap: !this.answered });
+    // op de telefoon ingezoomd op het stuk rond de gemarkeerde noot: grotere vakjes
+    const zoom = tapZoom(it);
+    const draw = extra => drawNeck(svg, { from: it.from, to: it.to, zoom, touch: true, marks: it.marks.concat(extra || []), tap: !this.answered });
     this.drawTap = draw;
     draw();
     svg.addEventListener('click', e => {
@@ -226,7 +242,7 @@ const Lesson = {
     const fig = h('figure', { class: 'card neck tapneck' }, svg);
     this.body.append(fig);
     const ta = this.ta = { found: [], miss: 0, flash: null };
-    const draw = () => drawNeck(svg, { from: 0, to: 12, big: true, highlight: it.strings.length < 6 ? it.strings : [], tap: !this.answered,
+    const draw = () => drawNeck(svg, { from: 0, to: 12, big: true, touch: true, active: it.strings, highlight: it.strings.length < 6 ? it.strings : [], tap: !this.answered,
       marks: ta.found.map(p => ({ s: p.s, f: p.f, kind: 'found', label: it.name })).concat(ta.flash ? [{ s: ta.flash.s, f: ta.flash.f, kind: 'wrong', label: FretQuiz.nameAt(ta.flash.s, ta.flash.f) }] : []).concat(this.answered && ta.shown ? ta.shown : []) });
     this.drawTapAll = draw;
     draw();
@@ -272,24 +288,24 @@ const Lesson = {
     ta.shown = it.valid.filter(p => !ta.found.some(q => q.s === p.s && q.f === p.f)).map(p => ({ s: p.s, f: p.f, kind: 'reveal', label: it.name }));
     this.doneTapAll(it, $('.tapneck', this.body), true);
   },
-  // goed beantwoord. In een herstel- of herhaalronde schuift de vraag een vakje door:
-  // uit de foutenbak naar morgen, daarna over 3 en over 7 dagen, en dan heb je hem onder de knie.
+  // goed beantwoord. In een herhaalronde schuift de vraag een vakje door:
+  // van nu naar morgen, daarna over 3 en over 7 dagen, en dan heb je hem onder de knie.
   right(it, title, auto, answer) {
     let note = '', icon = ICONS.retry, pool = it.type === 'play' ? 'play' : 'right', sound = 'right';
     if (this.bin && it._bin) {
       const r = Srs.correct(it._bin);
       if (r && r.from === 0) {
         this.fixed++; pool = 'fixed'; sound = 'fixed';
-        note = 'Uit je foutenbak. Morgen komt hij nog eens terug, om te kijken of hij blijft hangen.';
+        note = 'Morgen komt hij nog één keer terug, om te kijken of hij blijft hangen.';
         Quests.bump('fixed');
       } else if (r) {
         this.recalled++; pool = 'recall'; sound = 'fixed';
         if (r.mastered) { this.mastered++; icon = ICONS.star; note = 'Onder de knie! Deze vraag komt niet meer terug.'; }
         else note = `Een vakje verder: je ziet hem over ${r.days} dagen terug.`;
       }
-      // telt voor de opdracht "herhaal vragen die vandaag terugkomen", ook als het pas de tweede keer lukt
+      // oude opdracht "herhaal vragen die vandaag terugkomen", ook als het pas de tweede keer lukt
       if (r && it._box) Quests.bump('srs');
-      if (r) Fx.pop($('.ls-bin', this.el));
+      if (r) { Quests.bump('herhaal'); Fx.pop($('.ls-bin', this.el)); }
     }
     if (it._again && (pool === 'right' || pool === 'play')) pool = 'again';
     this.combo++;
@@ -302,7 +318,7 @@ const Lesson = {
     Feedback.right({ el: this.fxEl, via: this.via, sound, big: milestone });
     this.feedback(true, title || (milestone && Feedback.streak(this.combo)) || Feedback.word(pool), it.type === 'name' || it.type === 'tapall' ? '' : it.explain || '', auto, note, '', icon, answer || '');
   },
-  // fout: de vraag gaat (terug) naar de foutenbak en komt in deze les nog een keer
+  // fout: de vraag komt terug bij Herhalen (weer vanaf het begin) en in deze les nog een keer
   wrong(it, title, text, answer) {
     const lost = this.combo;
     this.combo = 0;
@@ -312,14 +328,14 @@ const Lesson = {
     if (this.bin) {
       const prev = it._bin ? Srs.entry(it._bin) : null, back = prev && prev.box > 0;
       Bin.add(it);
-      note = back ? `Terug naar de foutenbak.${again ? ' Je krijgt hem zo nog een keer.' : ''}` : again ? 'Hij blijft in je foutenbak. Je krijgt hem zo nog een keer.' : 'Hij blijft in je foutenbak.';
+      note = `${back ? 'Terug naar het begin. ' : ''}${again ? 'Je krijgt hem zo nog een keer.' : 'Hij komt de volgende keer terug.'}`;
     } else {
       this.wrongKeys.add(Bin.add(it, this.spec && this.spec.title, (this.spec && this.spec.topic) || it._topic));
-      note = again ? 'In je foutenbak gezet. Je krijgt hem straks nog een keer.' : 'In je foutenbak gezet. Herstel hem voor bonus-XP.';
+      note = again ? 'Je krijgt hem straks nog een keer, en hij komt terug bij Herhalen.' : 'Hij komt terug bij Herhalen.';
     }
     Feedback.wrong({ el: this.fxEl, via: this.via });
     const lift = lost >= 3 ? `Jammer van je ${lost} op rij. Je pakt de draad zo weer op.` : this.mistakes <= 1 || Math.random() < 0.35 ? Feedback.word('lift') : '';
-    this.feedback(false, title || Feedback.word(it._again ? 'wrongAgain' : 'wrong'), text, 0, note, lift, ICONS.plaster, answer);
+    this.feedback(false, title || Feedback.word(it._again ? 'wrongAgain' : 'wrong'), text, 0, note, lift, ICONS.retry, answer);
   },
   showCombo(n) {
     clearTimeout(this.comboT);
@@ -341,7 +357,7 @@ const Lesson = {
           h('div', { class: 'fb-head' }, h('b', { class: 'fb-title', text: title }), h('small', { class: 'fb-left', text: left ? `nog ${left} ${left === 1 ? 'vraag' : 'vragen'}` : 'klaar!' })),
           answer ? h('p', { class: 'fb-answer' }, h('span', { class: 'fb-arrow', text: '→' }), h('span', { text: answer })) : null,
           text ? h('p', { text: text.trim() }) : null,
-          note ? h('p', { class: 'fb-note' }, h('span', { html: icon || ICONS.plaster }), note) : null,
+          note ? h('p', { class: 'fb-note' }, h('span', { html: icon || ICONS.retry }), note) : null,
           lift ? h('p', { class: 'fb-lift', text: lift }) : null)),
       h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => this.next() }));
     if (auto) this.autoT = setTimeout(() => { if (this.answered) this.next(); }, auto);
@@ -480,22 +496,20 @@ const Lesson = {
     const speed = this.times.length ? this.times.reduce((a, b) => a + b, 0) / this.times.length : null;
     let xp, title, sub, mood, party = false, how = '';
     if (this.bin) {
-      const good = this.fixed + this.recalled, left = Bin.count(), todo = Srs.todoCount();
+      const good = this.fixed + this.recalled, todo = Srs.todoCount();
       xp = 2 * good + (good && !this.mistakes ? 5 : 0) + 5 * this.mastered;
-      if (this.fixed && this.srsBefore[0] && !left) {
-        Bin.reward(); xp += 10; party = true;
-        title = 'Foutenbak leeg!'; mood = 'juich';
-        sub = 'Alles hersteld. Je krijgt 10 XP extra en 2 minuten voor je dagdoel.';
-      } else if (this.review && good && !todo) {
+      if (good && !todo) {
+        // alles herhaald wat er klaarstond: 10 XP extra
+        Bin.reward(); xp += 10;
         title = this.mastered ? 'Onder de knie!' : 'Alles herhaald!'; mood = 'juich'; party = !this.mistakes || this.mastered > 0;
-        sub = this.mastered ? `${this.mastered === 1 ? 'Eén vraag komt' : `${this.mastered} vragen komen`} niet meer terug. Voor vandaag is alles herhaald.` : 'Wat je goed had, schuift een vakje door.';
+        sub = this.mastered ? `${this.mastered === 1 ? 'Eén vraag komt' : `${this.mastered} vragen komen`} niet meer terug. Voor vandaag is alles herhaald: 10 XP extra.` : 'Voor vandaag is alles herhaald. Je krijgt 10 XP extra.';
       } else {
-        title = good ? `${good} van ${this.total} goed` : this.review ? 'Nog niet onthouden' : 'Nog niet hersteld';
+        title = good ? `${good} van ${this.total} goed` : 'Nog niet onthouden';
         mood = good ? 'ehbo' : 'oeps';
-        sub = left ? `Er ${left === 1 ? 'staat' : 'staan'} nog ${left} ${left === 1 ? 'vraag' : 'vragen'} in je foutenbak.` : '';
+        sub = todo ? `Nog ${todo} ${todo === 1 ? 'vraag' : 'vragen'} te herhalen.` : '';
       }
       // zo werkt herhalen: uitleg op het moment dat het gebeurt
-      how = this.fixed ? 'Wat je herstelde, komt morgen terug. Weet je het dan nog, dan zie je het na 3 en daarna na 7 dagen nog één keer.' : '';
+      how = this.fixed ? 'Wat je nu goed had, komt morgen terug. Weet je het dan nog, dan zie je het na 3 en daarna na 7 dagen nog één keer.' : '';
       if (xp) Progress.addXP(xp);
     } else {
       xp = passed ? (sp.xp || 10) + (perfect ? 5 : 0) : 5;
@@ -504,43 +518,45 @@ const Lesson = {
       title = !passed ? 'Nog niet gehaald' : sp.test ? 'Unittoets gehaald!' : sp.label ? (perfect ? `${sp.label}: foutloos!` : `${sp.label} ${sp.pass ? 'gehaald' : 'klaar'}!`) : perfect ? 'Foutloos!' : 'Les voltooid!';
       mood = !passed ? 'oeps' : perfect || sp.test || sp.pass ? 'juich' : 'blij';
       party = passed && (perfect || sp.test || !!sp.pass);
-      sub = !passed ? (sp.test ? 'Je hebt 80% goed nodig. Herhaal de lessen van deze unit en probeer het nog eens.' : `Je hebt ${Math.round(need * 100)}% goed nodig. De vragen zijn elke keer anders: probeer het nog eens.`) : sp.title || '';
+      sub = !passed ? (sp.test ? 'Je hebt 80% goed nodig. Herhaal de lessen van deze unit en probeer het nog eens.' : `Je hebt ${Math.round(need * 100)}% goed nodig. De vragen zijn elke keer anders: probeer het nog eens.`) : sp.sub || sp.title || '';
     }
-    const fresh = Badges.check({ quiet: true });
+    // alles wat je in deze les verdiende (niveau, dagdoel, opdrachten, plectrums): hier in één overzicht
+    Badges.check();
+    const got = Moments.take();
+    if (got.some(m => m.big)) party = true;
     this.body.innerHTML = '';
     this.body.classList.remove('enter');
     this.foot.className = 'ls-foot';
     this.foot.innerHTML = '';
     const mm = `${Math.floor(secs / 60)}:${String(Math.round(secs % 60)).padStart(2, '0')}`;
     const xpEl = h('b', { text: `+${xp}` }), pctEl = h('b', { text: `${Math.round(accuracy * 100)}%` });
-    this.body.append(h('div', { class: 'ls-end' },
+    this.body.append(h('div', { class: 'ls-end' + (got.length ? ' has-moments' : '') },
       h('div', { class: 'end-fret' + (party ? ' party' : ''), html: Mascot.svg(mood) }),
       h('h2', { class: 'end-title', text: title }),
       sub ? h('p', { class: 'help', text: sub }) : null,
       h('div', { class: 'end-stats' },
         h('div', {}, h('small', { text: 'XP' }), xpEl),
-        this.bin ? h('div', {}, h('small', { text: this.review ? 'Goed' : 'Hersteld' }), h('b', { text: `${this.fixed + this.recalled}/${this.total}` })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
+        this.bin ? h('div', {}, h('small', { text: 'Goed' }), h('b', { text: `${this.fixed + this.recalled}/${this.total}` })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
         speed != null ? h('div', {}, h('small', { text: 'Per noot' }), h('b', { text: `${fmt1(speed)} s` })) : h('div', {}, h('small', { text: 'Tijd' }), h('b', { text: mm }))),
       this.bin ? h('div', { class: 'end-srs' }, Srs.row({ delta: Srs.delta(this.srsBefore) }), how ? h('p', { class: 'help', text: how }) : null) : null,
-      fresh.length ? h('div', { class: 'end-badges' }, fresh.map(b => h('div', { class: 'end-badge' },
-        h('span', { class: 'b-pick', html: pickBadge(b, true) }),
-        h('div', {}, h('small', { text: 'Nieuwe mijlpaal' }), h('b', { text: b.title }), h('span', { text: b.desc }))))) : null,
+      got.length ? Moments.list(got, 'Verdiend') : null,
       Progress.goalLine()));
     countUp(xpEl, xp, { prefix: '+', delay: 250 });
     if (!this.bin) countUp(pctEl, Math.round(accuracy * 100), { suffix: '%', delay: 350 });
     this.counter.textContent = '';
     this.barFill.style.width = '100%';
     const done = () => { const s = this.spec; this.spec = null; if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; };
-    // fouten uit deze les: direct herstellen voor bonus-XP
+    // fouten uit deze les: meteen herhalen voor bonus-XP
     const fixable = this.bin ? [] : [...this.wrongKeys].filter(k => Bin.has(k));
     if (fixable.length && Bin.items(fixable).length) {
-      this.foot.append(h('button', { class: 'primary big fix-btn', type: 'button', html: `${ICONS.plaster}<span>Herstel je fouten (+${Bin.bonusXP(fixable.length)} XP)</span>`, onclick: () => { const s = this.spec; this.spec = null; Bin.start({ keys: fixable, after: () => { if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; } }); } }),
+      this.foot.append(h('button', { class: 'primary big fix-btn', type: 'button', html: `${ICONS.retry}<span>Herhaal je ${fixable.length === 1 ? 'fout' : `${fixable.length} fouten`} (+${Bin.bonusXP(fixable.length)} XP)</span>`, onclick: () => { const s = this.spec; this.spec = null; Bin.start({ keys: fixable, after: () => { if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; } }); } }),
         h('button', { class: 'big', type: 'button', text: 'Verder', onclick: done }));
     } else if (this.bin && Srs.items().length) {
       this.foot.append(h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: done }),
         h('button', { class: 'big', type: 'button', text: 'Nog een ronde', onclick: () => { const s = this.spec; this.spec = null; Srs.start({ after: s && s.onDone ? () => s.onDone({ passed: true }) : null }); } }));
     } else this.foot.append(h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: done }));
-    Sfx.play('done');
+    // één geluid en één keer confetti voor alles samen
+    Sfx.play(got.some(m => m.big) ? 'goal' : 'done');
     if (party) setTimeout(() => Confetti.burst({ n: this.bin ? 70 : 90 }), 200);
   },
 };

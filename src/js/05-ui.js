@@ -124,22 +124,29 @@ const UI = {
     $$('.heard-line').forEach(el => { el.innerHTML = html; });
   },
   tuner: null,
-  // korte melding bovenin; meerdere meldingen komen na elkaar
-  flashQ: [], flashing: false,
-  flash(icon, title, text, kind) {
-    this.flashQ.push({ icon, title, text, kind });
+  // korte melding bovenin; more: extra regels in dezelfde melding (zie Moments). Tik om weg te halen.
+  // now: antwoord op iets wat je net deed (bijvoorbeeld een reservekopie); die wacht niet op andere meldingen
+  flashQ: [], flashing: false, closeFlash: null,
+  flash(icon, title, text, kind, more, now) {
+    const f = { icon, title, text, kind, more: more || [] };
+    if (now) this.flashQ.unshift(f); else this.flashQ.push(f);
     if (!this.flashing) this.nextFlash();
+    else if (now && this.closeFlash) this.closeFlash();
   },
   nextFlash() {
     const f = this.flashQ.shift();
-    if (!f) { this.flashing = false; return; }
+    if (!f) { this.flashing = false; this.closeFlash = null; return; }
     this.flashing = true;
-    const el = h('div', { class: 'flash' + (f.kind ? ' flash-' + f.kind : ''), role: 'status' },
+    const el = h('div', { class: 'flash' + (f.kind ? ' flash-' + f.kind : '') + (f.more.length ? ' multi' : ''), role: 'status' },
       h('span', { class: 'fl-ico', html: f.icon || '' }),
-      h('span', { class: 'fl-txt' }, h('b', { text: f.title }), f.text ? h('small', { text: f.text }) : null));
+      h('span', { class: 'fl-txt' }, h('b', { text: f.title }), f.text ? h('small', { text: f.text }) : null,
+        f.more.length ? h('ul', { class: 'fl-more' }, f.more.slice(0, 4).map(m => h('li', {}, h('b', { text: m.title }), m.text ? h('small', { text: m.text }) : null))) : null));
+    let gone = false;
+    const close = () => { if (gone) return; gone = true; el.classList.add('out'); setTimeout(() => { el.remove(); this.nextFlash(); }, 400); };
+    this.closeFlash = close;
+    el.addEventListener('click', close);
     document.body.append(el);
-    setTimeout(() => el.classList.add('out'), 2800);
-    setTimeout(() => { el.remove(); this.nextFlash(); }, 3200);
+    setTimeout(close, 2800 + 1200 * Math.min(3, f.more.length));
   },
 };
 
@@ -229,6 +236,8 @@ const Router = {
     Progress.renderTop();
     Daily.renderBar();
     Srs.badge();
+    // wat je verdiende terwijl je op het eindscherm van een les stond, krijg je nu alsnog te zien
+    Moments.later(700);
     window.scrollTo(0, 0);
   },
   back() {
@@ -263,7 +272,7 @@ function renderSettings(view) {
     h('div', { class: 'set-grid' },
       h('div', { class: 'field' },
         checkEl('strict', 'Octaaf moet kloppen', s.strict, v => { s.strict = v; save(); }, 'Alleen de precieze toonhoogte telt. Werkt het best met een goede microfoon of via een versterker; een telefoon hoort lage noten soms een octaaf te hoog.'),
-        checkEl('sound', 'Geluidjes', s.sound, v => { s.sound = v; save(); }, 'Bij goede antwoorden en noten, als je een fout herstelt en als je je dagdoel haalt. In een les zet je ze ook aan of uit met het luidsprekertje.'),
+        checkEl('sound', 'Geluidjes', s.sound, v => { s.sound = v; save(); }, 'Bij goede antwoorden en noten, als je een fout goed herhaalt en als je je dagdoel haalt. In een les zet je ze ook aan of uit met het luidsprekertje.'),
         checkEl('haptics', 'Trillen bij goed en fout', s.haptics, v => { s.haptics = v; save(); if (v) Haptics.play('right'); }, 'Eén tikje bij een goed antwoord, twee bij een fout. Werkt op Android en op een iPhone met iOS 18 of nieuwer. Terwijl je speelt trilt de app niet, anders hoort de microfoon je telefoon.')),
       field('Notenamen', seg([{ value: 'sharps', label: 'met ♯' }, { value: 'flats', label: 'met ♭' }, { value: 'both', label: '♯ en ♭' }], s.names, v => { s.names = v; save(); }), 'Met ♯ en ♭ wisselt het af, zodat je leert dat F♯ en G♭ dezelfde toets zijn.'),
       field('Automatische hint bij Noten zoeken', selectEl('autoHint', [{ value: 0, label: 'Uit' }, { value: 5, label: 'Na 5 seconden' }, { value: 10, label: 'Na 10 seconden' }, { value: 20, label: 'Na 20 seconden' }], s.autoHint, v => { s.autoHint = Number(v); save(); }))));
@@ -275,7 +284,12 @@ function renderSettings(view) {
     Store.stats = DEFAULT_STATS(); Store.saveStats();
     b.textContent = 'Scores gewist'; b.classList.remove('danger');
   } });
-  const scoreCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Scores' }), h('div', { class: 'row' }, reset));
+  const bk = Backup.status();
+  const scoreCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Je voortgang' }),
+    h('p', { class: 'help', text: 'Je voortgang staat alleen in deze browser. Met een reservekopie zet je hem terug, ook op een ander toestel.' }),
+    h('p', { class: 'bk-status' + (bk.old ? ' old' : ''), text: bk.text }),
+    backupButtons(),
+    h('div', { class: 'row' }, reset));
   const goalCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Dagdoel en lessen' }),
     h('div', { class: 'set-grid' },
       field('Dagdoel', seg([10, 15, 20, 30].map(n => ({ value: n, label: `${n} min` })), s.goal, v => { s.goal = Number(v); save(); Progress.renderTop(); }), 'Je reeks telt de dagen waarop je dit aantal minuten echt geoefend hebt.'),

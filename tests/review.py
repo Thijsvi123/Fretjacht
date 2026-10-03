@@ -126,14 +126,14 @@ async def main():
             R['fix_fb'] = fb
             check('Goed: één tikje trillen', fb['vib'] == [[18]], fb['vib'])
             check('Goed: noten uit de knop, groene rand, vinkje', fb['fx']['notes'] >= 5 and 'ok' in fb['fx']['edge'] and fb['fx']['marks'] == ['opt-mark'], fb['fx'])
-            check('Goed: hersteld, komt morgen terug', 'Morgen komt hij nog eens terug' in fb['note'], fb)
+            check('Goed: komt morgen nog één keer terug', 'Morgen komt hij nog één keer terug' in fb['note'], fb)
             end = await finish_session(); R['fix_end'] = end
-            check('Foutenbak leeg na herstel', end['title'] == 'Foutenbak leeg!', end)
+            check('Alles herhaald na de eerste ronde', end['title'] == 'Alles herhaald!', end)
             check('Eindscherm toont verschuiving in de vakjes', end['deltas'][:2] == ['−1', '+1'], end['deltas'])
             await page.wait_for_timeout(700); await shot('fix_end_srs')
             await leave_end()
             s = await srs(); R['after_fix'] = s
-            check('Na herstel: vak 1, morgen aan de beurt', s['items'][0]['box'] == 1 and s['items'][0]['due'] == day(1) and s['todo'] == 0, s)
+            check('Na herhalen: vak 1, morgen aan de beurt', s['items'][0]['box'] == 1 and s['items'][0]['due'] == day(1) and s['todo'] == 0, s)
             # nog niet aan de beurt: melding wanneer hij terugkomt
             await go('#oefenen')
             R['card_wait'] = await ev("({h: document.querySelector('.srs-card h2').textContent, sub: document.querySelector('.srs-card .srs-sub').textContent, badge: document.querySelector('.tb-badge').hidden})")
@@ -161,19 +161,19 @@ async def main():
             await ev('__fj.srsShift(3)')
             st = await start_review(); fb = await answer_mc(True); end = await finish_session(); await leave_end()
             s = await srs(); check('Vak 3, over 7 dagen', 'over 7 dagen' in fb['note'] and s['items'][0]['box'] == 3 and s['items'][0]['due'] == day(7), [fb['note'], s])
-            # na 7 dagen fout: terug naar de foutenbak, zelfde ronde nog een keer
+            # na 7 dagen fout: terug naar het begin, zelfde ronde nog een keer
             await ev('__fj.srsShift(7)')
             st = await start_review()
             fb = await answer_mc(False, 'fb_wrong_review'); R['wrong_review'] = fb
             check('Fout: twee tikjes trillen', fb['vib'] == [[40, 70, 40]], fb['vib'])
             check('Fout: kruisje, goede antwoord licht op, rode rand', 'opt-mark bad' in fb['fx']['marks'] and fb['fx']['reveal'] and 'bad' in fb['fx']['edge'], fb['fx'])
-            check('Fout: terug naar de foutenbak, straks nog een keer', 'Terug naar de foutenbak' in fb['note'] and 'nog een keer' in fb['note'], fb)
+            check('Fout: terug naar het begin, straks nog een keer', 'Terug naar het begin' in fb['note'] and 'nog een keer' in fb['note'], fb)
             check('Fout: motiverend bericht', len(fb['lift']) > 10, fb['lift'])
             s = await srs(); check('Fout: vak 0', s['items'][0]['box'] == 0, s)
             fb = await answer_mc(True)
-            check('Tweede poging goed: hersteld', 'Morgen komt hij' in fb['note'], fb)
+            check('Tweede poging goed: morgen weer', 'Morgen komt hij' in fb['note'], fb)
             end = await finish_session(); R['wrong_end'] = end; await leave_end()
-            s = await srs(); check('Na fout en herstel: weer vak 1', s['items'][0]['box'] == 1 and s['items'][0]['due'] == day(1), s)
+            s = await srs(); check('Na fout en tweede poging: weer vak 1', s['items'][0]['box'] == 1 and s['items'][0]['due'] == day(1), s)
             # nog drie keer goed: onder de knie
             for shift in (1, 3, 7):
                 await ev(f'__fj.srsShift({shift})')

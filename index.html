@@ -59,7 +59,7 @@ body {
   padding-block: max(12px, env(safe-area-inset-top, 0px)) max(32px, env(safe-area-inset-bottom, 0px));
   -webkit-tap-highlight-color: transparent;
 }
-.app { max-width: 980px; margin: 0 auto; display: grid; gap: 12px; }
+.app { max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 a { color: inherit; }
 
 /* kop */
@@ -349,14 +349,6 @@ body[data-view="lesson"] .flash { top: calc(68px + env(safe-area-inset-top, 0px)
 .flash.out { opacity: 0; transform: translate(-50%, -10px); }
 @keyframes flash-in { from { opacity: 0; transform: translate(-50%, -10px); } }
 @media (prefers-reduced-motion: reduce) { .flash { animation: none; transition: none; } }
-.end-badges { display: grid; gap: 8px; width: 100%; max-width: 420px; }
-.end-badge { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 14px; border: 2px solid color-mix(in srgb, var(--accent) 50%, var(--line)); background: var(--accent-soft); text-align: left; }
-.end-badge .b-ico { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); color: var(--accent); flex: none; }
-.end-badge .ico { width: 22px; height: 22px; }
-.end-badge div { display: grid; gap: 1px; min-width: 0; }
-.end-badge small { font: 500 11px/1.3 var(--mono); color: var(--accent-text); }
-.end-badge b { font-size: 15px; line-height: 1.25; }
-.end-badge span:last-child { font-size: 13px; color: var(--muted); line-height: 1.3; }
 
 /* leerpad */
 .path { display: grid; gap: 6px; }
@@ -515,7 +507,7 @@ button.ghost { background: transparent; }
 .row.links { margin-top: 6px; gap: 4px 18px; }
 
 
-/* ===================== Huisstijl: fret, pedalen, foutenbak, animaties ===================== */
+/* ===================== Huisstijl: fret, pedalen, herhalen, animaties ===================== */
 body { font-variant-numeric: tabular-nums; }
 .c-amber { --c: var(--accent); --c-ink: var(--accent-ink); --c-deep: var(--accent-deep); --c-soft: var(--accent-soft); --c-text: var(--accent-text); }
 .c-blauw { --c: #2D6BD4; --c-ink: #FFFFFF; --c-deep: #1D4C9E; --c-soft: #DCE8FB; --c-text: #2257B5; }
@@ -542,8 +534,7 @@ body { font-variant-numeric: tabular-nums; }
 @keyframes view-in { from { opacity: 0; } }
 
 /* labels zonder hoofdletters */
-.fig dt, .tile-l, .end-stats small, .end-badge small { font: 600 12.5px/1.25 var(--body); color: var(--muted); }
-.end-badge small { color: var(--accent-text); }
+.fig dt, .tile-l, .end-stats small { font: 600 12.5px/1.25 var(--body); color: var(--muted); }
 .tile-v { font: 800 semi-condensed 34px/1 var(--display); }
 .fig dd { font-weight: 800; }
 .card-h { margin: 0 0 4px; font: 800 semi-condensed 22px/1.15 var(--display); letter-spacing: -.01em; }
@@ -577,7 +568,7 @@ body { font-variant-numeric: tabular-nums; }
 @keyframes ring-out { from { transform: scale(.85); opacity: .9; } to { transform: scale(1.7); opacity: 0; } }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 
-/* knop voor de foutenbak naast "Oefen vandaag" */
+/* knop Herhalen naast "Oefen vandaag" */
 .bin-btn { position: relative; flex: none; width: 70px; padding: 8px 4px; display: grid; justify-items: center; align-content: center; gap: 3px; border-radius: 14px; border: 2px solid color-mix(in srgb, var(--bad) 45%, var(--line)); background: var(--surface); color: var(--bad); box-shadow: 0 4px 0 color-mix(in srgb, var(--bad) 35%, var(--line)); }
 .bin-btn .ico { width: 26px; height: 26px; }
 .bin-btn small { font: 700 11.5px/1 var(--body); color: var(--muted); }
@@ -623,9 +614,6 @@ body { font-variant-numeric: tabular-nums; }
 .end-stats b { font: 800 semi-condensed 28px/1 var(--display); }
 .fix-btn { display: flex; align-items: center; justify-content: center; gap: 10px; }
 .fix-btn .ico { width: 22px; height: 22px; }
-.end-badge .b-pick, .badge .b-pick { display: block; }
-.end-badge .b-pick { width: 46px; height: 46px; flex: none; }
-.end-badge .b-pick > svg, .badge .b-pick > svg { width: 100%; height: 100%; display: block; }
 
 /* mijlpalen als plectrums */
 .badge { padding: 12px 6px 10px; }
@@ -704,18 +692,6 @@ body { font-variant-numeric: tabular-nums; }
 .pedals.tools .pd-switch { width: 36px; height: 36px; box-shadow: 0 0 0 4px rgba(0, 0, 0, .17), 0 3px 0 4px rgba(0, 0, 0, .14); }
 .pedals.tools .pd-switch .ico { width: 13px; height: 13px; }
 
-/* foutenbak-kaart */
-.bin-card { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 12px; align-items: center; padding: 14px 16px 14px 10px; border-radius: 18px; background: var(--surface); border: 2px solid color-mix(in srgb, var(--bad) 45%, var(--line)); box-shadow: 0 4px 0 color-mix(in srgb, var(--bad) 30%, var(--line)); }
-.bc-fret svg { width: 100px; height: 100px; display: block; }
-.bin-card h2 { margin: 0; display: flex; align-items: center; gap: 8px; font: 800 semi-condensed 23px/1.1 var(--display); letter-spacing: -.01em; }
-.bc-n { min-width: 26px; height: 26px; padding: 0 8px; border-radius: 13px; background: var(--bad); color: #FFFFFF; font: 700 14px/26px var(--body); text-align: center; letter-spacing: 0; }
-.bin-card p { margin: 4px 0 12px; font-size: 14px; line-height: 1.4; color: var(--muted); }
-.bin-card button { display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 0 var(--accent-deep); }
-.bin-card button .ico { width: 20px; height: 20px; }
-.bin-card.empty { grid-template-columns: 58px minmax(0, 1fr); padding: 12px 14px; border-style: dashed; border-color: var(--line); box-shadow: none; }
-.bin-card.empty .bc-fret svg { width: 58px; height: 58px; }
-.bin-card.empty h2 { font-size: 19px; }
-.bin-card.empty p { margin-bottom: 0; }
 
 /* voortgang */
 .streak-card { display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 18px 12px 8px; border-radius: 20px; background: var(--accent); color: var(--accent-ink); box-shadow: 0 5px 0 var(--accent-deep); }
@@ -1115,6 +1091,62 @@ button.uh-link { border: 0; cursor: pointer; }
 .lc-ladder li.now { background: var(--accent); color: var(--accent-ink); border-color: var(--accent-deep); }
 .sc-best { margin: 4px 0 0; font: 600 13px/1.3 var(--body); opacity: .85; }
 .hals-row .progress span { background: #2D6BD4; }
+
+/* ===================== Eén overzicht, reservekopie, hals om op te tikken ===================== */
+/* wat je verdiende: op het eindscherm van een les en na Oefen vandaag */
+.moments { width: 100%; max-width: 420px; border-radius: 16px; border: 2px solid color-mix(in srgb, var(--accent) 50%, var(--line)); background: var(--accent-soft); text-align: left; padding: 4px 0; }
+.mo-h { margin: 8px 14px 0; font: 700 12.5px/1.2 var(--body); color: var(--accent-text); }
+.moments ul { list-style: none; margin: 0; padding: 0; }
+.moments li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; align-items: center; padding: 8px 14px 8px 10px; }
+.moments li + li { border-top: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); }
+.mo-ico { width: 44px; height: 44px; display: grid; place-items: center; }
+.mo-ico > svg { width: 100%; height: 100%; display: block; }
+.mo-ico > svg.ico { width: 26px; height: 26px; color: var(--accent-text); }
+.mo-txt { display: grid; gap: 1px; min-width: 0; }
+.mo-txt b { font-size: 15px; line-height: 1.25; }
+.mo-txt small { font-size: 13px; line-height: 1.3; color: var(--muted); }
+.moments li.big .mo-txt b { font-size: 16px; }
+.sheet .moments { justify-self: stretch; max-width: none; }
+.ls-end .moments { animation: rise .45s .25s cubic-bezier(.2, .8, .2, 1) both; }
+/* met een overzicht eronder: kleinere fret, zodat het overzicht in beeld komt */
+.ls-end.has-moments { padding-top: 8px; gap: 10px; }
+.ls-end.has-moments .end-fret { width: 112px; height: 112px; }
+.ls-end.has-moments .end-title { font-size: 32px; }
+/* meer momenten tegelijk: één melding met regels eronder */
+.flash.multi { align-items: flex-start; }
+.flash .fl-more { list-style: none; margin: 6px 0 0; padding: 6px 0 0; border-top: 1px solid color-mix(in srgb, var(--bg) 25%, transparent); display: grid; gap: 5px; }
+.flash .fl-more li { display: grid; gap: 0; }
+.flash .fl-more b { font-size: 13.5px; }
+.flash .fl-more small { font-size: 12px; }
+.flash { cursor: pointer; }
+/* herhaalkaart: eerdere lessen herhalen als er niets klaarstaat */
+.srs-old { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.srs-old .ico { width: 20px; height: 20px; }
+
+/* reservekopie */
+.backup-card .help { margin: 0 0 8px; }
+.bk-status { margin: 0 0 12px; font: 600 13.5px/1.35 var(--body); color: var(--ink); }
+.bk-status.old { color: var(--bad); }
+.bk-status.old::before { content: '! '; font-weight: 800; }
+.bk-btns { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.bk-btns button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.bk-btns .ico { width: 18px; height: 18px; }
+.backup-card.restore { border-style: dashed; }
+.settings-view .bk-btns { margin-bottom: 12px; }
+.bk-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.bk-table th, .bk-table td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--line); }
+.bk-table thead th { font: 700 12px/1.2 var(--body); color: var(--muted); }
+.bk-table tbody th { font-weight: 600; color: var(--muted); width: 38%; }
+.bk-table td { font-weight: 600; }
+.bk-table td.diff { color: var(--accent-text); }
+.bk-warn { color: var(--bad); font-weight: 600; }
+
+/* hals om op te tikken: in twee rijen op de telefoon */
+.neck svg.two-rows { max-width: 520px; margin: 0 auto; }
+
+/* kop op de telefoon: de titel past naast de chips, zonder dat de pagina breder wordt dan het scherm */
+@media (max-width: 420px) { .top { gap: 6px; } .brand h1 { font-size: 26px; } .logo { width: 36px; height: 36px; } body:not([data-view="path"]) .logo { display: none; } .chip { padding: 6px 8px 6px 7px; gap: 4px; } }
+@media (max-width: 380px) { .brand h1 { font-size: 24px; } }
 
 </style>
 </head>
@@ -1729,73 +1761,94 @@ const Metronome = {
 };
 
 // ---------- Hals tekenen ----------
-// o = { from, to, highlight: [snaren], marks: [{s, f, kind, label}], range: {min, max} | null }
+// o = { from, to, highlight: [snaren], marks: [{s, f, kind, label}], range: {min, max} | null,
+//       tap: tikvakjes aan, big: grote stippen (uitleg en vragen waar de naam ertoe doet),
+//       touch: een hals om op te tikken. Op de telefoon liggen de snaren dan verder uit elkaar en staat een
+//              lange hals in twee rijen (fret 0–6 en 7–12), zodat elk vakje groot genoeg is voor je vinger,
+//       zoom: {from, to}: op de telefoon alleen dit stuk van de hals,
+//       active: [snaren]: alleen deze snaren zijn aan te tikken; hun vakjes lopen door tot halverwege de buursnaar }
 function drawNeck(svg, o) {
-  const narrow = (svg.getBoundingClientRect().width || 1000) < 560;
-  const W = narrow ? (o.tap || o.big ? 470 : 640) : 1000, TOP = 16, GAP = 30, BOARD_H = 28 + 5 * GAP, X0 = 86;
-  const from = Math.max(0, o.from || 0), to = Math.max(from + 3, o.to == null ? 12 : o.to);
+  const narrow = (svg.getBoundingClientRect().width || 1000) < 560, touch = narrow && !!o.touch;
+  let from = Math.max(0, o.from || 0), to = Math.max(from + 3, o.to == null ? 12 : o.to);
+  if (narrow && o.zoom) { from = Math.max(0, o.zoom.from); to = Math.max(from + 3, o.zoom.to); }
+  const W = narrow ? (o.tap || o.big || touch ? 470 : 640) : 1000, TOP = 16, GAP = touch ? 36 : 30, BOARD_H = 28 + 5 * GAP, X0 = 86;
+  const ROW_H = TOP + BOARD_H + (touch ? 44 : 50);
+  // twee rijen: de tweede rij gaat verder waar de eerste ophoudt, met dezelfde fretbreedtes
+  const mid = touch && to - from >= 9 ? from + Math.ceil((to - from) / 2) : null;
+  const rows = mid == null ? [[from, to]] : [[from, mid], [mid + 1, to]];
   const d = n => 1 - Math.pow(2, -n / 12);
-  const leftN = from === 0 ? 0 : from - 1;
-  const S = (W - 12 - X0) / (d(to + 0.45) - d(leftN));
-  const xOf = n => X0 + S * (d(n) - d(leftN));
-  const cellW = f => (f === 0 ? 40 : xOf(f) - xOf(f - 1));
-  const midOf = f => (f === 0 ? X0 - 32 : (xOf(f - 1) + xOf(f)) / 2);
-  const yOf = s => TOP + 14 + s * GAP;
-  const yB = TOP + BOARD_H;
   const hl = new Set(o.highlight || []);
-  const strStart = from === 0 ? X0 - 52 : X0 - 18;
-  svg.setAttribute('viewBox', `0 0 ${W} 244`);
+  const act = o.active && o.active.length && o.active.length < 6 ? o.active.slice().sort((a, b) => a - b) : null;
   let h = '<defs><linearGradient id="fjwood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="w1"/><stop offset=".5" class="w2"/><stop offset="1" class="w1"/></linearGradient></defs>';
-  h += `<rect x="${X0}" y="${TOP}" width="${W - X0}" height="${BOARD_H}" fill="url(#fjwood)"/>`;
-  for (let i = 0; i < 9; i++) {
-    const y = TOP + 10 + i * (BOARD_H - 20) / 8, a = 3 + (i * 7) % 5, ph = i * 1.7;
-    let p = `M${X0} ${y.toFixed(1)}`;
-    for (let x = X0 + 60; x <= W; x += 60) p += ` L${x} ${(y + a * Math.sin(x / 140 + ph)).toFixed(1)}`;
-    h += `<path class="grain" d="${p}"/>`;
-  }
-  if (o.range) {
-    for (let f = Math.max(1, from); f <= to; f++) {
-      if (f < o.range.min || f > o.range.max) h += `<rect class="shade" x="${xOf(f - 1).toFixed(1)}" y="${TOP}" width="${cellW(f).toFixed(1)}" height="${BOARD_H}"/>`;
+  rows.forEach(([a, b], ri) => {
+    const oy = ri * ROW_H, top = oy + TOP;
+    const leftN = a === 0 ? 0 : a - 1;
+    const S = (W - 12 - X0) / (d(b + 0.45) - d(leftN));
+    const xOf = n => X0 + S * (d(n) - d(leftN));
+    const cellW = f => (f === 0 ? 40 : xOf(f) - xOf(f - 1));
+    const midOf = f => (f === 0 ? X0 - 32 : (xOf(f - 1) + xOf(f)) / 2);
+    const yOf = s => top + 14 + s * GAP;
+    const yB = top + BOARD_H;
+    const strStart = a === 0 ? X0 - 52 : X0 - 18;
+    h += `<rect x="${X0}" y="${top}" width="${W - X0}" height="${BOARD_H}" fill="url(#fjwood)"/>`;
+    for (let i = 0; i < 9; i++) {
+      const y = top + 10 + i * (BOARD_H - 20) / 8, amp = 3 + (i * 7) % 5, ph = i * 1.7 + ri;
+      let p = `M${X0} ${y.toFixed(1)}`;
+      for (let x = X0 + 60; x <= W; x += 60) p += ` L${x} ${(y + amp * Math.sin(x / 140 + ph)).toFixed(1)}`;
+      h += `<path class="grain" d="${p}"/>`;
     }
-    if (to >= o.range.max) h += `<rect class="shade" x="${xOf(to).toFixed(1)}" y="${TOP}" width="${(W - xOf(to)).toFixed(1)}" height="${BOARD_H}"/>`;
-  }
-  const midY = (yOf(2) + yOf(3)) / 2;
-  for (let f = Math.max(1, from); f <= to; f++) {
-    if ([3, 5, 7, 9, 15, 17, 19].includes(f)) h += `<circle class="inlay" cx="${midOf(f).toFixed(1)}" cy="${midY}" r="8"/>`;
-    if (f === 12) h += `<circle class="inlay" cx="${midOf(f).toFixed(1)}" cy="${(yOf(1) + yOf(2)) / 2}" r="8"/><circle class="inlay" cx="${midOf(f).toFixed(1)}" cy="${(yOf(3) + yOf(4)) / 2}" r="8"/>`;
-  }
-  for (let f = Math.max(1, from); f <= to; f++) {
-    const x = xOf(f).toFixed(1);
-    h += `<line class="fretw" x1="${x}" y1="${TOP}" x2="${x}" y2="${yB}"/><line class="freth" x1="${x - 1}" y1="${TOP}" x2="${x - 1}" y2="${yB}"/>`;
-  }
-  if (from === 0) h += `<rect class="nut" x="${X0 - 9}" y="${TOP - 3}" width="10" height="${BOARD_H + 6}" rx="2"/>`;
-  else h += `<line class="fretw" x1="${X0}" y1="${TOP}" x2="${X0}" y2="${yB}"/>`;
-  for (let s = 0; s < 6; s++) {
-    const y = yOf(s), w = 1 + GAUGE[s] / 12, wound = s >= 3, isT = hl.has(s);
-    if (isT) h += `<line class="glow" x1="${strStart}" y1="${y}" x2="${W}" y2="${y}" stroke-width="${(w + 10).toFixed(1)}"/>`;
-    h += `<line class="str${wound ? ' wound' : ''}${isT ? ' target' : ''}" x1="${strStart}" y1="${y}" x2="${W}" y2="${y}" stroke-width="${w.toFixed(1)}"/>`;
-    if (wound) h += `<line class="wind" x1="${strStart}" y1="${y}" x2="${W}" y2="${y}" stroke-width="${(w * 0.55).toFixed(1)}"/>`;
-    h += `<text class="slbl${isT ? ' target' : ''}" x="16" y="${y + 7}" text-anchor="middle">${STR_LETTER[s]}</text>`;
-  }
-  const few = to - from <= 8;
-  for (let f = Math.max(1, from); f <= to; f++) {
-    if (few || [3, 5, 7, 9, 12, 15, 17, 19].includes(f)) h += `<text class="fnum" x="${midOf(f).toFixed(1)}" y="${yB + 30}" text-anchor="middle">${f}</text>`;
-  }
-  for (const m of o.marks || []) {
-    if (m.f < from || m.f > to) continue;
-    const x = midOf(m.f).toFixed(1), y = yOf(m.s);
-    // big: grotere stippen en letters, voor uitleg en vragen waar de naam ertoe doet
-    const r = o.big ? Math.max(12, Math.min(15, cellW(m.f) * 0.5)) : Math.max(9, Math.min(16, cellW(m.f) * 0.44));
-    const fs = o.big ? Math.min(17, r * 1.08) : Math.max(10, Math.min(15, r * 0.95));
-    const lbl = m.label == null ? '' : String(m.label);
-    h += `<g class="mk ${m.kind || ''}"><circle cx="${x}" cy="${y}" r="${r.toFixed(1)}"/>${lbl ? `<text x="${x}" y="${(y + fs * 0.34).toFixed(1)}" text-anchor="middle" font-size="${fs.toFixed(1)}">${lbl}</text>` : ''}</g>`;
-  }
-  if (o.tap) {
-    for (let s = 0; s < 6; s++) for (let f = Math.max(0, from); f <= to; f++) {
-      const x0 = f === 0 ? X0 - 50 : xOf(f - 1), x1 = f === 0 ? X0 - 6 : xOf(f);
-      h += `<rect class="cell" data-s="${s}" data-f="${f}" x="${x0.toFixed(1)}" y="${(yOf(s) - GAP / 2).toFixed(1)}" width="${(x1 - x0).toFixed(1)}" height="${GAP}"/>`;
+    if (o.range) {
+      for (let f = Math.max(1, a); f <= b; f++) {
+        if (f < o.range.min || f > o.range.max) h += `<rect class="shade" x="${xOf(f - 1).toFixed(1)}" y="${top}" width="${cellW(f).toFixed(1)}" height="${BOARD_H}"/>`;
+      }
+      if (b >= o.range.max) h += `<rect class="shade" x="${xOf(b).toFixed(1)}" y="${top}" width="${(W - xOf(b)).toFixed(1)}" height="${BOARD_H}"/>`;
     }
-  }
+    const midY = (yOf(2) + yOf(3)) / 2;
+    for (let f = Math.max(1, a); f <= b; f++) {
+      if ([3, 5, 7, 9, 15, 17, 19].includes(f)) h += `<circle class="inlay" cx="${midOf(f).toFixed(1)}" cy="${midY}" r="8"/>`;
+      if (f === 12) h += `<circle class="inlay" cx="${midOf(f).toFixed(1)}" cy="${(yOf(1) + yOf(2)) / 2}" r="8"/><circle class="inlay" cx="${midOf(f).toFixed(1)}" cy="${(yOf(3) + yOf(4)) / 2}" r="8"/>`;
+    }
+    for (let f = Math.max(1, a); f <= b; f++) {
+      const x = xOf(f).toFixed(1);
+      h += `<line class="fretw" x1="${x}" y1="${top}" x2="${x}" y2="${yB}"/><line class="freth" x1="${x - 1}" y1="${top}" x2="${x - 1}" y2="${yB}"/>`;
+    }
+    if (a === 0) h += `<rect class="nut" x="${X0 - 9}" y="${top - 3}" width="10" height="${BOARD_H + 6}" rx="2"/>`;
+    else h += `<line class="fretw" x1="${X0}" y1="${top}" x2="${X0}" y2="${yB}"/>`;
+    for (let s = 0; s < 6; s++) {
+      const y = yOf(s), w = 1 + GAUGE[s] / 12, wound = s >= 3, isT = hl.has(s);
+      if (isT) h += `<line class="glow" x1="${strStart}" y1="${y}" x2="${W}" y2="${y}" stroke-width="${(w + 10).toFixed(1)}"/>`;
+      h += `<line class="str${wound ? ' wound' : ''}${isT ? ' target' : ''}" x1="${strStart}" y1="${y}" x2="${W}" y2="${y}" stroke-width="${w.toFixed(1)}"/>`;
+      if (wound) h += `<line class="wind" x1="${strStart}" y1="${y}" x2="${W}" y2="${y}" stroke-width="${(w * 0.55).toFixed(1)}"/>`;
+      h += `<text class="slbl${isT ? ' target' : ''}" x="16" y="${y + 7}" text-anchor="middle">${STR_LETTER[s]}</text>`;
+    }
+    const few = b - a <= 8;
+    for (let f = Math.max(1, a); f <= b; f++) {
+      if (few || [3, 5, 7, 9, 12, 15, 17, 19].includes(f)) h += `<text class="fnum" x="${midOf(f).toFixed(1)}" y="${yB + (touch ? 28 : 30)}" text-anchor="middle">${f}</text>`;
+    }
+    for (const m of o.marks || []) {
+      if (m.f < a || m.f > b) continue;
+      const x = midOf(m.f).toFixed(1), y = yOf(m.s);
+      // big: grotere stippen en letters, voor uitleg en vragen waar de naam ertoe doet
+      const r = o.big ? Math.max(12, Math.min(touch ? 17 : 15, cellW(m.f) * 0.5)) : Math.max(9, Math.min(16, cellW(m.f) * 0.44));
+      const fs = o.big ? Math.min(touch ? 19 : 17, r * 1.08) : Math.max(10, Math.min(15, r * 0.95));
+      const lbl = m.label == null ? '' : String(m.label);
+      h += `<g class="mk ${m.kind || ''}"><circle cx="${x}" cy="${y}" r="${r.toFixed(1)}"/>${lbl ? `<text x="${x}" y="${(y + fs * 0.34).toFixed(1)}" text-anchor="middle" font-size="${fs.toFixed(1)}">${lbl}</text>` : ''}</g>`;
+    }
+    if (o.tap) {
+      // tikvakjes; met active alleen op die snaren, en dan zo hoog dat je er niet naast tikt
+      const strs = act || [0, 1, 2, 3, 4, 5];
+      strs.forEach((s, k) => {
+        const y0 = act ? (k === 0 ? top - 8 : (yOf(strs[k - 1]) + yOf(s)) / 2) : yOf(s) - GAP / 2;
+        const y1 = act ? (k === strs.length - 1 ? yB + 8 : (yOf(s) + yOf(strs[k + 1])) / 2) : yOf(s) + GAP / 2;
+        for (let f = a; f <= b; f++) {
+          const x0 = f === 0 ? X0 - 50 : xOf(f - 1), x1 = f === 0 ? X0 - 6 : xOf(f);
+          h += `<rect class="cell" data-s="${s}" data-f="${f}" x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${(x1 - x0).toFixed(1)}" height="${(y1 - y0).toFixed(1)}"/>`;
+        }
+      });
+    }
+  });
+  svg.setAttribute('viewBox', `0 0 ${W} ${ROW_H * rows.length}`);
+  svg.classList.toggle('two-rows', rows.length > 1);
   svg.innerHTML = h;
 }
 
@@ -2009,22 +2062,29 @@ const UI = {
     $$('.heard-line').forEach(el => { el.innerHTML = html; });
   },
   tuner: null,
-  // korte melding bovenin; meerdere meldingen komen na elkaar
-  flashQ: [], flashing: false,
-  flash(icon, title, text, kind) {
-    this.flashQ.push({ icon, title, text, kind });
+  // korte melding bovenin; more: extra regels in dezelfde melding (zie Moments). Tik om weg te halen.
+  // now: antwoord op iets wat je net deed (bijvoorbeeld een reservekopie); die wacht niet op andere meldingen
+  flashQ: [], flashing: false, closeFlash: null,
+  flash(icon, title, text, kind, more, now) {
+    const f = { icon, title, text, kind, more: more || [] };
+    if (now) this.flashQ.unshift(f); else this.flashQ.push(f);
     if (!this.flashing) this.nextFlash();
+    else if (now && this.closeFlash) this.closeFlash();
   },
   nextFlash() {
     const f = this.flashQ.shift();
-    if (!f) { this.flashing = false; return; }
+    if (!f) { this.flashing = false; this.closeFlash = null; return; }
     this.flashing = true;
-    const el = h('div', { class: 'flash' + (f.kind ? ' flash-' + f.kind : ''), role: 'status' },
+    const el = h('div', { class: 'flash' + (f.kind ? ' flash-' + f.kind : '') + (f.more.length ? ' multi' : ''), role: 'status' },
       h('span', { class: 'fl-ico', html: f.icon || '' }),
-      h('span', { class: 'fl-txt' }, h('b', { text: f.title }), f.text ? h('small', { text: f.text }) : null));
+      h('span', { class: 'fl-txt' }, h('b', { text: f.title }), f.text ? h('small', { text: f.text }) : null,
+        f.more.length ? h('ul', { class: 'fl-more' }, f.more.slice(0, 4).map(m => h('li', {}, h('b', { text: m.title }), m.text ? h('small', { text: m.text }) : null))) : null));
+    let gone = false;
+    const close = () => { if (gone) return; gone = true; el.classList.add('out'); setTimeout(() => { el.remove(); this.nextFlash(); }, 400); };
+    this.closeFlash = close;
+    el.addEventListener('click', close);
     document.body.append(el);
-    setTimeout(() => el.classList.add('out'), 2800);
-    setTimeout(() => { el.remove(); this.nextFlash(); }, 3200);
+    setTimeout(close, 2800 + 1200 * Math.min(3, f.more.length));
   },
 };
 
@@ -2114,6 +2174,8 @@ const Router = {
     Progress.renderTop();
     Daily.renderBar();
     Srs.badge();
+    // wat je verdiende terwijl je op het eindscherm van een les stond, krijg je nu alsnog te zien
+    Moments.later(700);
     window.scrollTo(0, 0);
   },
   back() {
@@ -2148,7 +2210,7 @@ function renderSettings(view) {
     h('div', { class: 'set-grid' },
       h('div', { class: 'field' },
         checkEl('strict', 'Octaaf moet kloppen', s.strict, v => { s.strict = v; save(); }, 'Alleen de precieze toonhoogte telt. Werkt het best met een goede microfoon of via een versterker; een telefoon hoort lage noten soms een octaaf te hoog.'),
-        checkEl('sound', 'Geluidjes', s.sound, v => { s.sound = v; save(); }, 'Bij goede antwoorden en noten, als je een fout herstelt en als je je dagdoel haalt. In een les zet je ze ook aan of uit met het luidsprekertje.'),
+        checkEl('sound', 'Geluidjes', s.sound, v => { s.sound = v; save(); }, 'Bij goede antwoorden en noten, als je een fout goed herhaalt en als je je dagdoel haalt. In een les zet je ze ook aan of uit met het luidsprekertje.'),
         checkEl('haptics', 'Trillen bij goed en fout', s.haptics, v => { s.haptics = v; save(); if (v) Haptics.play('right'); }, 'Eén tikje bij een goed antwoord, twee bij een fout. Werkt op Android en op een iPhone met iOS 18 of nieuwer. Terwijl je speelt trilt de app niet, anders hoort de microfoon je telefoon.')),
       field('Notenamen', seg([{ value: 'sharps', label: 'met ♯' }, { value: 'flats', label: 'met ♭' }, { value: 'both', label: '♯ en ♭' }], s.names, v => { s.names = v; save(); }), 'Met ♯ en ♭ wisselt het af, zodat je leert dat F♯ en G♭ dezelfde toets zijn.'),
       field('Automatische hint bij Noten zoeken', selectEl('autoHint', [{ value: 0, label: 'Uit' }, { value: 5, label: 'Na 5 seconden' }, { value: 10, label: 'Na 10 seconden' }, { value: 20, label: 'Na 20 seconden' }], s.autoHint, v => { s.autoHint = Number(v); save(); }))));
@@ -2160,7 +2222,12 @@ function renderSettings(view) {
     Store.stats = DEFAULT_STATS(); Store.saveStats();
     b.textContent = 'Scores gewist'; b.classList.remove('danger');
   } });
-  const scoreCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Scores' }), h('div', { class: 'row' }, reset));
+  const bk = Backup.status();
+  const scoreCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Je voortgang' }),
+    h('p', { class: 'help', text: 'Je voortgang staat alleen in deze browser. Met een reservekopie zet je hem terug, ook op een ander toestel.' }),
+    h('p', { class: 'bk-status' + (bk.old ? ' old' : ''), text: bk.text }),
+    backupButtons(),
+    h('div', { class: 'row' }, reset));
   const goalCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Dagdoel en lessen' }),
     h('div', { class: 'set-grid' },
       field('Dagdoel', seg([10, 15, 20, 30].map(n => ({ value: n, label: `${n} min` })), s.goal, v => { s.goal = Number(v); save(); Progress.renderTop(); }), 'Je reeks telt de dagen waarop je dit aantal minuten echt geoefend hebt.'),
@@ -2417,8 +2484,8 @@ const LOADER_LINES = [
   'Een blije fret springt alle kanten op. In het Engels heet dat de weasel war dance.',
   'Fretten slapen 14 tot 18 uur per dag. Jouw dagdoel is een stuk korter.',
   'Geen gitaar bij de hand? Tik op “Ik kan nu niet spelen”.',
-  'Foute antwoorden gaan naar je foutenbak. Herstel ze voor bonus-XP.',
-  'Een herstelde fout komt terug na 1, 3 en 7 dagen. Zo blijft hij hangen.',
+  'Wat je fout hebt, komt terug bij Herhalen: meteen, en daarna na 1, 3 en 7 dagen.',
+  'Bewaar af en toe een reservekopie van je voortgang. Dat doe je bij Voortgang.',
 ];
 const Loader = {
   // toont de laadanimatie minstens min ms (en tot o.wait klaar is) en voert dan go() uit
@@ -2543,7 +2610,7 @@ const CHEER = {
   right: ['Goed zo!', 'Precies!', 'Klopt!', 'Netjes!', 'Top!', 'Lekker bezig!', 'Helemaal goed!', 'Knap!', 'Mooi zo!', 'Zo doe je dat!'],
   play: ['Raak!', 'Zuiver!', 'Mooi gespeeld!', 'Dat klinkt!', 'Strak!', 'Netjes gespeeld!'],
   again: ['Nu wel!', 'Tweede keer goed!', 'Zie je wel!', 'Die zit erin!'],
-  fixed: ['Hersteld!', 'Opgelost!', 'Die zit!', 'Gerepareerd!'],
+  fixed: ['Nu wel!', 'Opgelost!', 'Die zit!', 'Gerepareerd!'],
   recall: ['Goed onthouden!', 'Nog steeds goed!', 'Blijft hangen!', 'Paraat!'],
   wrong: ['Net niet', 'Bijna!', 'Niet helemaal', 'Nog niet', 'Oei, net mis'],
   wrongAgain: ['Nog lastig', 'Deze is taai', 'Nog niet helemaal'],
@@ -4086,7 +4153,7 @@ registerMode({
       if (t) marks.push({ s: st, f, kind: 'ex' + (t.label === 'R' ? ' root' : '') + (hl && hl.s === st && hl.f === f ? ' hit' : ''), label: s.labels === 'names' ? t.name : t.label });
     }
     if (hl && !tones.find(x => x.pc === mod12(OPEN[hl.s] + hl.f))) marks.push({ s: hl.s, f: hl.f, kind: 'wrong', label: '' });
-    drawNeck(this.svg, { from, to, marks, tap: true });
+    drawNeck(this.svg, { from, to, marks, tap: true, touch: true });
     this.slots.innerHTML = tones.map(t => `<span class="slot${t.label === 'R' ? ' on' : ''}"><small>${t.label}</small><b>${t.name}</b></span>`).join('');
   },
   tap(e) {
@@ -4500,7 +4567,7 @@ registerMode({
     const marks = q.found.map(p => ({ s: p.s, f: p.f, kind: 'found', label: q.name }));
     if (q.flash) marks.push({ s: q.flash.s, f: q.flash.f, kind: 'wrong', label: FretQuiz.nameAt(q.flash.s, q.flash.f) });
     if (this.answered) for (const p of q.valid) if (!q.found.some(x => x.s === p.s && x.f === p.f)) marks.push({ s: p.s, f: p.f, kind: 'reveal', label: q.name });
-    drawNeck(this.svg, { from: 0, to, big: true, highlight: s.strings.length < 6 ? s.strings : [], tap: !this.answered, marks });
+    drawNeck(this.svg, { from: 0, to, big: true, touch: true, active: s.strings, highlight: s.strings.length < 6 ? s.strings : [], tap: !this.answered, marks });
   },
   expected() { return []; },
   // Welke noot?: een toets gekozen
@@ -4573,7 +4640,7 @@ registerMode({
         { label: 'Per noot', value: fb.ok && totalT ? sec(totalT / fb.ok) : '–' },
         { label: 'Beste reeks', value: String(fb.best || 0) },
       ]),
-      hard.length ? h('p', { class: 'help nq-hard', text: `Lastigst: ${hard.map(x => `${FretQuiz.nameAt(x.s, x.f)} op ${FretQuiz.where(x.s, x.f)}`).join(', ')}.` }) : null);
+      hard.length ? h('p', { class: 'help nq-hard', text: `Lastigst: ${hard.map(x => `${FretQuiz.nameAt(x.s, x.f)} op ${FretQuiz.where(x.s, x.f)}`).join(', ')}.` }) : '');
     const marks = [];
     for (let s = 0; s < 6; s++) for (let f = 0; f <= 12; f++) { const lv = FretQuiz.heat(s, f); if (lv) marks.push({ s, f, kind: `heat h${lv}`, label: FretQuiz.nameAt(s, f) }); }
     drawNeck(svg, { from: 0, to: 12, marks });
@@ -5311,6 +5378,20 @@ function nextHals() {
 
 // ---------- Lesspeler (één oefening tegelijk, zoals Duolingo) ----------
 const sameSet = (a, b) => a.length === b.length && a.every(x => b.includes(x));
+// tikvraag met een gemarkeerde noot: welk stuk van de hals de telefoon laat zien (7 frets rond die noot,
+// genoeg voor de vormen van intervallen, met minstens één goede plek erin). Op een groot scherm blijft
+// de hele hals staan.
+function tapZoom(it) {
+  const root = (it.marks || [])[0];
+  if (!root) return null;
+  let a = Math.max(0, root.f - 2), b = a + 6;
+  if (b > 12) { b = 12; a = 6; }
+  if (!(it.valid || []).some(p => p.f >= a && p.f <= b) && (it.valid || []).length) {
+    const near = it.valid.slice().sort((p, q) => Math.abs(p.f - root.f) - Math.abs(q.f - root.f))[0];
+    a = Math.min(a, near.f); b = Math.max(b, near.f);
+  }
+  return { from: a, to: b };
+}
 const KIND = { play: ['pick', 'Speel op je gitaar'], tap: ['note', 'Tik op de hals'], theory: ['book', 'Theorie'], learn: ['book', 'Leren'], name: ['eye', 'Herkennen'], tapall: ['target', 'Toepassen'] };
 const Lesson = {
   spec: null,
@@ -5318,8 +5399,8 @@ const Lesson = {
   mount(view) {
     const sp = this.spec;
     if (!sp) { setTimeout(() => { location.hash = ''; }, 0); return; }
-    // bin: herstelronde of herhaalronde (review: ook vragen uit de vakjes die vandaag terugkomen)
-    this.bin = sp.mode === 'bin'; this.review = !!sp.review;
+    // bin: een herhaalronde (nieuwe fouten en vragen die vandaag terugkomen)
+    this.bin = sp.mode === 'bin'; this.review = this.bin;
     this.cantPlay = (Store.settings.cantPlayUntil || 0) > Date.now();
     let items = sp.items.map((it, i) => Object.assign({ _id: i }, it));
     if (this.cantPlay && items.some(i => i.type !== 'play')) items = items.filter(i => i.type !== 'play');
@@ -5334,7 +5415,7 @@ const Lesson = {
       h('div', { class: 'ls-top' },
         h('button', { class: 'ls-close', type: 'button', 'aria-label': 'Les stoppen', html: ICONS.close, onclick: () => this.askQuit() }),
         h('div', { class: 'ls-bar', role: 'progressbar', 'aria-label': 'Voortgang in deze les' }, this.barFill),
-        this.bin ? h('span', { class: 'ls-bin', title: this.review ? 'Nog te herhalen' : 'Vragen in je foutenbak', html: this.review ? `${ICONS.retry}<b class="todo-count">${Srs.todoCount()}</b>` : `${ICONS.plaster}<b class="bin-count">${Bin.count()}</b>` }) : null,
+        this.bin ? h('span', { class: 'ls-bin', title: 'Nog te herhalen', html: `${ICONS.retry}<b class="todo-count">${Srs.todoCount()}</b>` }) : null,
         this.counter = h('span', { class: 'ls-count' }),
         this.sndBtn),
       this.comboEl = h('div', { class: 'combo', 'aria-live': 'polite' }),
@@ -5364,7 +5445,7 @@ const Lesson = {
       h('div', { class: 'sheet center' },
         h('div', { class: 'sheet-mascot', html: Mascot.svg('oeps') }),
         h('h3', { text: 'Wil je stoppen?' }),
-        h('p', { class: 'help', text: this.review ? 'Wat je al goed had, schuift een vakje door. De rest komt de volgende keer terug.' : this.bin ? 'Wat je al hebt hersteld, is uit je foutenbak. De rest blijft erin staan.' : 'Je voortgang in deze les gaat verloren. Wat je tot nu toe hebt geoefend, telt wel mee voor je dagdoel.' }),
+        h('p', { class: 'help', text: this.bin ? 'Wat je al goed had, schuift een vakje door. De rest komt de volgende keer terug.' : 'Je voortgang in deze les gaat verloren. Wat je tot nu toe hebt geoefend, telt wel mee voor je dagdoel.' }),
         h('button', { class: 'primary big', type: 'button', text: 'Doorgaan met oefenen', onclick: () => sheet.remove() }),
         h('button', { class: 'big ghost', type: 'button', text: 'Stoppen', onclick: () => { sheet.remove(); this.leave(); } })));
     document.body.append(sheet);
@@ -5389,7 +5470,7 @@ const Lesson = {
     this.foot.className = 'ls-foot';
     this.foot.innerHTML = '';
     const [ico, label] = KIND[KIND[it.type] ? it.type : 'theory'];
-    const from = it._box ? `herhaling na ${SRS_DAYS[it._box]} ${SRS_DAYS[it._box] === 1 ? 'dag' : 'dagen'}` : 'uit je foutenbak';
+    const from = it._box ? `herhaling na ${SRS_DAYS[it._box]} ${SRS_DAYS[it._box] === 1 ? 'dag' : 'dagen'}` : 'eerder fout';
     this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, ${from}` : label));
     this.body.append(h('h2', { class: 'ls-prompt', text: it.prompt }));
     if (it.sub && it.type !== 'play') this.body.append(h('p', { class: 'ls-sub', text: it.sub }));
@@ -5440,7 +5521,9 @@ const Lesson = {
     const fig = h('figure', { class: 'card neck tapneck' }, svg);
     this.body.append(fig);
     this.tapSvg = svg; this.tapFig = fig;
-    const draw = extra => drawNeck(svg, { from: it.from, to: it.to, marks: it.marks.concat(extra || []), tap: !this.answered });
+    // op de telefoon ingezoomd op het stuk rond de gemarkeerde noot: grotere vakjes
+    const zoom = tapZoom(it);
+    const draw = extra => drawNeck(svg, { from: it.from, to: it.to, zoom, touch: true, marks: it.marks.concat(extra || []), tap: !this.answered });
     this.drawTap = draw;
     draw();
     svg.addEventListener('click', e => {
@@ -5537,7 +5620,7 @@ const Lesson = {
     const fig = h('figure', { class: 'card neck tapneck' }, svg);
     this.body.append(fig);
     const ta = this.ta = { found: [], miss: 0, flash: null };
-    const draw = () => drawNeck(svg, { from: 0, to: 12, big: true, highlight: it.strings.length < 6 ? it.strings : [], tap: !this.answered,
+    const draw = () => drawNeck(svg, { from: 0, to: 12, big: true, touch: true, active: it.strings, highlight: it.strings.length < 6 ? it.strings : [], tap: !this.answered,
       marks: ta.found.map(p => ({ s: p.s, f: p.f, kind: 'found', label: it.name })).concat(ta.flash ? [{ s: ta.flash.s, f: ta.flash.f, kind: 'wrong', label: FretQuiz.nameAt(ta.flash.s, ta.flash.f) }] : []).concat(this.answered && ta.shown ? ta.shown : []) });
     this.drawTapAll = draw;
     draw();
@@ -5583,24 +5666,24 @@ const Lesson = {
     ta.shown = it.valid.filter(p => !ta.found.some(q => q.s === p.s && q.f === p.f)).map(p => ({ s: p.s, f: p.f, kind: 'reveal', label: it.name }));
     this.doneTapAll(it, $('.tapneck', this.body), true);
   },
-  // goed beantwoord. In een herstel- of herhaalronde schuift de vraag een vakje door:
-  // uit de foutenbak naar morgen, daarna over 3 en over 7 dagen, en dan heb je hem onder de knie.
+  // goed beantwoord. In een herhaalronde schuift de vraag een vakje door:
+  // van nu naar morgen, daarna over 3 en over 7 dagen, en dan heb je hem onder de knie.
   right(it, title, auto, answer) {
     let note = '', icon = ICONS.retry, pool = it.type === 'play' ? 'play' : 'right', sound = 'right';
     if (this.bin && it._bin) {
       const r = Srs.correct(it._bin);
       if (r && r.from === 0) {
         this.fixed++; pool = 'fixed'; sound = 'fixed';
-        note = 'Uit je foutenbak. Morgen komt hij nog eens terug, om te kijken of hij blijft hangen.';
+        note = 'Morgen komt hij nog één keer terug, om te kijken of hij blijft hangen.';
         Quests.bump('fixed');
       } else if (r) {
         this.recalled++; pool = 'recall'; sound = 'fixed';
         if (r.mastered) { this.mastered++; icon = ICONS.star; note = 'Onder de knie! Deze vraag komt niet meer terug.'; }
         else note = `Een vakje verder: je ziet hem over ${r.days} dagen terug.`;
       }
-      // telt voor de opdracht "herhaal vragen die vandaag terugkomen", ook als het pas de tweede keer lukt
+      // oude opdracht "herhaal vragen die vandaag terugkomen", ook als het pas de tweede keer lukt
       if (r && it._box) Quests.bump('srs');
-      if (r) Fx.pop($('.ls-bin', this.el));
+      if (r) { Quests.bump('herhaal'); Fx.pop($('.ls-bin', this.el)); }
     }
     if (it._again && (pool === 'right' || pool === 'play')) pool = 'again';
     this.combo++;
@@ -5613,7 +5696,7 @@ const Lesson = {
     Feedback.right({ el: this.fxEl, via: this.via, sound, big: milestone });
     this.feedback(true, title || (milestone && Feedback.streak(this.combo)) || Feedback.word(pool), it.type === 'name' || it.type === 'tapall' ? '' : it.explain || '', auto, note, '', icon, answer || '');
   },
-  // fout: de vraag gaat (terug) naar de foutenbak en komt in deze les nog een keer
+  // fout: de vraag komt terug bij Herhalen (weer vanaf het begin) en in deze les nog een keer
   wrong(it, title, text, answer) {
     const lost = this.combo;
     this.combo = 0;
@@ -5623,14 +5706,14 @@ const Lesson = {
     if (this.bin) {
       const prev = it._bin ? Srs.entry(it._bin) : null, back = prev && prev.box > 0;
       Bin.add(it);
-      note = back ? `Terug naar de foutenbak.${again ? ' Je krijgt hem zo nog een keer.' : ''}` : again ? 'Hij blijft in je foutenbak. Je krijgt hem zo nog een keer.' : 'Hij blijft in je foutenbak.';
+      note = `${back ? 'Terug naar het begin. ' : ''}${again ? 'Je krijgt hem zo nog een keer.' : 'Hij komt de volgende keer terug.'}`;
     } else {
       this.wrongKeys.add(Bin.add(it, this.spec && this.spec.title, (this.spec && this.spec.topic) || it._topic));
-      note = again ? 'In je foutenbak gezet. Je krijgt hem straks nog een keer.' : 'In je foutenbak gezet. Herstel hem voor bonus-XP.';
+      note = again ? 'Je krijgt hem straks nog een keer, en hij komt terug bij Herhalen.' : 'Hij komt terug bij Herhalen.';
     }
     Feedback.wrong({ el: this.fxEl, via: this.via });
     const lift = lost >= 3 ? `Jammer van je ${lost} op rij. Je pakt de draad zo weer op.` : this.mistakes <= 1 || Math.random() < 0.35 ? Feedback.word('lift') : '';
-    this.feedback(false, title || Feedback.word(it._again ? 'wrongAgain' : 'wrong'), text, 0, note, lift, ICONS.plaster, answer);
+    this.feedback(false, title || Feedback.word(it._again ? 'wrongAgain' : 'wrong'), text, 0, note, lift, ICONS.retry, answer);
   },
   showCombo(n) {
     clearTimeout(this.comboT);
@@ -5652,7 +5735,7 @@ const Lesson = {
           h('div', { class: 'fb-head' }, h('b', { class: 'fb-title', text: title }), h('small', { class: 'fb-left', text: left ? `nog ${left} ${left === 1 ? 'vraag' : 'vragen'}` : 'klaar!' })),
           answer ? h('p', { class: 'fb-answer' }, h('span', { class: 'fb-arrow', text: '→' }), h('span', { text: answer })) : null,
           text ? h('p', { text: text.trim() }) : null,
-          note ? h('p', { class: 'fb-note' }, h('span', { html: icon || ICONS.plaster }), note) : null,
+          note ? h('p', { class: 'fb-note' }, h('span', { html: icon || ICONS.retry }), note) : null,
           lift ? h('p', { class: 'fb-lift', text: lift }) : null)),
       h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => this.next() }));
     if (auto) this.autoT = setTimeout(() => { if (this.answered) this.next(); }, auto);
@@ -5791,22 +5874,20 @@ const Lesson = {
     const speed = this.times.length ? this.times.reduce((a, b) => a + b, 0) / this.times.length : null;
     let xp, title, sub, mood, party = false, how = '';
     if (this.bin) {
-      const good = this.fixed + this.recalled, left = Bin.count(), todo = Srs.todoCount();
+      const good = this.fixed + this.recalled, todo = Srs.todoCount();
       xp = 2 * good + (good && !this.mistakes ? 5 : 0) + 5 * this.mastered;
-      if (this.fixed && this.srsBefore[0] && !left) {
-        Bin.reward(); xp += 10; party = true;
-        title = 'Foutenbak leeg!'; mood = 'juich';
-        sub = 'Alles hersteld. Je krijgt 10 XP extra en 2 minuten voor je dagdoel.';
-      } else if (this.review && good && !todo) {
+      if (good && !todo) {
+        // alles herhaald wat er klaarstond: 10 XP extra
+        Bin.reward(); xp += 10;
         title = this.mastered ? 'Onder de knie!' : 'Alles herhaald!'; mood = 'juich'; party = !this.mistakes || this.mastered > 0;
-        sub = this.mastered ? `${this.mastered === 1 ? 'Eén vraag komt' : `${this.mastered} vragen komen`} niet meer terug. Voor vandaag is alles herhaald.` : 'Wat je goed had, schuift een vakje door.';
+        sub = this.mastered ? `${this.mastered === 1 ? 'Eén vraag komt' : `${this.mastered} vragen komen`} niet meer terug. Voor vandaag is alles herhaald: 10 XP extra.` : 'Voor vandaag is alles herhaald. Je krijgt 10 XP extra.';
       } else {
-        title = good ? `${good} van ${this.total} goed` : this.review ? 'Nog niet onthouden' : 'Nog niet hersteld';
+        title = good ? `${good} van ${this.total} goed` : 'Nog niet onthouden';
         mood = good ? 'ehbo' : 'oeps';
-        sub = left ? `Er ${left === 1 ? 'staat' : 'staan'} nog ${left} ${left === 1 ? 'vraag' : 'vragen'} in je foutenbak.` : '';
+        sub = todo ? `Nog ${todo} ${todo === 1 ? 'vraag' : 'vragen'} te herhalen.` : '';
       }
       // zo werkt herhalen: uitleg op het moment dat het gebeurt
-      how = this.fixed ? 'Wat je herstelde, komt morgen terug. Weet je het dan nog, dan zie je het na 3 en daarna na 7 dagen nog één keer.' : '';
+      how = this.fixed ? 'Wat je nu goed had, komt morgen terug. Weet je het dan nog, dan zie je het na 3 en daarna na 7 dagen nog één keer.' : '';
       if (xp) Progress.addXP(xp);
     } else {
       xp = passed ? (sp.xp || 10) + (perfect ? 5 : 0) : 5;
@@ -5815,50 +5896,54 @@ const Lesson = {
       title = !passed ? 'Nog niet gehaald' : sp.test ? 'Unittoets gehaald!' : sp.label ? (perfect ? `${sp.label}: foutloos!` : `${sp.label} ${sp.pass ? 'gehaald' : 'klaar'}!`) : perfect ? 'Foutloos!' : 'Les voltooid!';
       mood = !passed ? 'oeps' : perfect || sp.test || sp.pass ? 'juich' : 'blij';
       party = passed && (perfect || sp.test || !!sp.pass);
-      sub = !passed ? (sp.test ? 'Je hebt 80% goed nodig. Herhaal de lessen van deze unit en probeer het nog eens.' : `Je hebt ${Math.round(need * 100)}% goed nodig. De vragen zijn elke keer anders: probeer het nog eens.`) : sp.title || '';
+      sub = !passed ? (sp.test ? 'Je hebt 80% goed nodig. Herhaal de lessen van deze unit en probeer het nog eens.' : `Je hebt ${Math.round(need * 100)}% goed nodig. De vragen zijn elke keer anders: probeer het nog eens.`) : sp.sub || sp.title || '';
     }
-    const fresh = Badges.check({ quiet: true });
+    // alles wat je in deze les verdiende (niveau, dagdoel, opdrachten, plectrums): hier in één overzicht
+    Badges.check();
+    const got = Moments.take();
+    if (got.some(m => m.big)) party = true;
     this.body.innerHTML = '';
     this.body.classList.remove('enter');
     this.foot.className = 'ls-foot';
     this.foot.innerHTML = '';
     const mm = `${Math.floor(secs / 60)}:${String(Math.round(secs % 60)).padStart(2, '0')}`;
     const xpEl = h('b', { text: `+${xp}` }), pctEl = h('b', { text: `${Math.round(accuracy * 100)}%` });
-    this.body.append(h('div', { class: 'ls-end' },
+    this.body.append(h('div', { class: 'ls-end' + (got.length ? ' has-moments' : '') },
       h('div', { class: 'end-fret' + (party ? ' party' : ''), html: Mascot.svg(mood) }),
       h('h2', { class: 'end-title', text: title }),
       sub ? h('p', { class: 'help', text: sub }) : null,
       h('div', { class: 'end-stats' },
         h('div', {}, h('small', { text: 'XP' }), xpEl),
-        this.bin ? h('div', {}, h('small', { text: this.review ? 'Goed' : 'Hersteld' }), h('b', { text: `${this.fixed + this.recalled}/${this.total}` })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
+        this.bin ? h('div', {}, h('small', { text: 'Goed' }), h('b', { text: `${this.fixed + this.recalled}/${this.total}` })) : h('div', {}, h('small', { text: 'Goed' }), pctEl),
         speed != null ? h('div', {}, h('small', { text: 'Per noot' }), h('b', { text: `${fmt1(speed)} s` })) : h('div', {}, h('small', { text: 'Tijd' }), h('b', { text: mm }))),
       this.bin ? h('div', { class: 'end-srs' }, Srs.row({ delta: Srs.delta(this.srsBefore) }), how ? h('p', { class: 'help', text: how }) : null) : null,
-      fresh.length ? h('div', { class: 'end-badges' }, fresh.map(b => h('div', { class: 'end-badge' },
-        h('span', { class: 'b-pick', html: pickBadge(b, true) }),
-        h('div', {}, h('small', { text: 'Nieuwe mijlpaal' }), h('b', { text: b.title }), h('span', { text: b.desc }))))) : null,
+      got.length ? Moments.list(got, 'Verdiend') : null,
       Progress.goalLine()));
     countUp(xpEl, xp, { prefix: '+', delay: 250 });
     if (!this.bin) countUp(pctEl, Math.round(accuracy * 100), { suffix: '%', delay: 350 });
     this.counter.textContent = '';
     this.barFill.style.width = '100%';
     const done = () => { const s = this.spec; this.spec = null; if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; };
-    // fouten uit deze les: direct herstellen voor bonus-XP
+    // fouten uit deze les: meteen herhalen voor bonus-XP
     const fixable = this.bin ? [] : [...this.wrongKeys].filter(k => Bin.has(k));
     if (fixable.length && Bin.items(fixable).length) {
-      this.foot.append(h('button', { class: 'primary big fix-btn', type: 'button', html: `${ICONS.plaster}<span>Herstel je fouten (+${Bin.bonusXP(fixable.length)} XP)</span>`, onclick: () => { const s = this.spec; this.spec = null; Bin.start({ keys: fixable, after: () => { if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; } }); } }),
+      this.foot.append(h('button', { class: 'primary big fix-btn', type: 'button', html: `${ICONS.retry}<span>Herhaal je ${fixable.length === 1 ? 'fout' : `${fixable.length} fouten`} (+${Bin.bonusXP(fixable.length)} XP)</span>`, onclick: () => { const s = this.spec; this.spec = null; Bin.start({ keys: fixable, after: () => { if (s && s.onDone) s.onDone({ passed }); else location.hash = ''; } }); } }),
         h('button', { class: 'big', type: 'button', text: 'Verder', onclick: done }));
     } else if (this.bin && Srs.items().length) {
       this.foot.append(h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: done }),
         h('button', { class: 'big', type: 'button', text: 'Nog een ronde', onclick: () => { const s = this.spec; this.spec = null; Srs.start({ after: s && s.onDone ? () => s.onDone({ passed: true }) : null }); } }));
     } else this.foot.append(h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: done }));
-    Sfx.play('done');
+    // één geluid en één keer confetti voor alles samen
+    Sfx.play(got.some(m => m.big) ? 'goal' : 'done');
     if (party) setTimeout(() => Confetti.burst({ n: this.bin ? 70 : 90 }), 200);
   },
 };
 
-// ---------- Foutenbak: vragen die je fout had, tot je ze goed beantwoordt ----------
-// Elke vraag staat in een vak (box). Vak 0 is de foutenbak. Herstel je hem, dan gaat hij naar vak 1 en
-// komt hij later terug om te herhalen (zie Srs hieronder). Een fout zet hem altijd terug in vak 0.
+// ---------- Herhalen: wat je fout had, komt terug tot je het weet ----------
+// Eén begrip voor de gebruiker: Herhalen. Een vraag die je fout hebt, komt terug: meteen (vak 0), en als je
+// hem dan goed hebt na 1 dag, na 3 dagen en na 7 dagen (vak 1 t/m 3, Leitner). Weet je hem na 7 dagen nog,
+// dan heb je hem onder de knie. Een fout zet hem altijd terug in vak 0.
+// Bin beheert de lijst (vak 0 heette vroeger de foutenbak), Srs de vakken en de herhaalrondes.
 const Bin = {
   MAX: 40, MAX_ALL: 150,
   all() { const s = Store.stats; if (!Array.isArray(s.bin)) s.bin = []; return s.bin; },
@@ -5879,16 +5964,14 @@ const Bin = {
   },
   add(it, from, topic) {
     const k = it._bin || this.key(it), all = this.all(), ex = all.find(x => x.k === k);
-    const first = !this.list().length && !(Store.stats.binSeen);
     if (ex) { ex.n++; ex.t = Date.now(); ex.box = 0; ex.due = ''; }
     else {
       all.push({ k, it: this.clean(it), n: 1, t: Date.now(), from: from || '', topic: topic || it._topic || '', box: 0 });
-      // maximaal 40 in de foutenbak en 150 in totaal: de oudste gaan eruit
+      // maximaal 40 nieuwe fouten en 150 in totaal: de oudste gaan eruit
       const b0 = all.filter(x => !x.box);
       for (let i = 0; i < b0.length - this.MAX; i++) all.splice(all.indexOf(b0[i]), 1);
       while (all.length > this.MAX_ALL) { const i = all.findIndex(x => x.box); all.splice(i >= 0 ? i : 0, 1); }
     }
-    if (first) Store.stats.binSeen = true;
     Store.saveStats();
     this.changed();
     return k;
@@ -5910,7 +5993,7 @@ const Bin = {
     return src.filter(x => this.playable(x)).slice(0, max || 10).map(x => this.copy(x));
   },
   bonusXP(n) { return 2 * n + 5; },
-  // start een herstelronde met alleen deze vragen (bijvoorbeeld uit de les die je net deed).
+  // herhaal alleen deze vragen (de fouten uit de les die je net deed).
   // o.after: na afloop, o.exit: bij tussentijds stoppen. Standaard terug naar waar je vandaan kwam.
   start(o = {}) {
     if (!o.keys) return Srs.start(o);
@@ -5919,37 +6002,36 @@ const Bin = {
     const items = this.items(o.keys, 10);
     if (!items.length) { (o.after || back)(); return; }
     const needMic = items.some(x => x.type === 'play') && !Engine.mic;
-    Loader.run({ title: 'Herstel je fouten', sub: `${items.length} ${items.length === 1 ? 'vraag' : 'vragen'} uit je foutenbak`, mood: 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
-      Lesson.open({ mode: 'bin', title: 'Herstel je fouten', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
+    Loader.run({ title: items.length === 1 ? 'Herhaal je fout' : 'Herhaal je fouten', sub: `${items.length} ${items.length === 1 ? 'vraag' : 'vragen'} uit deze les`, mood: 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
+      Lesson.open({ mode: 'bin', title: 'Herhalen', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
   },
-  // beloning als de bak leeg is: 2 minuten erbij voor het dagdoel (de 10 XP telt de les zelf)
+  // alles herhaald wat er klaarstond: telt voor de mijlpaal (de 10 XP extra telt de les zelf)
   reward() {
     Store.stats.binCleared = (Store.stats.binCleared || 0) + 1;
     Store.saveStats();
-    Progress.addBonus(120);
   },
   changed() {
-    const n = this.count(), todo = Srs.todoCount();
-    $$('.bin-count').forEach(el => { el.textContent = String(n); });
+    const todo = Srs.todoCount();
     $$('.todo-count').forEach(el => { el.textContent = String(todo); });
     $$('.bin-btn').forEach(el => { el.hidden = !todo; });
     Srs.badge();
   },
 };
 
-// ---------- Herhalen: fouten komen terug na 1, 3 en 7 dagen (Leitner) ----------
-// Herstel je een fout, dan gaat hij naar vak 1 en zie je hem morgen terug. Weet je hem dan nog,
-// dan gaat hij een vak verder: over 3 dagen, daarna over 7 dagen. Na vak 3 heb je hem onder de knie.
-// Een fout zet hem terug in de foutenbak, en dan begint het opnieuw.
 const SRS_DAYS = [0, 1, 3, 7];
-const SRS_LABELS = ['Fouten\u00ADbak', '1 dag', '3 dagen', '7 dagen', 'Onder de knie'];
+const SRS_LABELS = ['Nu', '1 dag', '3 dagen', '7 dagen', 'Onder de knie'];
 const addDays = (key, n) => { const d = new Date(key + 'T12:00:00'); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const Srs = {
   entry(k) { return Bin.all().find(x => x.k === k) || null; },
   isDue(x, t) { return x.box > 0 && (x.due || '') <= (t || todayKey()); },
   dueList() { const t = todayKey(); return Bin.all().filter(x => this.isDue(x, t)); },
   dueCount() { return this.dueList().length; },
+  // alles wat nu te herhalen is: nieuwe fouten plus wat vandaag terugkomt
   todoCount() { return Bin.count() + this.dueCount(); },
+  // "2 nieuwe fouten en 1 vraag die vandaag terugkomt"
+  what(nb, due) {
+    return [nb ? `${nb} ${nb === 1 ? 'nieuwe fout' : 'nieuwe fouten'}` : '', due ? `${due} ${due === 1 ? 'vraag die vandaag terugkomt' : 'vragen die vandaag terugkomen'}` : ''].filter(Boolean).join(' en ');
+  },
   // aantallen per vak, plus wat je onder de knie hebt
   snapshot() {
     const c = [0, 0, 0, 0, Store.stats.srsDone || 0];
@@ -5970,7 +6052,7 @@ const Srs = {
     return 'op ' + new Date(date + 'T12:00:00').toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'short' });
   },
   comes(nx) { const w = this.when(nx.date); return `${w[0].toUpperCase() + w.slice(1)} ${nx.n === 1 ? 'komt er een vraag' : `komen er ${nx.n} vragen`} terug.`; },
-  // goed beantwoord in een herstel- of herhaalronde: een vak verder
+  // goed beantwoord in een herhaalronde: een vak verder
   correct(k) {
     const x = this.entry(k);
     if (!x) return null;
@@ -5989,27 +6071,29 @@ const Srs = {
     Bin.changed();
     return res;
   },
-  // wat vandaag aan de beurt is (oudste eerst), daarna de foutenbak
+  // wat vandaag terugkomt (oudste eerst), daarna de nieuwe fouten
   items(max) {
     const due = this.dueList().filter(x => Bin.playable(x)).sort((a, b) => (a.due < b.due ? -1 : a.due > b.due ? 1 : a.box - b.box));
     const bin = Bin.list().filter(x => Bin.playable(x)).sort((a, b) => b.n - a.n || a.t - b.t);
     return due.concat(bin).slice(0, max || 10).map(x => Bin.copy(x));
   },
+  // herhalen: eerst wat klaarstaat; staat er niets klaar, dan vragen uit eerdere lessen (zwakke eerst)
   start(o = {}) {
     const from = location.hash === '#les' ? '' : location.hash;
     const back = () => { if (location.hash === from) Router.render(); else location.hash = from; };
     const items = this.items(10);
     if (!items.length) {
+      const todo = this.todoCount();
+      if (!todo && Review.start(o)) return;
       const nx = this.next();
-      UI.flash(ICONS.retry, Bin.count() ? 'Alleen speelvragen over' : 'Niets te herhalen', Bin.count() ? 'Zet speelopdrachten weer aan om ze te herstellen.' : nx ? this.comes(nx) : 'Fouten uit je lessen komen hier terug.', 'badge');
+      UI.flash(ICONS.retry, todo ? 'Alleen speelvragen over' : 'Niets te herhalen', todo ? 'Zet speelopdrachten weer aan om ze te herhalen.' : nx ? this.comes(nx) : 'Wat je fout hebt in een les, komt hier terug.', 'badge', null, true);
       (o.after || back)();
       return;
     }
-    const due = items.filter(x => x._box).length, fix = items.length - due;
+    const due = items.filter(x => x._box).length;
     const needMic = items.some(x => x.type === 'play') && !Engine.mic;
-    const sub = [due ? `${due} ${due === 1 ? 'vraag' : 'vragen'} uit je vakjes` : '', fix ? `${fix} uit je foutenbak` : ''].filter(Boolean).join(' en ');
-    Loader.run({ title: 'Herhalen', sub, mood: due ? 'denk' : 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
-      Lesson.open({ mode: 'bin', review: true, title: 'Herhalen', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
+    Loader.run({ title: 'Herhalen', sub: this.what(items.length - due, due), mood: due ? 'denk' : 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
+      Lesson.open({ mode: 'bin', title: 'Herhalen', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
   },
   // teller op het tabblad Oefenen
   badge() {
@@ -6024,7 +6108,7 @@ const Srs = {
     const c = this.snapshot(), due = this.dueBy(), d = o.delta || [];
     return h('div', { class: 'lb-row', role: 'list', 'aria-label': 'Herhaalvakjes' }, SRS_LABELS.map((label, k) => {
       const n = c[k], cards = Math.min(3, n);
-      return h('div', { class: `lb b${k}${n ? ' has' : ''}${due[k] ? ' due' : ''}`, role: 'listitem', 'aria-label': `${label}: ${n}${due[k] ? `, ${due[k]} vandaag aan de beurt` : ''}` },
+      return h('div', { class: `lb b${k}${n ? ' has' : ''}${due[k] ? ' due' : ''}`, role: 'listitem', 'aria-label': `${k === 0 ? 'Nu te herhalen' : k === 4 ? label : `Na ${label}`}: ${n}${due[k] ? `, ${due[k]} vandaag aan de beurt` : ''}` },
         h('span', { class: 'lb-cards', 'aria-hidden': 'true' }, Array.from({ length: cards }, () => h('i'))),
         h('b', { class: 'lb-n', text: String(n) }),
         h('small', { class: 'lb-l', text: label }),
@@ -6035,13 +6119,14 @@ const Srs = {
   // kaart bovenaan Oefenen
   card() {
     const c = this.snapshot(), nb = c[0], due = this.dueCount(), todo = nb + due, total = c.reduce((a, b) => a + b, 0), nx = this.next();
+    const old = !todo && Review.available();
     let title, text, mood;
     if (!total) {
       title = 'Nog niets te herhalen'; mood = 'boek';
-      text = 'Een fout uit je lessen komt hier terecht. Herstel je hem, dan komt hij terug na 1, 3 en 7 dagen. Zo blijft het hangen.';
+      text = 'Wat je fout hebt in een les, komt hier terug: meteen, en daarna na 1, 3 en 7 dagen. Zo blijft het hangen.';
     } else if (todo) {
       title = `${todo} ${todo === 1 ? 'vraag' : 'vragen'} om te herhalen`; mood = due ? 'denk' : 'ehbo';
-      text = [due ? `${due} ${due === 1 ? 'komt' : 'komen'} vandaag terug uit je vakjes` : '', nb ? `${nb} ${nb === 1 ? 'staat' : 'staan'} in je foutenbak` : ''].filter(Boolean).join(' en ') + '. Goed is een vakje verder, fout is terug naar de foutenbak.';
+      text = `${this.what(nb, due)[0].toUpperCase()}${this.what(nb, due).slice(1)}. Goed is een vakje verder, fout is terug naar het begin.`;
     } else {
       title = 'Vandaag niets te herhalen'; mood = 'slaap';
       text = nx ? this.comes(nx) : `Je hebt ${c[4]} ${c[4] === 1 ? 'vraag' : 'vragen'} onder de knie.`;
@@ -6051,7 +6136,8 @@ const Srs = {
         h('div', { class: 'srs-fret', html: Mascot.svg(mood) }),
         h('div', { class: 'srs-text' }, h('p', { class: 'srs-eyebrow', text: 'Herhalen' }), h('h2', { text: title }), h('p', { class: 'srs-sub', text: text }))),
       this.row(),
-      todo ? h('button', { class: 'primary big srs-go', type: 'button', onclick: () => this.start() }, h('span', { html: ICONS.retry }), h('span', { text: 'Herhaal nu' }), h('b', { class: 'todo-count', text: String(todo) })) : null);
+      todo ? h('button', { class: 'primary big srs-go', type: 'button', onclick: () => this.start() }, h('span', { html: ICONS.retry }), h('span', { text: 'Herhaal nu' }), h('b', { class: 'todo-count', text: String(todo) }))
+        : old ? h('button', { class: 'big srs-old', type: 'button', onclick: () => Review.start() }, h('span', { html: ICONS.retry }), h('span', { text: 'Herhaal eerdere lessen' })) : null);
   },
 };
 
@@ -6301,8 +6387,8 @@ function renderPath(view) {
   const nx = renderTrack(box, track, { intro, just });
   const remaining = Math.max(0, Progress.goalSecs() - Progress.day().secs), todo = Srs.todoCount();
   const cta = h('div', { class: 'cta-bar' },
-    h('button', { class: 'bin-btn', type: 'button', hidden: !todo, 'aria-label': `Herhaal fouten (${todo})`, title: 'Herhaal fouten', onclick: () => Srs.start() },
-      h('span', { html: ICONS.plaster }), h('b', { class: 'todo-count', text: String(todo) }), h('small', { text: 'herhaal' })),
+    h('button', { class: 'bin-btn', type: 'button', hidden: !todo, 'aria-label': `Herhalen: ${todo} ${todo === 1 ? 'vraag' : 'vragen'}`, title: 'Herhalen', onclick: () => Srs.start() },
+      h('span', { html: ICONS.retry }), h('b', { class: 'todo-count', text: String(todo) }), h('small', { text: 'herhaal' })),
     h('button', { class: 'primary big', type: 'button', id: 'todayBtn', onclick: () => Daily.showPlan() },
       h('span', { text: Daily.active ? 'Ga verder met vandaag' : remaining ? 'Oefen vandaag' : 'Extra oefenen' }),
       h('small', { text: remaining ? `nog ${Math.ceil(remaining / 60)} min voor je dagdoel` : 'dagdoel gehaald' })));
@@ -6322,8 +6408,21 @@ function nodeSheet(u, i, nodes, unitNo) {
   document.body.append(sheet);
 }
 
-// ---------- Opfrissen: vragen uit afgeronde lessen, zwakke eerst ----------
+// ---------- Herhalen zonder fouten: vragen uit afgeronde lessen, zwakke eerst ----------
+// Staat er bij Herhalen niets klaar, dan haalt dit vragen uit lessen die je al deed. Wat je dan fout hebt,
+// komt gewoon terug bij Herhalen.
 const Review = {
+  // start een ronde; geeft false als er nog geen afgeronde lessen zijn
+  start(o = {}) {
+    const items = this.build(8);
+    if (!items.length) return false;
+    const from = location.hash === '#les' ? '' : location.hash;
+    const back = () => { if (location.hash === from) Router.render(); else location.hash = from; };
+    const needMic = items.some(x => x.type === 'play') && !Engine.mic && Bin.canPlay();
+    Loader.run({ title: 'Herhalen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst', mood: 'boek', wait: needMic ? Engine.startMic() : null }, () =>
+      Lesson.open({ title: 'Herhalen', label: 'Herhalen', sub: 'Vragen uit eerdere lessen. Wat je fout had, komt terug bij Herhalen.', items, xp: 10, onDone: o.after || back, onExit: o.exit || o.after || back }));
+    return true;
+  },
   candidates() {
     const out = [];
     for (const u of PathData.units()) unitNodes(u).forEach((node, i) => {
@@ -6371,11 +6470,9 @@ const Level = {
     const from = this.need(n), to = this.need(n + 1);
     return { n, title: this.title(n), next: this.title(n + 1), from, to, xp, pct: (xp - from) / (to - from), left: to - xp };
   },
-  // feestje bij een nieuw niveau
+  // feestje bij een nieuw niveau (in een les: op het eindscherm)
   up(n) {
-    UI.flash(Mascot.svg('juich', { crop: 'head' }), `Niveau ${n}: ${this.title(n)}!`, n === 2 ? 'Je eerste niveau omhoog. Zo gaat het verder.' : `Op naar ${this.title(n + 1)}.`, 'goal');
-    setTimeout(() => Confetti.burst({ n: 90, y: innerHeight * 0.28 }), 250);
-    Sfx.play('goal');
+    Moments.add({ key: 'level-' + n, prio: 6, big: true, icon: Mascot.svg('juich', { crop: 'head' }), title: `Niveau ${n}: ${this.title(n)}!`, text: n === 2 ? 'Je eerste niveau omhoog. Zo gaat het verder.' : `Op naar ${this.title(n + 1)}.` });
     $$('.lv-meter').forEach(el => Fx.restart(el, 'lv-up'));
   },
   // segmentmeter zoals op een versterker
@@ -6396,13 +6493,6 @@ const Progress = {
     if (after > before) Level.up(after);
   },
   met(k) { return this.peek(k).secs >= this.goalSecs(); },
-  // extra minuten als beloning (bijvoorbeeld een lege foutenbak)
-  addBonus(secs) {
-    const d = this.day(), before = d.secs;
-    d.secs += secs; d.bonus = (d.bonus || 0) + secs;
-    Store.saveStats(); this.renderTop();
-    if (before < this.goalSecs() && d.secs >= this.goalSecs()) this.goalReached();
-  },
   tick() {
     const v = document.body.dataset.view;
     const practicing = document.visibilityState === 'visible' && Activity.active() && (v === 'lesson' || (v === 'mode' && (Engine.mic || (current && current.noMic))));
@@ -6451,11 +6541,9 @@ const Progress = {
   goalReached() {
     Store.saveStats();
     const sk = this.streak();
-    UI.flash(Mascot.svg('juich', { crop: 'head' }), 'Dagdoel gehaald!', sk.n === 1 ? 'Je reeks is begonnen.' : `${sk.n} dagen op rij.`, 'goal');
-    // de mijlpaal voor je eerste dagdoel zegt hetzelfde als deze melding
+    Moments.add({ key: 'goal', prio: 5, big: true, icon: Mascot.svg('juich', { crop: 'head' }), title: 'Dagdoel gehaald!', text: sk.n === 1 ? 'Je reeks is begonnen.' : `${sk.n} dagen op rij.` });
+    // de mijlpaal voor je eerste dagdoel zegt hetzelfde als dit moment
     Badges.check({ skip: ['goal'] });
-    Confetti.burst({ n: 110, y: innerHeight * 0.3 });
-    Sfx.play('goal');
   },
   renderTop() {
     const sk = this.streak(), secs = this.day().secs, goal = this.goalSecs();
@@ -6489,7 +6577,7 @@ const BADGES = [
   { id: 'streak30', icon: 'flame', pick: '#C4336F', title: 'Op tournee', desc: '30 dagen op rij je dagdoel', test: () => Progress.bestStreak() >= 30 },
   { id: 'perfect', icon: 'check', pick: 'pearl', title: 'Zuiver', desc: 'Een les zonder fouten', test: s => Object.values(s.path.nodes).some(n => n.perfect) },
   { id: 'unit', icon: 'trophy', pick: '#2B1A14', title: 'Eerste plaat', desc: 'Een unittoets gehaald', test: s => Object.values(s.path.nodes).some(n => n.test && n.done) },
-  { id: 'bin', icon: 'plaster', pick: 'pearl', title: 'Pleister erop', desc: 'Je foutenbak helemaal leeggemaakt', test: s => (s.binCleared || 0) >= 1 },
+  { id: 'bin', icon: 'plaster', pick: 'pearl', title: 'Pleister erop', desc: 'Alles herhaald wat er klaarstond', test: s => (s.binCleared || 0) >= 1 },
   { id: 'srs10', icon: 'retry', pick: '#1F6FA8', title: 'Uit het hoofd', desc: '10 fouten onder de knie gekregen', test: s => (s.srsDone || 0) >= 10 },
   { id: 'xp100', icon: 'bolt', pick: '#0B7D72', title: 'Demo', desc: '100 XP verdiend', test: s => (s.xp || 0) >= 100 },
   { id: 'xp500', icon: 'bolt', pick: '#B4520E', title: 'Single', desc: '500 XP verdiend', test: s => (s.xp || 0) >= 500 },
@@ -6525,13 +6613,13 @@ function pickBadge(b, got) {
   return `<svg viewBox="0 0 64 64" class="pickb${got ? ' got' : ''}" aria-hidden="true">${defs ? `<defs>${defs}</defs>` : ''}<path d="${shape}" fill="${fill}" ${got ? 'stroke="rgba(0,0,0,.18)" stroke-width="1.5"' : 'stroke="var(--line)" stroke-width="2" stroke-dasharray="4 4"'}/>${got ? '<path d="M17 12c6-4 18-5 26-1" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".45"/>' : ''}${icon}</svg>`;
 }
 const Badges = {
-  // geeft de nieuw behaalde mijlpalen terug; quiet: geen melding (het eindscherm toont ze zelf)
+  // nieuw behaalde mijlpalen worden momenten (zie Moments); skip: geen moment voor deze (wel behaald)
   check(o = {}) {
     const s = Store.stats; s.badges = s.badges || {};
     const fresh = [];
     for (const b of BADGES) if (!s.badges[b.id] && b.test(s)) { s.badges[b.id] = todayKey(); fresh.push(b); }
     if (fresh.length) Store.saveStats();
-    if (!o.quiet) for (const b of fresh) if (!(o.skip || []).includes(b.id)) UI.flash(pickBadge(b, true), `Nieuwe mijlpaal: ${b.title}`, b.desc, 'badge');
+    for (const b of fresh) if (!(o.skip || []).includes(b.id)) Moments.add({ key: 'badge-' + b.id, prio: 2, icon: pickBadge(b, true), title: `Nieuwe mijlpaal: ${b.title}`, text: b.desc });
     return fresh;
   },
 };
@@ -6610,6 +6698,7 @@ function badgesCard() {
 // nog nooit geoefend: één grote uitnodiging, en wat je hier straks ziet
 function renderProgressEmpty(view) {
   view.append(emptyHero('progress'));
+  view.append(restoreCard());
   const li = (icon, b, t) => h('li', {}, h('span', { class: 'pv-ico', html: icon }), h('span', {}, h('b', { text: b }), h('small', { text: t })));
   view.append(h('div', { class: 'card preview' }, h('h2', { class: 'card-h', text: 'Wat je hier straks ziet' }),
     h('ul', { class: 'pv-list' },
@@ -6694,15 +6783,18 @@ function renderProgress(view) {
   ];
   view.append(h('div', { class: 'card hard' }, h('h2', { class: 'card-h', text: 'Records' }), h('ol', {}, rows.map(([a, b]) => h('li', {}, h('span', { text: a }), h('span', { text: b })))),
     h('div', { class: 'row links' }, h('a', { class: 'link', href: '#m-heatmap', text: 'Hittekaart van de hals' }), h('a', { class: 'link', href: '#instellingen', text: 'Instellingen' }))));
+  view.append(backupCard());
 }
 
 // ---------- Dagelijkse opdrachten, reeksbevriezer en voortgang voor de cursus ----------
 const qc = (d, k) => (d.c && d.c[k]) || 0;
 const QUESTS = [
   { id: 'node', cat: 'a', icon: 'path', target: () => 1, text: () => 'Rond een stap in je leerpad af', value: d => qc(d, 'nodes'), ok: () => !!nextNode() },
-  { id: 'fix', cat: 'a', icon: 'plaster', target: () => Math.min(3, Bin.count()), text: n => (n === 1 ? 'Herstel een fout uit je foutenbak' : `Herstel ${n} fouten uit je foutenbak`), value: d => qc(d, 'fixed'), ok: () => Bin.items().length > 0 },
+  { id: 'herhaal', cat: 'a', icon: 'retry', target: () => Math.min(4, Srs.items(4).length), text: n => (n === 1 ? 'Herhaal een vraag' : `Herhaal ${n} vragen`), value: d => qc(d, 'herhaal'), ok: () => Srs.items(1).length > 0 },
   { id: 'combo', cat: 'a', icon: 'flame', target: () => 6, text: n => `Beantwoord ${n} vragen op rij goed`, value: d => qc(d, 'combo'), ok: () => PathData.units().length > 0 },
-  { id: 'srs', cat: 'a', icon: 'retry', target: () => Math.min(5, Srs.dueList().filter(x => Bin.playable(x)).length), text: n => (n === 1 ? 'Herhaal de vraag die vandaag terugkomt' : `Herhaal ${n} vragen die vandaag terugkomen`), value: d => qc(d, 'srs'), ok: () => Srs.dueList().some(x => Bin.playable(x)) },
+  // van vóór Herhalen; alleen nog voor een dag waarop ze al gekozen waren
+  { id: 'fix', cat: 'old', icon: 'retry', target: () => 1, text: n => (n === 1 ? 'Herhaal een vraag die je fout had' : `Herhaal ${n} vragen die je fout had`), value: d => qc(d, 'fixed') },
+  { id: 'srs', cat: 'old', icon: 'retry', target: () => 1, text: n => (n === 1 ? 'Herhaal de vraag die vandaag terugkomt' : `Herhaal ${n} vragen die vandaag terugkomen`), value: d => qc(d, 'srs') },
   { id: 'notes', cat: 'b', icon: 'note', target: () => 25, text: n => `Vind ${n} noten op de hals`, value: d => qc(d, 'notes') },
   { id: 'challenge', cat: 'b', icon: 'bolt', target: () => clamp(Math.round((Store.stats.challenge.best || 12) * 0.8), 8, 40), text: n => `Haal ${n} of meer bij 60 seconden`, value: d => qc(d, 'challenge') },
   { id: 'scales', cat: 'b', icon: 'pick', target: () => 2, text: n => `Speel ${n} toonladderboxen helemaal`, value: d => qc(d, 'scales') },
@@ -6741,20 +6833,18 @@ const Quests = {
     let changed = false;
     for (const q of qs) if (!d.qd[q.id] && this.progress(q) >= q.target) {
       d.qd[q.id] = true; changed = true;
+      Moments.add({ key: 'quest-' + q.id, prio: 3, quest: this.text(q), icon: Mascot.svg('juich', { crop: 'head' }), title: 'Opdracht gedaan!', text: `${this.text(q)}. +10 XP` });
       Progress.addXP(10);
-      UI.flash(Mascot.svg('juich', { crop: 'head' }), 'Opdracht gedaan!', `${this.text(q)}. +10 XP`, 'goal');
-      Sfx.play('fixed');
     }
     if (changed && qs.every(q => d.qd[q.id]) && !d.qdAll) {
       d.qdAll = true;
       if ((Store.stats.freezes || 0) < 2) {
         Store.stats.freezes = (Store.stats.freezes || 0) + 1;
-        UI.flash(Mascot.svg('ijs', { crop: 'head' }), 'Reeksbevriezer verdiend!', 'Mis je een dag, dan houdt hij je reeks vast.', 'goal');
+        Moments.add({ key: 'freeze', prio: 4, big: true, icon: Mascot.svg('ijs', { crop: 'head' }), title: 'Reeksbevriezer verdiend!', text: 'Je deed alle drie de opdrachten. Mis je een dag, dan houdt hij je reeks vast.' });
       } else {
+        Moments.add({ key: 'quests-all', prio: 4, big: true, icon: Mascot.svg('juich', { crop: 'head' }), title: 'Alle opdrachten gedaan!', text: 'Je hebt al 2 bevriezers, dus je krijgt 20 XP extra.' });
         Progress.addXP(20);
-        UI.flash(Mascot.svg('juich', { crop: 'head' }), 'Alle opdrachten gedaan!', 'Je hebt al 2 bevriezers, dus je krijgt 20 XP extra.', 'goal');
       }
-      setTimeout(() => Confetti.burst({ n: 70 }), 300);
     }
     if (changed) { Store.saveStats(); this.render(); }
   },
@@ -6803,7 +6893,7 @@ const Freeze = {
   },
   check() {
     const used = this.apply();
-    if (used.length) setTimeout(() => UI.flash(Mascot.svg('ijs', { crop: 'head' }), 'Je reeks is gered!', used.length === 1 ? 'Je reeksbevriezer heeft je reeks vastgehouden voor de dag die je miste.' : `${used.length} bevriezers hebben je reeks vastgehouden.`, 'goal'), 900);
+    if (used.length) Moments.add({ key: 'frozen', prio: 4, icon: Mascot.svg('ijs', { crop: 'head' }), title: 'Je reeks is gered!', text: used.length === 1 ? 'Je reeksbevriezer heeft je reeks vastgehouden voor de dag die je miste.' : `${used.length} bevriezers hebben je reeks vastgehouden.` });
     return used;
   },
 };
@@ -6834,7 +6924,7 @@ function courseSummary() {
   const weakSk = Object.values(st.skills || {}).filter(v => v.w >= 2 && v.p).sort((a, b) => b.w / (b.r + b.w) - a.w / (a.r + a.w)).slice(0, 3);
   if (weakSk.length) L.push(`- Vaak fout: ${weakSk.map(v => `“${shorten(v.p)}” (${v.w} van ${v.r + v.w} fout)`).join(', ')}.`);
   const bin = Bin.list();
-  if (bin.length) L.push(`- Nog in de foutenbak (${bin.length}): ${bin.slice(-4).map(x => `“${shorten(itemLabel(x.it))}”`).join(', ')}.`);
+  if (bin.length) L.push(`- Net fout, nog te herhalen (${bin.length}): ${bin.slice(-4).map(x => `“${shorten(itemLabel(x.it))}”`).join(', ')}.`);
   const sc = Srs.snapshot(), inBoxes = sc[1] + sc[2] + sc[3];
   if (inBoxes || sc[4]) L.push(`- Herhalen na 1, 3 en 7 dagen: ${inBoxes} ${inBoxes === 1 ? 'vraag' : 'vragen'} onderweg, ${sc[4]} onder de knie.`);
   const sticky = Bin.all().filter(x => x.n >= 3).sort((a, b) => b.n - a.n).slice(0, 3);
@@ -6866,12 +6956,186 @@ async function copyCourseSummary(out) {
   out.textContent = text;
   try {
     await navigator.clipboard.writeText(text);
-    UI.flash(Mascot.svg('boek', { crop: 'head' }), 'Gekopieerd', 'Plak het als reactie op je volgende les.', 'goal');
+    UI.flash(Mascot.svg('boek', { crop: 'head' }), 'Gekopieerd', 'Plak het als reactie op je volgende les.', 'goal', null, true);
   } catch (e) {
     const r = document.createRange(); r.selectNodeContents(out);
     const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
-    UI.flash(ICONS.book, 'Kopieer de tekst hieronder', 'Hij staat al geselecteerd.', 'badge');
+    UI.flash(ICONS.book, 'Kopieer de tekst hieronder', 'Hij staat al geselecteerd.', 'badge', null, true);
   }
+}
+
+// ---------- Momenten: niveau omhoog, dagdoel, opdrachten, bevriezer, plectrums ----------
+// Tijdens een les of Oefen vandaag verschijnt er geen melding over je vraag heen. Alles wat je verdient,
+// komt samen in één overzicht aan het eind: op het eindscherm van de les of na de sessie.
+// Daarbuiten (bijvoorbeeld tijdens een oefening) worden momenten die vlak na elkaar komen één melding.
+// m = { key, prio, icon, title, text, big }: big = met confetti; prio bepaalt de volgorde (hoogste eerst)
+const Moments = {
+  pending: [], session: null, timer: 0,
+  quiet() { return document.body.dataset.view === 'lesson' || Daily.active; },
+  add(m) {
+    if (m.key && this.pending.some(x => x.key === m.key)) return;
+    this.pending.push(m);
+    if (this.session && !(m.key && this.session.some(x => x.key === m.key))) this.session.push(m);
+    this.later(400);
+  },
+  // de momenten die nog niet getoond zijn, belangrijkste eerst; daarna is de lijst leeg
+  take() { const out = this.sort(this.pending); this.pending = []; return out; },
+  // belangrijkste eerst; meer opdrachten tegelijk worden één regel
+  sort(list) {
+    const qs = list.filter(m => m.quest), rest = list.filter(m => !m.quest);
+    if (qs.length > 1) {
+      const texts = qs.map((m, i) => (i ? m.quest[0].toLowerCase() + m.quest.slice(1) : m.quest));
+      rest.push({ key: 'quests', prio: 3, icon: qs[0].icon, title: `${qs.length} opdrachten gedaan!`, text: `${texts.slice(0, -1).join(', ')} en ${texts[texts.length - 1]}. +${10 * qs.length} XP` });
+    } else rest.push(...qs);
+    return rest.sort((a, b) => (b.prio || 0) - (a.prio || 0));
+  },
+  later(ms) { clearTimeout(this.timer); if (this.pending.length && !this.quiet()) this.timer = setTimeout(() => this.flush(), ms); },
+  // één melding: het belangrijkste moment bovenaan, de rest als regels eronder
+  flush() {
+    if (this.quiet()) return;
+    const list = this.take();
+    if (!list.length) return;
+    const [top, ...rest] = list;
+    UI.flash(top.icon, top.title, top.text, 'goal', rest);
+    this.cheer(list);
+  },
+  cheer(list, y, delay = 0) {
+    if (list.some(m => m.big)) { Sfx.play('goal'); setTimeout(() => Confetti.burst({ n: 90, y: y != null ? y : innerHeight * 0.3 }), delay); }
+    else if (list.length) Sfx.play('fixed');
+  },
+  // lijstje voor een eindscherm
+  list(list, title) {
+    return h('section', { class: 'moments', 'aria-label': title || 'Verdiend' },
+      title ? h('p', { class: 'mo-h', text: title }) : null,
+      h('ul', {}, this.sort(list).map(m => h('li', { class: m.big ? 'big' : '' },
+        h('span', { class: 'mo-ico', html: m.icon || ICONS.star }),
+        h('span', { class: 'mo-txt' }, h('b', { text: m.title }), m.text ? h('small', { text: m.text }) : null)))));
+  },
+};
+
+// ---------- Reservekopie: je voortgang bewaren en terugzetten ----------
+// Alles staat alleen in de opslag van deze browser. Een kopie als bestand beschermt je reeks en XP als de
+// browser die opslag wist (Safari doet dat bij een website die je een week niet opent), en zo neem je je
+// voortgang mee naar een andere telefoon of computer.
+const daysAgo = ts => Math.round((new Date(todayKey() + 'T12:00:00') - new Date(dayKeyOf(new Date(ts)) + 'T12:00:00')) / 86400000);
+const Backup = {
+  data() { return { app: 'fretjacht', v: 1, saved: new Date().toISOString(), stats: Store.stats, settings: Store.settings }; },
+  fileName() { return `fretjacht-${todayKey()}.json`; },
+  // op de telefoon via het deelmenu (bewaar in Bestanden of iCloud Drive, of mail hem naar jezelf),
+  // anders als download
+  async save() {
+    const prev = Store.stats.backupAt;
+    Store.stats.backupAt = Date.now();
+    const name = this.fileName(), text = JSON.stringify(this.data());
+    let how = 'download';
+    try {
+      const file = new File([text], name, { type: 'application/json' });
+      if (navigator.canShare && matchMedia('(pointer: coarse)').matches && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Fretjacht-reservekopie' });
+        how = 'share';
+      }
+    } catch (e) {
+      // deelmenu dichtgedaan: niets bewaard
+      if (e && e.name === 'AbortError') { Store.stats.backupAt = prev; return false; }
+    }
+    if (how === 'download') this.download(text, name);
+    Store.saveStats();
+    this.persist();
+    UI.flash(ICONS.check, 'Reservekopie gemaakt', how === 'share' ? 'Bewaar hem op een plek die blijft, zoals iCloud Drive of Google Drive.' : `${name} staat bij je downloads.`, 'goal', null, true);
+    this.refresh();
+    return true;
+  },
+  download(text, name) {
+    const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+    const a = h('a', { href: url, download: name });
+    a.style.display = 'none';
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  },
+  // vraag de browser de opslag niet zomaar te wissen (werkt niet overal, maar kan geen kwaad)
+  persist() { try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {} },
+  pick() {
+    const inp = h('input', { type: 'file', accept: '.json,application/json' });
+    inp.style.display = 'none';
+    inp.addEventListener('change', () => { const f = inp.files && inp.files[0]; inp.remove(); if (f) this.read(f); });
+    document.body.append(inp);
+    inp.click();
+  },
+  async read(file) {
+    let j = null;
+    try { j = JSON.parse(await file.text()); } catch (e) {}
+    if (!this.valid(j)) { UI.flash(ICONS.close, 'Dit is geen reservekopie', 'Kies een bestand van Fretjacht, zoals fretjacht-2026-10-03.json.', 'badge', null, true); return false; }
+    this.confirm(j);
+    return true;
+  },
+  valid(j) { return !!(j && j.app === 'fretjacht' && j.stats && typeof j.stats === 'object' && !Array.isArray(j.stats) && j.stats.days && typeof j.stats.days === 'object'); },
+  facts(st) {
+    const xp = Number(st.xp) || 0, lv = Level.of(xp);
+    const days = Object.keys(st.days || {}).filter(k => st.days[k] && st.days[k].secs > 0).sort();
+    return { level: `${lv.n}, ${lv.title}`, xp: `${xp}`, days: String(days.length), last: days.length ? niceDate(days[days.length - 1]) : '–', badges: String(Object.keys(st.badges || {}).length) };
+  },
+  // eerst laten zien wat er verandert
+  confirm(j) {
+    const now = this.facts(Store.stats), kop = this.facts(j.stats), saved = new Date(j.saved || Date.now());
+    const row = (label, a, b) => h('tr', {}, h('th', { scope: 'row', text: label }), h('td', { text: a }), h('td', { class: a !== b ? 'diff' : '', text: b }));
+    const less = (Number(j.stats.xp) || 0) < (Store.stats.xp || 0);
+    const sheet = h('div', { class: 'sheet-wrap', onclick: e => { if (e.target === sheet) sheet.remove(); } },
+      h('div', { class: 'sheet backup-sheet' },
+        h('p', { class: 'sheet-eyebrow', text: 'Reservekopie terugzetten' }),
+        h('h3', { text: `Kopie van ${isNaN(saved) ? 'onbekende datum' : saved.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}` }),
+        h('table', { class: 'bk-table' },
+          h('thead', {}, h('tr', {}, h('td'), h('th', { scope: 'col', text: 'Nu' }), h('th', { scope: 'col', text: 'In de kopie' }))),
+          h('tbody', {}, row('Niveau', now.level, kop.level), row('XP', now.xp, kop.xp), row('Dagen geoefend', now.days, kop.days), row('Laatst geoefend', now.last, kop.last), row('Plectrums', now.badges, kop.badges))),
+        h('p', { class: 'help' + (less ? ' bk-warn' : ''), text: `Je voortgang op dit toestel wordt vervangen door die uit de kopie.${less ? ' Let op: in de kopie heb je minder XP dan nu.' : ''}` }),
+        h('button', { class: 'primary big', type: 'button', id: 'bkRestore', text: 'Terugzetten', onclick: () => { sheet.remove(); this.restore(j); } }),
+        h('button', { class: 'big ghost', type: 'button', text: 'Annuleren', onclick: () => sheet.remove() })));
+    document.body.append(sheet);
+  },
+  restore(j) {
+    if (Daily.active) Daily.stop();
+    // instellingen van de microfoon horen bij dit toestel en blijven staan
+    const cur = Store.settings, set = Object.assign({}, j.settings && typeof j.settings === 'object' ? j.settings : {});
+    set.gateDb = cur.gateDb; set.cantPlayUntil = 0;
+    set.metro = Object.assign({}, set.metro || {}, { corr: cur.metro.corr });
+    Store.put('stats', j.stats);
+    Store.put('settings', set);
+    Store.load();
+    Moments.pending = [];
+    Freeze.check();
+    this.persist();
+    const lv = Level.of(Store.stats.xp || 0);
+    Bin.changed(); Progress.renderTop();
+    Router.render();
+    UI.flash(Mascot.svg('juich', { crop: 'head' }), 'Voortgang teruggezet', `Niveau ${lv.n}, ${Store.stats.xp || 0} XP. Welkom terug!`, 'goal', null, true);
+  },
+  status() {
+    const at = Store.stats.backupAt;
+    if (!at) return { text: 'Je hebt nog geen reservekopie gemaakt.', old: (Store.stats.xp || 0) >= 50 };
+    const n = daysAgo(at), when = n <= 0 ? 'vandaag' : n === 1 ? 'gisteren' : `${n} dagen geleden`;
+    return { text: `Laatste reservekopie: ${when}.`, old: n > 14 };
+  },
+  refresh() { $$('.bk-status').forEach(el => { const s = this.status(); el.textContent = s.text; el.classList.toggle('old', s.old); }); },
+};
+// knoppen, voor Voortgang en Instellingen
+function backupButtons() {
+  return h('div', { class: 'bk-btns' },
+    h('button', { class: 'primary', type: 'button', id: 'bkSave', onclick: () => Backup.save() }, h('span', { html: ICONS.copy }), h('span', { text: 'Reservekopie maken' })),
+    h('button', { type: 'button', id: 'bkPick', onclick: () => Backup.pick() }, h('span', { html: ICONS.retry }), h('span', { text: 'Terugzetten' })));
+}
+function backupCard() {
+  const s = Backup.status();
+  return h('div', { class: 'card backup-card', id: 'backupCard' },
+    h('h2', { class: 'card-h', text: 'Reservekopie' }),
+    h('p', { class: 'help', text: 'Je voortgang staat alleen in deze browser. Bewaar af en toe een kopie, bijvoorbeeld in iCloud Drive of Google Drive. Wist je browser hem, of krijg je een nieuwe telefoon, dan zet je hem daarmee terug.' }),
+    h('p', { class: 'bk-status' + (s.old ? ' old' : ''), text: s.text }),
+    backupButtons());
+}
+// in de lege staat: misschien heb je al een kopie
+function restoreCard() {
+  return h('div', { class: 'card backup-card restore' },
+    h('h2', { class: 'card-h', text: 'Al eerder geoefend?' }),
+    h('p', { class: 'help', text: 'Op een ander toestel, of voordat je browser alles wiste? Zet je reservekopie terug, dan ga je verder waar je was.' }),
+    h('div', { class: 'bk-btns' }, h('button', { type: 'button', id: 'bkPick', onclick: () => Backup.pick() }, h('span', { html: ICONS.retry }), h('span', { text: 'Reservekopie terugzetten' }))));
 }
 
 // ---------- Oefen vandaag: een sessie die zichzelf samenstelt ----------
@@ -6888,10 +7152,10 @@ const Daily = {
     // de volgende stap in de Halsjacht: zonder gitaar, dus altijd mogelijk
     const hx = nextHals();
     if (hx) add({ kind: 'node', ref: hx, minutes: 3, title: 'Halsjacht', sub: `Niveau ${hx.unitNo}, ${hx.unit.title}: ${hx.node.title.toLowerCase()}` });
-    // herhalen wat vandaag terugkomt en de foutenbak; anders vragen uit eerdere lessen opfrissen
+    // herhalen: nieuwe fouten en wat vandaag terugkomt; staat er niets klaar, dan vragen uit eerdere lessen
     const rv = Srs.items(), due = rv.filter(x => x._box).length, nb = rv.length - due;
-    if (rv.length) add({ kind: 'bin', minutes: 3, title: 'Herhalen', sub: [due ? `${due} ${due === 1 ? 'vraag komt' : 'vragen komen'} terug` : '', nb ? `${nb} uit je foutenbak` : ''].filter(Boolean).join(', ') });
-    else if (Review.available()) add({ kind: 'review', minutes: 3, title: 'Opfrissen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst' });
+    if (rv.length) add({ kind: 'bin', minutes: 3, title: 'Herhalen', sub: Srs.what(nb, due).replace(/^./, c => c.toUpperCase()) });
+    else if (Review.available()) add({ kind: 'review', minutes: 3, title: 'Herhalen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst' });
     const cu = nx ? nx.unit : PathData.units().slice(-1)[0];
     if (cu) {
       const d = unitMeta(cu).drill;
@@ -6918,6 +7182,8 @@ const Daily = {
   start(steps) {
     this.steps = steps; this.idx = 0; this.active = true;
     this.startXP = Store.stats.xp || 0; this.startSecs = Progress.day().secs;
+    // alles wat je in deze sessie verdient, komt aan het eind in één overzicht
+    Moments.session = [];
     const needMic = !Engine.mic && !((Store.settings.cantPlayUntil || 0) > Date.now());
     Loader.run({ title: 'Oefen vandaag', sub: needMic ? 'Microfoon aanzetten…' : `${steps.length} stappen`, mood: 'luister', wait: needMic ? Engine.startMic() : null }, () => this.run());
   },
@@ -6935,9 +7201,7 @@ const Daily = {
       if (!Srs.items().length) return this.advance();
       Srs.start({ after: () => this.advance(), exit: () => { location.hash = ''; } });
     } else if (st.kind === 'review') {
-      const items = Review.build(8);
-      if (!items.length) return this.advance();
-      Lesson.open({ title: 'Opfrissen', items, xp: 10, onDone: () => this.advance(), onExit: () => { location.hash = ''; } });
+      if (!Review.start({ after: () => this.advance(), exit: () => { location.hash = ''; } })) return this.advance();
     } else {
       // instellingen die bij de les horen gelden alleen tijdens deze stap
       if (st.set) TempSettings.apply(st.mode, st.set);
@@ -6959,23 +7223,32 @@ const Daily = {
   },
   restore() { TempSettings.restore(); },
   advance() { clearInterval(this.timer); this.restore(); this.idx++; if (this.idx >= this.steps.length) return this.finish(); this.run(); },
-  stop() { this.active = false; clearInterval(this.timer); this.restore(); this.renderBar(); if (location.hash.startsWith('#m-')) location.hash = ''; },
+  stop() {
+    this.active = false; clearInterval(this.timer); this.restore(); this.renderBar();
+    Moments.session = null;
+    if (location.hash.startsWith('#m-')) location.hash = ''; else Moments.later(300);
+  },
   finish() {
     this.active = false; clearInterval(this.timer); this.restore(); this.renderBar();
     const min = Math.max(0, Math.round((Progress.day().secs - this.startSecs) / 60)), xp = Math.max(0, (Store.stats.xp || 0) - this.startXP);
+    // alles uit deze sessie, ook wat al op het eindscherm van een les stond
+    const got = Moments.session || [];
+    Moments.session = null; Moments.take();
     if (location.hash === '' || location.hash === '#') Router.render(); else location.hash = '';
-    setTimeout(() => this.celebrate(min, xp), 60);
+    setTimeout(() => this.celebrate(min, xp, got), 60);
   },
-  celebrate(min, xp) {
+  celebrate(min, xp, got = []) {
     const sk = Progress.streak();
     const sheet = h('div', { class: 'sheet-wrap', onclick: e => { if (e.target === sheet) sheet.remove(); } },
       h('div', { class: 'sheet center' },
         h('div', { class: 'sheet-mascot party', html: Mascot.svg(sk.today ? 'juich' : 'blij') }),
         h('h3', { text: 'Sessie klaar!' }),
         h('p', { class: 'help', text: `${min} ${min === 1 ? 'minuut' : 'minuten'} geoefend en ${xp} XP verdiend.${sk.today ? ` Je reeks staat op ${sk.n} ${sk.n === 1 ? 'dag' : 'dagen'}.` : ''}` }),
+        got.length ? Moments.list(got, 'Dit heb je verdiend') : null,
         Progress.goalLine(),
         h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => sheet.remove() })));
     document.body.append(sheet);
+    Moments.cheer(got.filter(m => m.big), innerHeight * 0.25, 250);
   },
   renderBar() {
     const bar = $('#sessionBar');
@@ -7154,6 +7427,10 @@ window.__fj = {
   hals: () => ({ done: halsDoneCount(), next: nextHals() && { level: nextHals().unitNo, step: nextHals().node.title }, levels: HALS_LEVELS.map((L, i) => halsLevelDone(i)) }),
   noteq: () => (current && current.id === 'noteq' && current.q ? { kind: current.q.kind, s: current.q.s, f: current.q.f, pc: current.q.pc, valid: current.q.valid, answered: current.answered } : null),
   addXP: n => Progress.addXP(n),
+  // een les met zelfgekozen vragen, en de momenten die nog wachten op een overzicht
+  lessonWith: (items, o) => Lesson.open(Object.assign({ title: 'Test', items: items.map(x => Object.assign({}, x)), onDone: () => { location.hash = ''; }, onExit: () => { location.hash = ''; } }, o || {})),
+  moments: () => Moments.pending.map(m => m.title),
+  tapVisible: () => ((Lesson.cur && Lesson.cur.valid) || []).find(v => document.querySelector(`.tapneck .cell[data-s="${v.s}"][data-f="${v.f}"]`)) || null,
   halsGen: (i, k) => halsNodes(HalsData.units()[i])[k].gen(),
   halsLevels: () => HALS_LEVELS,
   loading: () => !!document.querySelector('.loader'),

@@ -21,11 +21,9 @@ const Level = {
     const from = this.need(n), to = this.need(n + 1);
     return { n, title: this.title(n), next: this.title(n + 1), from, to, xp, pct: (xp - from) / (to - from), left: to - xp };
   },
-  // feestje bij een nieuw niveau
+  // feestje bij een nieuw niveau (in een les: op het eindscherm)
   up(n) {
-    UI.flash(Mascot.svg('juich', { crop: 'head' }), `Niveau ${n}: ${this.title(n)}!`, n === 2 ? 'Je eerste niveau omhoog. Zo gaat het verder.' : `Op naar ${this.title(n + 1)}.`, 'goal');
-    setTimeout(() => Confetti.burst({ n: 90, y: innerHeight * 0.28 }), 250);
-    Sfx.play('goal');
+    Moments.add({ key: 'level-' + n, prio: 6, big: true, icon: Mascot.svg('juich', { crop: 'head' }), title: `Niveau ${n}: ${this.title(n)}!`, text: n === 2 ? 'Je eerste niveau omhoog. Zo gaat het verder.' : `Op naar ${this.title(n + 1)}.` });
     $$('.lv-meter').forEach(el => Fx.restart(el, 'lv-up'));
   },
   // segmentmeter zoals op een versterker
@@ -46,13 +44,6 @@ const Progress = {
     if (after > before) Level.up(after);
   },
   met(k) { return this.peek(k).secs >= this.goalSecs(); },
-  // extra minuten als beloning (bijvoorbeeld een lege foutenbak)
-  addBonus(secs) {
-    const d = this.day(), before = d.secs;
-    d.secs += secs; d.bonus = (d.bonus || 0) + secs;
-    Store.saveStats(); this.renderTop();
-    if (before < this.goalSecs() && d.secs >= this.goalSecs()) this.goalReached();
-  },
   tick() {
     const v = document.body.dataset.view;
     const practicing = document.visibilityState === 'visible' && Activity.active() && (v === 'lesson' || (v === 'mode' && (Engine.mic || (current && current.noMic))));
@@ -101,11 +92,9 @@ const Progress = {
   goalReached() {
     Store.saveStats();
     const sk = this.streak();
-    UI.flash(Mascot.svg('juich', { crop: 'head' }), 'Dagdoel gehaald!', sk.n === 1 ? 'Je reeks is begonnen.' : `${sk.n} dagen op rij.`, 'goal');
-    // de mijlpaal voor je eerste dagdoel zegt hetzelfde als deze melding
+    Moments.add({ key: 'goal', prio: 5, big: true, icon: Mascot.svg('juich', { crop: 'head' }), title: 'Dagdoel gehaald!', text: sk.n === 1 ? 'Je reeks is begonnen.' : `${sk.n} dagen op rij.` });
+    // de mijlpaal voor je eerste dagdoel zegt hetzelfde als dit moment
     Badges.check({ skip: ['goal'] });
-    Confetti.burst({ n: 110, y: innerHeight * 0.3 });
-    Sfx.play('goal');
   },
   renderTop() {
     const sk = this.streak(), secs = this.day().secs, goal = this.goalSecs();
@@ -139,7 +128,7 @@ const BADGES = [
   { id: 'streak30', icon: 'flame', pick: '#C4336F', title: 'Op tournee', desc: '30 dagen op rij je dagdoel', test: () => Progress.bestStreak() >= 30 },
   { id: 'perfect', icon: 'check', pick: 'pearl', title: 'Zuiver', desc: 'Een les zonder fouten', test: s => Object.values(s.path.nodes).some(n => n.perfect) },
   { id: 'unit', icon: 'trophy', pick: '#2B1A14', title: 'Eerste plaat', desc: 'Een unittoets gehaald', test: s => Object.values(s.path.nodes).some(n => n.test && n.done) },
-  { id: 'bin', icon: 'plaster', pick: 'pearl', title: 'Pleister erop', desc: 'Je foutenbak helemaal leeggemaakt', test: s => (s.binCleared || 0) >= 1 },
+  { id: 'bin', icon: 'plaster', pick: 'pearl', title: 'Pleister erop', desc: 'Alles herhaald wat er klaarstond', test: s => (s.binCleared || 0) >= 1 },
   { id: 'srs10', icon: 'retry', pick: '#1F6FA8', title: 'Uit het hoofd', desc: '10 fouten onder de knie gekregen', test: s => (s.srsDone || 0) >= 10 },
   { id: 'xp100', icon: 'bolt', pick: '#0B7D72', title: 'Demo', desc: '100 XP verdiend', test: s => (s.xp || 0) >= 100 },
   { id: 'xp500', icon: 'bolt', pick: '#B4520E', title: 'Single', desc: '500 XP verdiend', test: s => (s.xp || 0) >= 500 },
@@ -175,13 +164,13 @@ function pickBadge(b, got) {
   return `<svg viewBox="0 0 64 64" class="pickb${got ? ' got' : ''}" aria-hidden="true">${defs ? `<defs>${defs}</defs>` : ''}<path d="${shape}" fill="${fill}" ${got ? 'stroke="rgba(0,0,0,.18)" stroke-width="1.5"' : 'stroke="var(--line)" stroke-width="2" stroke-dasharray="4 4"'}/>${got ? '<path d="M17 12c6-4 18-5 26-1" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".45"/>' : ''}${icon}</svg>`;
 }
 const Badges = {
-  // geeft de nieuw behaalde mijlpalen terug; quiet: geen melding (het eindscherm toont ze zelf)
+  // nieuw behaalde mijlpalen worden momenten (zie Moments); skip: geen moment voor deze (wel behaald)
   check(o = {}) {
     const s = Store.stats; s.badges = s.badges || {};
     const fresh = [];
     for (const b of BADGES) if (!s.badges[b.id] && b.test(s)) { s.badges[b.id] = todayKey(); fresh.push(b); }
     if (fresh.length) Store.saveStats();
-    if (!o.quiet) for (const b of fresh) if (!(o.skip || []).includes(b.id)) UI.flash(pickBadge(b, true), `Nieuwe mijlpaal: ${b.title}`, b.desc, 'badge');
+    for (const b of fresh) if (!(o.skip || []).includes(b.id)) Moments.add({ key: 'badge-' + b.id, prio: 2, icon: pickBadge(b, true), title: `Nieuwe mijlpaal: ${b.title}`, text: b.desc });
     return fresh;
   },
 };
@@ -260,6 +249,7 @@ function badgesCard() {
 // nog nooit geoefend: één grote uitnodiging, en wat je hier straks ziet
 function renderProgressEmpty(view) {
   view.append(emptyHero('progress'));
+  view.append(restoreCard());
   const li = (icon, b, t) => h('li', {}, h('span', { class: 'pv-ico', html: icon }), h('span', {}, h('b', { text: b }), h('small', { text: t })));
   view.append(h('div', { class: 'card preview' }, h('h2', { class: 'card-h', text: 'Wat je hier straks ziet' }),
     h('ul', { class: 'pv-list' },
@@ -344,4 +334,5 @@ function renderProgress(view) {
   ];
   view.append(h('div', { class: 'card hard' }, h('h2', { class: 'card-h', text: 'Records' }), h('ol', {}, rows.map(([a, b]) => h('li', {}, h('span', { text: a }), h('span', { text: b })))),
     h('div', { class: 'row links' }, h('a', { class: 'link', href: '#m-heatmap', text: 'Hittekaart van de hals' }), h('a', { class: 'link', href: '#instellingen', text: 'Instellingen' }))));
+  view.append(backupCard());
 }

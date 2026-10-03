@@ -74,7 +74,7 @@ registerMode({
     const marks = q.found.map(p => ({ s: p.s, f: p.f, kind: 'found', label: q.name }));
     if (q.flash) marks.push({ s: q.flash.s, f: q.flash.f, kind: 'wrong', label: FretQuiz.nameAt(q.flash.s, q.flash.f) });
     if (this.answered) for (const p of q.valid) if (!q.found.some(x => x.s === p.s && x.f === p.f)) marks.push({ s: p.s, f: p.f, kind: 'reveal', label: q.name });
-    drawNeck(this.svg, { from: 0, to, big: true, highlight: s.strings.length < 6 ? s.strings : [], tap: !this.answered, marks });
+    drawNeck(this.svg, { from: 0, to, big: true, touch: true, active: s.strings, highlight: s.strings.length < 6 ? s.strings : [], tap: !this.answered, marks });
   },
   expected() { return []; },
   // Welke noot?: een toets gekozen
@@ -147,7 +147,7 @@ registerMode({
         { label: 'Per noot', value: fb.ok && totalT ? sec(totalT / fb.ok) : '–' },
         { label: 'Beste reeks', value: String(fb.best || 0) },
       ]),
-      hard.length ? h('p', { class: 'help nq-hard', text: `Lastigst: ${hard.map(x => `${FretQuiz.nameAt(x.s, x.f)} op ${FretQuiz.where(x.s, x.f)}`).join(', ')}.` }) : null);
+      hard.length ? h('p', { class: 'help nq-hard', text: `Lastigst: ${hard.map(x => `${FretQuiz.nameAt(x.s, x.f)} op ${FretQuiz.where(x.s, x.f)}`).join(', ')}.` }) : '');
     const marks = [];
     for (let s = 0; s < 6; s++) for (let f = 0; f <= 12; f++) { const lv = FretQuiz.heat(s, f); if (lv) marks.push({ s, f, kind: `heat h${lv}`, label: FretQuiz.nameAt(s, f) }); }
     drawNeck(svg, { from: 0, to: 12, marks });

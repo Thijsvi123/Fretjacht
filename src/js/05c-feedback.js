@@ -67,7 +67,7 @@ const CHEER = {
   right: ['Goed zo!', 'Precies!', 'Klopt!', 'Netjes!', 'Top!', 'Lekker bezig!', 'Helemaal goed!', 'Knap!', 'Mooi zo!', 'Zo doe je dat!'],
   play: ['Raak!', 'Zuiver!', 'Mooi gespeeld!', 'Dat klinkt!', 'Strak!', 'Netjes gespeeld!'],
   again: ['Nu wel!', 'Tweede keer goed!', 'Zie je wel!', 'Die zit erin!'],
-  fixed: ['Hersteld!', 'Opgelost!', 'Die zit!', 'Gerepareerd!'],
+  fixed: ['Nu wel!', 'Opgelost!', 'Die zit!', 'Gerepareerd!'],
   recall: ['Goed onthouden!', 'Nog steeds goed!', 'Blijft hangen!', 'Paraat!'],
   wrong: ['Net niet', 'Bijna!', 'Niet helemaal', 'Nog niet', 'Oei, net mis'],
   wrongAgain: ['Nog lastig', 'Deze is taai', 'Nog niet helemaal'],

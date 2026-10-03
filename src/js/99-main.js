@@ -40,6 +40,10 @@ window.__fj = {
   hals: () => ({ done: halsDoneCount(), next: nextHals() && { level: nextHals().unitNo, step: nextHals().node.title }, levels: HALS_LEVELS.map((L, i) => halsLevelDone(i)) }),
   noteq: () => (current && current.id === 'noteq' && current.q ? { kind: current.q.kind, s: current.q.s, f: current.q.f, pc: current.q.pc, valid: current.q.valid, answered: current.answered } : null),
   addXP: n => Progress.addXP(n),
+  // een les met zelfgekozen vragen, en de momenten die nog wachten op een overzicht
+  lessonWith: (items, o) => Lesson.open(Object.assign({ title: 'Test', items: items.map(x => Object.assign({}, x)), onDone: () => { location.hash = ''; }, onExit: () => { location.hash = ''; } }, o || {})),
+  moments: () => Moments.pending.map(m => m.title),
+  tapVisible: () => ((Lesson.cur && Lesson.cur.valid) || []).find(v => document.querySelector(`.tapneck .cell[data-s="${v.s}"][data-f="${v.f}"]`)) || null,
   halsGen: (i, k) => halsNodes(HalsData.units()[i])[k].gen(),
   halsLevels: () => HALS_LEVELS,
   loading: () => !!document.querySelector('.loader'),

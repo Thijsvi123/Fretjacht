@@ -244,8 +244,8 @@ function renderPath(view) {
   const nx = renderTrack(box, track, { intro, just });
   const remaining = Math.max(0, Progress.goalSecs() - Progress.day().secs), todo = Srs.todoCount();
   const cta = h('div', { class: 'cta-bar' },
-    h('button', { class: 'bin-btn', type: 'button', hidden: !todo, 'aria-label': `Herhaal fouten (${todo})`, title: 'Herhaal fouten', onclick: () => Srs.start() },
-      h('span', { html: ICONS.plaster }), h('b', { class: 'todo-count', text: String(todo) }), h('small', { text: 'herhaal' })),
+    h('button', { class: 'bin-btn', type: 'button', hidden: !todo, 'aria-label': `Herhalen: ${todo} ${todo === 1 ? 'vraag' : 'vragen'}`, title: 'Herhalen', onclick: () => Srs.start() },
+      h('span', { html: ICONS.retry }), h('b', { class: 'todo-count', text: String(todo) }), h('small', { text: 'herhaal' })),
     h('button', { class: 'primary big', type: 'button', id: 'todayBtn', onclick: () => Daily.showPlan() },
       h('span', { text: Daily.active ? 'Ga verder met vandaag' : remaining ? 'Oefen vandaag' : 'Extra oefenen' }),
       h('small', { text: remaining ? `nog ${Math.ceil(remaining / 60)} min voor je dagdoel` : 'dagdoel gehaald' })));
@@ -265,8 +265,21 @@ function nodeSheet(u, i, nodes, unitNo) {
   document.body.append(sheet);
 }
 
-// ---------- Opfrissen: vragen uit afgeronde lessen, zwakke eerst ----------
+// ---------- Herhalen zonder fouten: vragen uit afgeronde lessen, zwakke eerst ----------
+// Staat er bij Herhalen niets klaar, dan haalt dit vragen uit lessen die je al deed. Wat je dan fout hebt,
+// komt gewoon terug bij Herhalen.
 const Review = {
+  // start een ronde; geeft false als er nog geen afgeronde lessen zijn
+  start(o = {}) {
+    const items = this.build(8);
+    if (!items.length) return false;
+    const from = location.hash === '#les' ? '' : location.hash;
+    const back = () => { if (location.hash === from) Router.render(); else location.hash = from; };
+    const needMic = items.some(x => x.type === 'play') && !Engine.mic && Bin.canPlay();
+    Loader.run({ title: 'Herhalen', sub: 'Vragen uit eerdere lessen, je zwakke punten eerst', mood: 'boek', wait: needMic ? Engine.startMic() : null }, () =>
+      Lesson.open({ title: 'Herhalen', label: 'Herhalen', sub: 'Vragen uit eerdere lessen. Wat je fout had, komt terug bij Herhalen.', items, xp: 10, onDone: o.after || back, onExit: o.exit || o.after || back }));
+    return true;
+  },
   candidates() {
     const out = [];
     for (const u of PathData.units()) unitNodes(u).forEach((node, i) => {

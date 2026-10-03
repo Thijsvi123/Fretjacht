@@ -1,4 +1,4 @@
-"""Leerflow end-to-end: leerpad, lessen, foutenbak, Oefen vandaag, Oefenen (pedalboard) en Voortgang.
+"""Leerflow end-to-end: leerpad, lessen, herhalen, Oefen vandaag, Oefenen (pedalboard) en Voortgang.
 Gebruikt een nep-microfoon (tests/fake.js). SCHEME=dark voor donkere modus, SHOTS=<map> voor schermafbeeldingen,
 FONTS_DIR=<map met bricolage.ttf en instrument.ttf> voor de echte lettertypes."""
 import os, asyncio, subprocess, sys, time, json
@@ -57,7 +57,7 @@ async def main():
                     await ev(f"(() => {{ const want = {json.dumps(picks)}; document.querySelectorAll('.chip-btn').forEach(b => {{ if (want.includes(b.textContent)) b.click(); }}); }})()")
                     await page.click('.ls-foot button.primary'); await page.wait_for_timeout(120); await click_text('.ls-foot button', 'Verder')
                 elif t == 'tap':
-                    v = st['valid'][0]
+                    v = await ev('__fj.tapVisible()')
                     s, f = (v['s'], v['f']) if not wrong else ((v['s'] + 3) % 6, v['f'])
                     await page.locator(f'.tapneck .cell[data-s="{s}"][data-f="{f}"]').click(force=True)
                     await page.click('.ls-foot button.primary'); await page.wait_for_timeout(120); await click_text('.ls-foot button', 'Verder')

@@ -56,7 +56,7 @@ registerMode({
       if (t) marks.push({ s: st, f, kind: 'ex' + (t.label === 'R' ? ' root' : '') + (hl && hl.s === st && hl.f === f ? ' hit' : ''), label: s.labels === 'names' ? t.name : t.label });
     }
     if (hl && !tones.find(x => x.pc === mod12(OPEN[hl.s] + hl.f))) marks.push({ s: hl.s, f: hl.f, kind: 'wrong', label: '' });
-    drawNeck(this.svg, { from, to, marks, tap: true });
+    drawNeck(this.svg, { from, to, marks, tap: true, touch: true });
     this.slots.innerHTML = tones.map(t => `<span class="slot${t.label === 'R' ? ' on' : ''}"><small>${t.label}</small><b>${t.name}</b></span>`).join('');
   },
   tap(e) {

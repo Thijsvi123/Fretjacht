@@ -236,8 +236,8 @@ const LOADER_LINES = [
   'Een blije fret springt alle kanten op. In het Engels heet dat de weasel war dance.',
   'Fretten slapen 14 tot 18 uur per dag. Jouw dagdoel is een stuk korter.',
   'Geen gitaar bij de hand? Tik op “Ik kan nu niet spelen”.',
-  'Foute antwoorden gaan naar je foutenbak. Herstel ze voor bonus-XP.',
-  'Een herstelde fout komt terug na 1, 3 en 7 dagen. Zo blijft hij hangen.',
+  'Wat je fout hebt, komt terug bij Herhalen: meteen, en daarna na 1, 3 en 7 dagen.',
+  'Bewaar af en toe een reservekopie van je voortgang. Dat doe je bij Voortgang.',
 ];
 const Loader = {
   // toont de laadanimatie minstens min ms (en tot o.wait klaar is) en voert dan go() uit

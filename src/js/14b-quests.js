@@ -2,9 +2,11 @@
 const qc = (d, k) => (d.c && d.c[k]) || 0;
 const QUESTS = [
   { id: 'node', cat: 'a', icon: 'path', target: () => 1, text: () => 'Rond een stap in je leerpad af', value: d => qc(d, 'nodes'), ok: () => !!nextNode() },
-  { id: 'fix', cat: 'a', icon: 'plaster', target: () => Math.min(3, Bin.count()), text: n => (n === 1 ? 'Herstel een fout uit je foutenbak' : `Herstel ${n} fouten uit je foutenbak`), value: d => qc(d, 'fixed'), ok: () => Bin.items().length > 0 },
+  { id: 'herhaal', cat: 'a', icon: 'retry', target: () => Math.min(4, Srs.items(4).length), text: n => (n === 1 ? 'Herhaal een vraag' : `Herhaal ${n} vragen`), value: d => qc(d, 'herhaal'), ok: () => Srs.items(1).length > 0 },
   { id: 'combo', cat: 'a', icon: 'flame', target: () => 6, text: n => `Beantwoord ${n} vragen op rij goed`, value: d => qc(d, 'combo'), ok: () => PathData.units().length > 0 },
-  { id: 'srs', cat: 'a', icon: 'retry', target: () => Math.min(5, Srs.dueList().filter(x => Bin.playable(x)).length), text: n => (n === 1 ? 'Herhaal de vraag die vandaag terugkomt' : `Herhaal ${n} vragen die vandaag terugkomen`), value: d => qc(d, 'srs'), ok: () => Srs.dueList().some(x => Bin.playable(x)) },
+  // van vóór Herhalen; alleen nog voor een dag waarop ze al gekozen waren
+  { id: 'fix', cat: 'old', icon: 'retry', target: () => 1, text: n => (n === 1 ? 'Herhaal een vraag die je fout had' : `Herhaal ${n} vragen die je fout had`), value: d => qc(d, 'fixed') },
+  { id: 'srs', cat: 'old', icon: 'retry', target: () => 1, text: n => (n === 1 ? 'Herhaal de vraag die vandaag terugkomt' : `Herhaal ${n} vragen die vandaag terugkomen`), value: d => qc(d, 'srs') },
   { id: 'notes', cat: 'b', icon: 'note', target: () => 25, text: n => `Vind ${n} noten op de hals`, value: d => qc(d, 'notes') },
   { id: 'challenge', cat: 'b', icon: 'bolt', target: () => clamp(Math.round((Store.stats.challenge.best || 12) * 0.8), 8, 40), text: n => `Haal ${n} of meer bij 60 seconden`, value: d => qc(d, 'challenge') },
   { id: 'scales', cat: 'b', icon: 'pick', target: () => 2, text: n => `Speel ${n} toonladderboxen helemaal`, value: d => qc(d, 'scales') },
@@ -43,20 +45,18 @@ const Quests = {
     let changed = false;
     for (const q of qs) if (!d.qd[q.id] && this.progress(q) >= q.target) {
       d.qd[q.id] = true; changed = true;
+      Moments.add({ key: 'quest-' + q.id, prio: 3, quest: this.text(q), icon: Mascot.svg('juich', { crop: 'head' }), title: 'Opdracht gedaan!', text: `${this.text(q)}. +10 XP` });
       Progress.addXP(10);
-      UI.flash(Mascot.svg('juich', { crop: 'head' }), 'Opdracht gedaan!', `${this.text(q)}. +10 XP`, 'goal');
-      Sfx.play('fixed');
     }
     if (changed && qs.every(q => d.qd[q.id]) && !d.qdAll) {
       d.qdAll = true;
       if ((Store.stats.freezes || 0) < 2) {
         Store.stats.freezes = (Store.stats.freezes || 0) + 1;
-        UI.flash(Mascot.svg('ijs', { crop: 'head' }), 'Reeksbevriezer verdiend!', 'Mis je een dag, dan houdt hij je reeks vast.', 'goal');
+        Moments.add({ key: 'freeze', prio: 4, big: true, icon: Mascot.svg('ijs', { crop: 'head' }), title: 'Reeksbevriezer verdiend!', text: 'Je deed alle drie de opdrachten. Mis je een dag, dan houdt hij je reeks vast.' });
       } else {
+        Moments.add({ key: 'quests-all', prio: 4, big: true, icon: Mascot.svg('juich', { crop: 'head' }), title: 'Alle opdrachten gedaan!', text: 'Je hebt al 2 bevriezers, dus je krijgt 20 XP extra.' });
         Progress.addXP(20);
-        UI.flash(Mascot.svg('juich', { crop: 'head' }), 'Alle opdrachten gedaan!', 'Je hebt al 2 bevriezers, dus je krijgt 20 XP extra.', 'goal');
       }
-      setTimeout(() => Confetti.burst({ n: 70 }), 300);
     }
     if (changed) { Store.saveStats(); this.render(); }
   },
@@ -105,7 +105,7 @@ const Freeze = {
   },
   check() {
     const used = this.apply();
-    if (used.length) setTimeout(() => UI.flash(Mascot.svg('ijs', { crop: 'head' }), 'Je reeks is gered!', used.length === 1 ? 'Je reeksbevriezer heeft je reeks vastgehouden voor de dag die je miste.' : `${used.length} bevriezers hebben je reeks vastgehouden.`, 'goal'), 900);
+    if (used.length) Moments.add({ key: 'frozen', prio: 4, icon: Mascot.svg('ijs', { crop: 'head' }), title: 'Je reeks is gered!', text: used.length === 1 ? 'Je reeksbevriezer heeft je reeks vastgehouden voor de dag die je miste.' : `${used.length} bevriezers hebben je reeks vastgehouden.` });
     return used;
   },
 };
@@ -136,7 +136,7 @@ function courseSummary() {
   const weakSk = Object.values(st.skills || {}).filter(v => v.w >= 2 && v.p).sort((a, b) => b.w / (b.r + b.w) - a.w / (a.r + a.w)).slice(0, 3);
   if (weakSk.length) L.push(`- Vaak fout: ${weakSk.map(v => `“${shorten(v.p)}” (${v.w} van ${v.r + v.w} fout)`).join(', ')}.`);
   const bin = Bin.list();
-  if (bin.length) L.push(`- Nog in de foutenbak (${bin.length}): ${bin.slice(-4).map(x => `“${shorten(itemLabel(x.it))}”`).join(', ')}.`);
+  if (bin.length) L.push(`- Net fout, nog te herhalen (${bin.length}): ${bin.slice(-4).map(x => `“${shorten(itemLabel(x.it))}”`).join(', ')}.`);
   const sc = Srs.snapshot(), inBoxes = sc[1] + sc[2] + sc[3];
   if (inBoxes || sc[4]) L.push(`- Herhalen na 1, 3 en 7 dagen: ${inBoxes} ${inBoxes === 1 ? 'vraag' : 'vragen'} onderweg, ${sc[4]} onder de knie.`);
   const sticky = Bin.all().filter(x => x.n >= 3).sort((a, b) => b.n - a.n).slice(0, 3);
@@ -168,10 +168,10 @@ async function copyCourseSummary(out) {
   out.textContent = text;
   try {
     await navigator.clipboard.writeText(text);
-    UI.flash(Mascot.svg('boek', { crop: 'head' }), 'Gekopieerd', 'Plak het als reactie op je volgende les.', 'goal');
+    UI.flash(Mascot.svg('boek', { crop: 'head' }), 'Gekopieerd', 'Plak het als reactie op je volgende les.', 'goal', null, true);
   } catch (e) {
     const r = document.createRange(); r.selectNodeContents(out);
     const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
-    UI.flash(ICONS.book, 'Kopieer de tekst hieronder', 'Hij staat al geselecteerd.', 'badge');
+    UI.flash(ICONS.book, 'Kopieer de tekst hieronder', 'Hij staat al geselecteerd.', 'badge', null, true);
   }
 }

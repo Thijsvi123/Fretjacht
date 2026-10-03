@@ -91,7 +91,7 @@ async def main():
                     await ev(f"(() => {{ const want = {json.dumps(picks)}; document.querySelectorAll('.chip-btn').forEach(b => {{ if (want.includes(b.textContent)) b.click(); }}); }})()")
                     await page.click('.ls-foot button.primary'); await page.wait_for_timeout(150); await verder(); return t
                 if t == 'tap':
-                    v = st['valid'][0]
+                    v = await ev('__fj.tapVisible()')
                     await page.locator(f'.tapneck .cell[data-s="{v["s"]}"][data-f="{v["f"]}"]').click(force=True)
                     await page.click('.ls-foot button.primary'); await page.wait_for_timeout(150); await verder(); return t
                 if t == 'play':
@@ -107,7 +107,7 @@ async def main():
                 await page.wait_for_timeout(500)
                 return kinds
             async def end_info():
-                return await ev("({title: document.querySelector('.end-title').textContent, stats: Array.from(document.querySelectorAll('.end-stats div')).map(d => d.textContent), badges: Array.from(document.querySelectorAll('.end-badge b')).map(b => b.textContent)})")
+                return await ev("({title: document.querySelector('.end-title').textContent, stats: Array.from(document.querySelectorAll('.end-stats div')).map(d => d.textContent), badges: Array.from(document.querySelectorAll('.ls-end .moments li b')).map(b => b.textContent)})")
             async def start_hals_node():
                 await go('#voortgang'); await go('#')
                 if await ev("!document.querySelector('.track-switch .on[data-track=\"hals\"]')"): await page.click('.track-switch button[data-track="hals"]'); await page.wait_for_timeout(300)
@@ -196,7 +196,7 @@ async def main():
             await page.wait_for_timeout(500); await shot('recog_end')
             await verder(); await page.wait_for_timeout(400)
             R['bin_after'] = await ev('__fj.bin()')
-            check('Fout herkende noot staat in de foutenbak', any(x['type'] == 'name' for x in R['bin_after']), R['bin_after'])
+            check('Fout herkende noot komt terug bij Herhalen', any(x['type'] == 'name' for x in R['bin_after']), R['bin_after'])
             # toepassen: één misser
             st = await start_hals_node()
             check('Toepassen: tik alle plekken', st and st['type'] == 'tapall', st)
@@ -204,7 +204,7 @@ async def main():
             check('Toepassen: foute tik laat de noot daar zien', R.get('tap_wrong', {}).get('wrong') and R['tap_wrong'].get('label'), R.get('tap_wrong'))
             e = await end_info(); R['apply_end'] = e
             check('Toepassen gehaald', e['title'].startswith('Toepassen') and ('gehaald' in e['title'] or 'foutloos' in e['title']), e)
-            check('Eindscherm toont nieuw plectrum Lage E beheerst', 'Lage E beheerst' in e['badges'], e['badges'])
+            check('Eindscherm toont nieuw plectrum Lage E beheerst', 'Nieuwe mijlpaal: Lage E beheerst' in e['badges'], e['badges'])
             await page.wait_for_timeout(700); await shot('apply_end')
             await verder(); await page.wait_for_timeout(600)
             R['hals_state'] = await ev('__fj.hals()')

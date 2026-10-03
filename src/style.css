@@ -41,7 +41,7 @@ body {
   padding-block: max(12px, env(safe-area-inset-top, 0px)) max(32px, env(safe-area-inset-bottom, 0px));
   -webkit-tap-highlight-color: transparent;
 }
-.app { max-width: 980px; margin: 0 auto; display: grid; gap: 12px; }
+.app { max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 a { color: inherit; }
 
 /* kop */
@@ -331,14 +331,6 @@ body[data-view="lesson"] .flash { top: calc(68px + env(safe-area-inset-top, 0px)
 .flash.out { opacity: 0; transform: translate(-50%, -10px); }
 @keyframes flash-in { from { opacity: 0; transform: translate(-50%, -10px); } }
 @media (prefers-reduced-motion: reduce) { .flash { animation: none; transition: none; } }
-.end-badges { display: grid; gap: 8px; width: 100%; max-width: 420px; }
-.end-badge { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 14px; border: 2px solid color-mix(in srgb, var(--accent) 50%, var(--line)); background: var(--accent-soft); text-align: left; }
-.end-badge .b-ico { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); color: var(--accent); flex: none; }
-.end-badge .ico { width: 22px; height: 22px; }
-.end-badge div { display: grid; gap: 1px; min-width: 0; }
-.end-badge small { font: 500 11px/1.3 var(--mono); color: var(--accent-text); }
-.end-badge b { font-size: 15px; line-height: 1.25; }
-.end-badge span:last-child { font-size: 13px; color: var(--muted); line-height: 1.3; }
 
 /* leerpad */
 .path { display: grid; gap: 6px; }
@@ -497,7 +489,7 @@ button.ghost { background: transparent; }
 .row.links { margin-top: 6px; gap: 4px 18px; }
 
 
-/* ===================== Huisstijl: fret, pedalen, foutenbak, animaties ===================== */
+/* ===================== Huisstijl: fret, pedalen, herhalen, animaties ===================== */
 body { font-variant-numeric: tabular-nums; }
 .c-amber { --c: var(--accent); --c-ink: var(--accent-ink); --c-deep: var(--accent-deep); --c-soft: var(--accent-soft); --c-text: var(--accent-text); }
 .c-blauw { --c: #2D6BD4; --c-ink: #FFFFFF; --c-deep: #1D4C9E; --c-soft: #DCE8FB; --c-text: #2257B5; }
@@ -524,8 +516,7 @@ body { font-variant-numeric: tabular-nums; }
 @keyframes view-in { from { opacity: 0; } }
 
 /* labels zonder hoofdletters */
-.fig dt, .tile-l, .end-stats small, .end-badge small { font: 600 12.5px/1.25 var(--body); color: var(--muted); }
-.end-badge small { color: var(--accent-text); }
+.fig dt, .tile-l, .end-stats small { font: 600 12.5px/1.25 var(--body); color: var(--muted); }
 .tile-v { font: 800 semi-condensed 34px/1 var(--display); }
 .fig dd { font-weight: 800; }
 .card-h { margin: 0 0 4px; font: 800 semi-condensed 22px/1.15 var(--display); letter-spacing: -.01em; }
@@ -559,7 +550,7 @@ body { font-variant-numeric: tabular-nums; }
 @keyframes ring-out { from { transform: scale(.85); opacity: .9; } to { transform: scale(1.7); opacity: 0; } }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 
-/* knop voor de foutenbak naast "Oefen vandaag" */
+/* knop Herhalen naast "Oefen vandaag" */
 .bin-btn { position: relative; flex: none; width: 70px; padding: 8px 4px; display: grid; justify-items: center; align-content: center; gap: 3px; border-radius: 14px; border: 2px solid color-mix(in srgb, var(--bad) 45%, var(--line)); background: var(--surface); color: var(--bad); box-shadow: 0 4px 0 color-mix(in srgb, var(--bad) 35%, var(--line)); }
 .bin-btn .ico { width: 26px; height: 26px; }
 .bin-btn small { font: 700 11.5px/1 var(--body); color: var(--muted); }
@@ -605,9 +596,6 @@ body { font-variant-numeric: tabular-nums; }
 .end-stats b { font: 800 semi-condensed 28px/1 var(--display); }
 .fix-btn { display: flex; align-items: center; justify-content: center; gap: 10px; }
 .fix-btn .ico { width: 22px; height: 22px; }
-.end-badge .b-pick, .badge .b-pick { display: block; }
-.end-badge .b-pick { width: 46px; height: 46px; flex: none; }
-.end-badge .b-pick > svg, .badge .b-pick > svg { width: 100%; height: 100%; display: block; }
 
 /* mijlpalen als plectrums */
 .badge { padding: 12px 6px 10px; }
@@ -686,18 +674,6 @@ body { font-variant-numeric: tabular-nums; }
 .pedals.tools .pd-switch { width: 36px; height: 36px; box-shadow: 0 0 0 4px rgba(0, 0, 0, .17), 0 3px 0 4px rgba(0, 0, 0, .14); }
 .pedals.tools .pd-switch .ico { width: 13px; height: 13px; }
 
-/* foutenbak-kaart */
-.bin-card { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 12px; align-items: center; padding: 14px 16px 14px 10px; border-radius: 18px; background: var(--surface); border: 2px solid color-mix(in srgb, var(--bad) 45%, var(--line)); box-shadow: 0 4px 0 color-mix(in srgb, var(--bad) 30%, var(--line)); }
-.bc-fret svg { width: 100px; height: 100px; display: block; }
-.bin-card h2 { margin: 0; display: flex; align-items: center; gap: 8px; font: 800 semi-condensed 23px/1.1 var(--display); letter-spacing: -.01em; }
-.bc-n { min-width: 26px; height: 26px; padding: 0 8px; border-radius: 13px; background: var(--bad); color: #FFFFFF; font: 700 14px/26px var(--body); text-align: center; letter-spacing: 0; }
-.bin-card p { margin: 4px 0 12px; font-size: 14px; line-height: 1.4; color: var(--muted); }
-.bin-card button { display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 0 var(--accent-deep); }
-.bin-card button .ico { width: 20px; height: 20px; }
-.bin-card.empty { grid-template-columns: 58px minmax(0, 1fr); padding: 12px 14px; border-style: dashed; border-color: var(--line); box-shadow: none; }
-.bin-card.empty .bc-fret svg { width: 58px; height: 58px; }
-.bin-card.empty h2 { font-size: 19px; }
-.bin-card.empty p { margin-bottom: 0; }
 
 /* voortgang */
 .streak-card { display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 18px 12px 8px; border-radius: 20px; background: var(--accent); color: var(--accent-ink); box-shadow: 0 5px 0 var(--accent-deep); }
@@ -1097,3 +1073,59 @@ button.uh-link { border: 0; cursor: pointer; }
 .lc-ladder li.now { background: var(--accent); color: var(--accent-ink); border-color: var(--accent-deep); }
 .sc-best { margin: 4px 0 0; font: 600 13px/1.3 var(--body); opacity: .85; }
 .hals-row .progress span { background: #2D6BD4; }
+
+/* ===================== Eén overzicht, reservekopie, hals om op te tikken ===================== */
+/* wat je verdiende: op het eindscherm van een les en na Oefen vandaag */
+.moments { width: 100%; max-width: 420px; border-radius: 16px; border: 2px solid color-mix(in srgb, var(--accent) 50%, var(--line)); background: var(--accent-soft); text-align: left; padding: 4px 0; }
+.mo-h { margin: 8px 14px 0; font: 700 12.5px/1.2 var(--body); color: var(--accent-text); }
+.moments ul { list-style: none; margin: 0; padding: 0; }
+.moments li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; align-items: center; padding: 8px 14px 8px 10px; }
+.moments li + li { border-top: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); }
+.mo-ico { width: 44px; height: 44px; display: grid; place-items: center; }
+.mo-ico > svg { width: 100%; height: 100%; display: block; }
+.mo-ico > svg.ico { width: 26px; height: 26px; color: var(--accent-text); }
+.mo-txt { display: grid; gap: 1px; min-width: 0; }
+.mo-txt b { font-size: 15px; line-height: 1.25; }
+.mo-txt small { font-size: 13px; line-height: 1.3; color: var(--muted); }
+.moments li.big .mo-txt b { font-size: 16px; }
+.sheet .moments { justify-self: stretch; max-width: none; }
+.ls-end .moments { animation: rise .45s .25s cubic-bezier(.2, .8, .2, 1) both; }
+/* met een overzicht eronder: kleinere fret, zodat het overzicht in beeld komt */
+.ls-end.has-moments { padding-top: 8px; gap: 10px; }
+.ls-end.has-moments .end-fret { width: 112px; height: 112px; }
+.ls-end.has-moments .end-title { font-size: 32px; }
+/* meer momenten tegelijk: één melding met regels eronder */
+.flash.multi { align-items: flex-start; }
+.flash .fl-more { list-style: none; margin: 6px 0 0; padding: 6px 0 0; border-top: 1px solid color-mix(in srgb, var(--bg) 25%, transparent); display: grid; gap: 5px; }
+.flash .fl-more li { display: grid; gap: 0; }
+.flash .fl-more b { font-size: 13.5px; }
+.flash .fl-more small { font-size: 12px; }
+.flash { cursor: pointer; }
+/* herhaalkaart: eerdere lessen herhalen als er niets klaarstaat */
+.srs-old { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.srs-old .ico { width: 20px; height: 20px; }
+
+/* reservekopie */
+.backup-card .help { margin: 0 0 8px; }
+.bk-status { margin: 0 0 12px; font: 600 13.5px/1.35 var(--body); color: var(--ink); }
+.bk-status.old { color: var(--bad); }
+.bk-status.old::before { content: '! '; font-weight: 800; }
+.bk-btns { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.bk-btns button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.bk-btns .ico { width: 18px; height: 18px; }
+.backup-card.restore { border-style: dashed; }
+.settings-view .bk-btns { margin-bottom: 12px; }
+.bk-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.bk-table th, .bk-table td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--line); }
+.bk-table thead th { font: 700 12px/1.2 var(--body); color: var(--muted); }
+.bk-table tbody th { font-weight: 600; color: var(--muted); width: 38%; }
+.bk-table td { font-weight: 600; }
+.bk-table td.diff { color: var(--accent-text); }
+.bk-warn { color: var(--bad); font-weight: 600; }
+
+/* hals om op te tikken: in twee rijen op de telefoon */
+.neck svg.two-rows { max-width: 520px; margin: 0 auto; }
+
+/* kop op de telefoon: de titel past naast de chips, zonder dat de pagina breder wordt dan het scherm */
+@media (max-width: 420px) { .top { gap: 6px; } .brand h1 { font-size: 26px; } .logo { width: 36px; height: 36px; } body:not([data-view="path"]) .logo { display: none; } .chip { padding: 6px 8px 6px 7px; gap: 4px; } }
+@media (max-width: 380px) { .brand h1 { font-size: 24px; } }

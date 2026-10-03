@@ -1,6 +1,8 @@
-// ---------- Foutenbak: vragen die je fout had, tot je ze goed beantwoordt ----------
-// Elke vraag staat in een vak (box). Vak 0 is de foutenbak. Herstel je hem, dan gaat hij naar vak 1 en
-// komt hij later terug om te herhalen (zie Srs hieronder). Een fout zet hem altijd terug in vak 0.
+// ---------- Herhalen: wat je fout had, komt terug tot je het weet ----------
+// Eén begrip voor de gebruiker: Herhalen. Een vraag die je fout hebt, komt terug: meteen (vak 0), en als je
+// hem dan goed hebt na 1 dag, na 3 dagen en na 7 dagen (vak 1 t/m 3, Leitner). Weet je hem na 7 dagen nog,
+// dan heb je hem onder de knie. Een fout zet hem altijd terug in vak 0.
+// Bin beheert de lijst (vak 0 heette vroeger de foutenbak), Srs de vakken en de herhaalrondes.
 const Bin = {
   MAX: 40, MAX_ALL: 150,
   all() { const s = Store.stats; if (!Array.isArray(s.bin)) s.bin = []; return s.bin; },
@@ -21,16 +23,14 @@ const Bin = {
   },
   add(it, from, topic) {
     const k = it._bin || this.key(it), all = this.all(), ex = all.find(x => x.k === k);
-    const first = !this.list().length && !(Store.stats.binSeen);
     if (ex) { ex.n++; ex.t = Date.now(); ex.box = 0; ex.due = ''; }
     else {
       all.push({ k, it: this.clean(it), n: 1, t: Date.now(), from: from || '', topic: topic || it._topic || '', box: 0 });
-      // maximaal 40 in de foutenbak en 150 in totaal: de oudste gaan eruit
+      // maximaal 40 nieuwe fouten en 150 in totaal: de oudste gaan eruit
       const b0 = all.filter(x => !x.box);
       for (let i = 0; i < b0.length - this.MAX; i++) all.splice(all.indexOf(b0[i]), 1);
       while (all.length > this.MAX_ALL) { const i = all.findIndex(x => x.box); all.splice(i >= 0 ? i : 0, 1); }
     }
-    if (first) Store.stats.binSeen = true;
     Store.saveStats();
     this.changed();
     return k;
@@ -52,7 +52,7 @@ const Bin = {
     return src.filter(x => this.playable(x)).slice(0, max || 10).map(x => this.copy(x));
   },
   bonusXP(n) { return 2 * n + 5; },
-  // start een herstelronde met alleen deze vragen (bijvoorbeeld uit de les die je net deed).
+  // herhaal alleen deze vragen (de fouten uit de les die je net deed).
   // o.after: na afloop, o.exit: bij tussentijds stoppen. Standaard terug naar waar je vandaan kwam.
   start(o = {}) {
     if (!o.keys) return Srs.start(o);
@@ -61,37 +61,36 @@ const Bin = {
     const items = this.items(o.keys, 10);
     if (!items.length) { (o.after || back)(); return; }
     const needMic = items.some(x => x.type === 'play') && !Engine.mic;
-    Loader.run({ title: 'Herstel je fouten', sub: `${items.length} ${items.length === 1 ? 'vraag' : 'vragen'} uit je foutenbak`, mood: 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
-      Lesson.open({ mode: 'bin', title: 'Herstel je fouten', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
+    Loader.run({ title: items.length === 1 ? 'Herhaal je fout' : 'Herhaal je fouten', sub: `${items.length} ${items.length === 1 ? 'vraag' : 'vragen'} uit deze les`, mood: 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
+      Lesson.open({ mode: 'bin', title: 'Herhalen', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
   },
-  // beloning als de bak leeg is: 2 minuten erbij voor het dagdoel (de 10 XP telt de les zelf)
+  // alles herhaald wat er klaarstond: telt voor de mijlpaal (de 10 XP extra telt de les zelf)
   reward() {
     Store.stats.binCleared = (Store.stats.binCleared || 0) + 1;
     Store.saveStats();
-    Progress.addBonus(120);
   },
   changed() {
-    const n = this.count(), todo = Srs.todoCount();
-    $$('.bin-count').forEach(el => { el.textContent = String(n); });
+    const todo = Srs.todoCount();
     $$('.todo-count').forEach(el => { el.textContent = String(todo); });
     $$('.bin-btn').forEach(el => { el.hidden = !todo; });
     Srs.badge();
   },
 };
 
-// ---------- Herhalen: fouten komen terug na 1, 3 en 7 dagen (Leitner) ----------
-// Herstel je een fout, dan gaat hij naar vak 1 en zie je hem morgen terug. Weet je hem dan nog,
-// dan gaat hij een vak verder: over 3 dagen, daarna over 7 dagen. Na vak 3 heb je hem onder de knie.
-// Een fout zet hem terug in de foutenbak, en dan begint het opnieuw.
 const SRS_DAYS = [0, 1, 3, 7];
-const SRS_LABELS = ['Fouten\u00ADbak', '1 dag', '3 dagen', '7 dagen', 'Onder de knie'];
+const SRS_LABELS = ['Nu', '1 dag', '3 dagen', '7 dagen', 'Onder de knie'];
 const addDays = (key, n) => { const d = new Date(key + 'T12:00:00'); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const Srs = {
   entry(k) { return Bin.all().find(x => x.k === k) || null; },
   isDue(x, t) { return x.box > 0 && (x.due || '') <= (t || todayKey()); },
   dueList() { const t = todayKey(); return Bin.all().filter(x => this.isDue(x, t)); },
   dueCount() { return this.dueList().length; },
+  // alles wat nu te herhalen is: nieuwe fouten plus wat vandaag terugkomt
   todoCount() { return Bin.count() + this.dueCount(); },
+  // "2 nieuwe fouten en 1 vraag die vandaag terugkomt"
+  what(nb, due) {
+    return [nb ? `${nb} ${nb === 1 ? 'nieuwe fout' : 'nieuwe fouten'}` : '', due ? `${due} ${due === 1 ? 'vraag die vandaag terugkomt' : 'vragen die vandaag terugkomen'}` : ''].filter(Boolean).join(' en ');
+  },
   // aantallen per vak, plus wat je onder de knie hebt
   snapshot() {
     const c = [0, 0, 0, 0, Store.stats.srsDone || 0];
@@ -112,7 +111,7 @@ const Srs = {
     return 'op ' + new Date(date + 'T12:00:00').toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'short' });
   },
   comes(nx) { const w = this.when(nx.date); return `${w[0].toUpperCase() + w.slice(1)} ${nx.n === 1 ? 'komt er een vraag' : `komen er ${nx.n} vragen`} terug.`; },
-  // goed beantwoord in een herstel- of herhaalronde: een vak verder
+  // goed beantwoord in een herhaalronde: een vak verder
   correct(k) {
     const x = this.entry(k);
     if (!x) return null;
@@ -131,27 +130,29 @@ const Srs = {
     Bin.changed();
     return res;
   },
-  // wat vandaag aan de beurt is (oudste eerst), daarna de foutenbak
+  // wat vandaag terugkomt (oudste eerst), daarna de nieuwe fouten
   items(max) {
     const due = this.dueList().filter(x => Bin.playable(x)).sort((a, b) => (a.due < b.due ? -1 : a.due > b.due ? 1 : a.box - b.box));
     const bin = Bin.list().filter(x => Bin.playable(x)).sort((a, b) => b.n - a.n || a.t - b.t);
     return due.concat(bin).slice(0, max || 10).map(x => Bin.copy(x));
   },
+  // herhalen: eerst wat klaarstaat; staat er niets klaar, dan vragen uit eerdere lessen (zwakke eerst)
   start(o = {}) {
     const from = location.hash === '#les' ? '' : location.hash;
     const back = () => { if (location.hash === from) Router.render(); else location.hash = from; };
     const items = this.items(10);
     if (!items.length) {
+      const todo = this.todoCount();
+      if (!todo && Review.start(o)) return;
       const nx = this.next();
-      UI.flash(ICONS.retry, Bin.count() ? 'Alleen speelvragen over' : 'Niets te herhalen', Bin.count() ? 'Zet speelopdrachten weer aan om ze te herstellen.' : nx ? this.comes(nx) : 'Fouten uit je lessen komen hier terug.', 'badge');
+      UI.flash(ICONS.retry, todo ? 'Alleen speelvragen over' : 'Niets te herhalen', todo ? 'Zet speelopdrachten weer aan om ze te herhalen.' : nx ? this.comes(nx) : 'Wat je fout hebt in een les, komt hier terug.', 'badge', null, true);
       (o.after || back)();
       return;
     }
-    const due = items.filter(x => x._box).length, fix = items.length - due;
+    const due = items.filter(x => x._box).length;
     const needMic = items.some(x => x.type === 'play') && !Engine.mic;
-    const sub = [due ? `${due} ${due === 1 ? 'vraag' : 'vragen'} uit je vakjes` : '', fix ? `${fix} uit je foutenbak` : ''].filter(Boolean).join(' en ');
-    Loader.run({ title: 'Herhalen', sub, mood: due ? 'denk' : 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
-      Lesson.open({ mode: 'bin', review: true, title: 'Herhalen', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
+    Loader.run({ title: 'Herhalen', sub: this.what(items.length - due, due), mood: due ? 'denk' : 'ehbo', wait: needMic ? Engine.startMic() : null }, () =>
+      Lesson.open({ mode: 'bin', title: 'Herhalen', items, onDone: o.after || back, onExit: o.exit || o.after || back }));
   },
   // teller op het tabblad Oefenen
   badge() {
@@ -166,7 +167,7 @@ const Srs = {
     const c = this.snapshot(), due = this.dueBy(), d = o.delta || [];
     return h('div', { class: 'lb-row', role: 'list', 'aria-label': 'Herhaalvakjes' }, SRS_LABELS.map((label, k) => {
       const n = c[k], cards = Math.min(3, n);
-      return h('div', { class: `lb b${k}${n ? ' has' : ''}${due[k] ? ' due' : ''}`, role: 'listitem', 'aria-label': `${label}: ${n}${due[k] ? `, ${due[k]} vandaag aan de beurt` : ''}` },
+      return h('div', { class: `lb b${k}${n ? ' has' : ''}${due[k] ? ' due' : ''}`, role: 'listitem', 'aria-label': `${k === 0 ? 'Nu te herhalen' : k === 4 ? label : `Na ${label}`}: ${n}${due[k] ? `, ${due[k]} vandaag aan de beurt` : ''}` },
         h('span', { class: 'lb-cards', 'aria-hidden': 'true' }, Array.from({ length: cards }, () => h('i'))),
         h('b', { class: 'lb-n', text: String(n) }),
         h('small', { class: 'lb-l', text: label }),
@@ -177,13 +178,14 @@ const Srs = {
   // kaart bovenaan Oefenen
   card() {
     const c = this.snapshot(), nb = c[0], due = this.dueCount(), todo = nb + due, total = c.reduce((a, b) => a + b, 0), nx = this.next();
+    const old = !todo && Review.available();
     let title, text, mood;
     if (!total) {
       title = 'Nog niets te herhalen'; mood = 'boek';
-      text = 'Een fout uit je lessen komt hier terecht. Herstel je hem, dan komt hij terug na 1, 3 en 7 dagen. Zo blijft het hangen.';
+      text = 'Wat je fout hebt in een les, komt hier terug: meteen, en daarna na 1, 3 en 7 dagen. Zo blijft het hangen.';
     } else if (todo) {
       title = `${todo} ${todo === 1 ? 'vraag' : 'vragen'} om te herhalen`; mood = due ? 'denk' : 'ehbo';
-      text = [due ? `${due} ${due === 1 ? 'komt' : 'komen'} vandaag terug uit je vakjes` : '', nb ? `${nb} ${nb === 1 ? 'staat' : 'staan'} in je foutenbak` : ''].filter(Boolean).join(' en ') + '. Goed is een vakje verder, fout is terug naar de foutenbak.';
+      text = `${this.what(nb, due)[0].toUpperCase()}${this.what(nb, due).slice(1)}. Goed is een vakje verder, fout is terug naar het begin.`;
     } else {
       title = 'Vandaag niets te herhalen'; mood = 'slaap';
       text = nx ? this.comes(nx) : `Je hebt ${c[4]} ${c[4] === 1 ? 'vraag' : 'vragen'} onder de knie.`;
@@ -193,6 +195,7 @@ const Srs = {
         h('div', { class: 'srs-fret', html: Mascot.svg(mood) }),
         h('div', { class: 'srs-text' }, h('p', { class: 'srs-eyebrow', text: 'Herhalen' }), h('h2', { text: title }), h('p', { class: 'srs-sub', text: text }))),
       this.row(),
-      todo ? h('button', { class: 'primary big srs-go', type: 'button', onclick: () => this.start() }, h('span', { html: ICONS.retry }), h('span', { text: 'Herhaal nu' }), h('b', { class: 'todo-count', text: String(todo) })) : null);
+      todo ? h('button', { class: 'primary big srs-go', type: 'button', onclick: () => this.start() }, h('span', { html: ICONS.retry }), h('span', { text: 'Herhaal nu' }), h('b', { class: 'todo-count', text: String(todo) }))
+        : old ? h('button', { class: 'big srs-old', type: 'button', onclick: () => Review.start() }, h('span', { html: ICONS.retry }), h('span', { text: 'Herhaal eerdere lessen' })) : null);
   },
 };
