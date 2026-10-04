@@ -72,6 +72,8 @@ const CHEER = {
   wrong: ['Net niet', 'Bijna!', 'Niet helemaal', 'Nog niet', 'Oei, net mis'],
   wrongAgain: ['Nog lastig', 'Deze is taai', 'Nog niet helemaal'],
   lift: ['Van fouten leer je het meest.', 'Zo onthoud je hem straks beter.', 'Even goed kijken, dan lukt hij de volgende keer.', 'Elke fout is een stapje vooruit.', 'Ook de beste gitaristen spelen weleens een valse noot.'],
+  // bij luistervragen en naspelen op gehoor
+  liftEar: ['Van fouten leer je het meest.', 'Zo onthoud je hem straks beter.', 'Luister nog eens goed, dan lukt hij de volgende keer.', 'Elke fout is een stapje vooruit.', 'Je oor went eraan. Hoe vaker je luistert, hoe makkelijker.'],
 };
 const STREAK_LINES = { 3: 'Drie op rij!', 5: 'Vijf op rij, lekker bezig!', 8: 'Acht op rij! Niet te stoppen.', 10: 'Tien op rij! Applaus.', 15: 'Vijftien op rij. Encore!', 20: 'Twintig op rij. Legendarisch!' };
 const Feedback = {

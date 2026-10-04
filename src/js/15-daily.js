@@ -10,10 +10,12 @@ const Daily = {
     const g = Guitar.on();
     if (g) add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
     const nx = nextNode();
-    if (nx) add({ kind: 'node', ref: nx, minutes: nx.node.lesson ? 8 : 4, title: 'Leerpad', sub: nx.node.lesson ? `Les ${nx.unit.lesson} lezen: ${nx.unit.title}` : `Unit ${nx.unitNo}: ${nx.node.title}` });
-    // de volgende stap in de Halsjacht: zonder gitaar, dus altijd mogelijk
+    if (nx) add({ kind: 'node', ref: nx, minutes: nx.node.cards && nx.node.cards.length ? 5 : 4, title: 'Leerpad', sub: this.stepSub(nx) });
+    // de volgende stap in de Halsjacht en in Gehoor: met of zonder gitaar, dus altijd mogelijk
     const hx = nextHals();
-    if (hx) add({ kind: 'node', ref: hx, minutes: 3, title: 'Halsjacht', sub: `Niveau ${hx.unitNo}, ${hx.unit.title}: ${hx.node.title.toLowerCase()}` });
+    if (hx) add({ kind: 'node', ref: hx, minutes: 3, title: 'Halsjacht', sub: this.stepSub(hx) });
+    const gx = nextGehoor();
+    if (gx) add({ kind: 'node', ref: gx, minutes: 3, title: 'Gehoor', sub: this.stepSub(gx) });
     // herhalen: nieuwe fouten en wat vandaag terugkomt; staat er niets klaar, dan vragen uit eerdere lessen
     const rv = Srs.items(), due = rv.filter(x => x._box).length, nb = rv.length - due;
     if (rv.length) add({ kind: 'bin', minutes: 3, title: 'Herhalen', sub: Srs.what(nb, due).replace(/^./, c => c.toUpperCase()) });
@@ -28,6 +30,12 @@ const Daily = {
     for (const x of extras) { if (est >= remainMin) break; add({ kind: 'drill', mode: x.mode, set: x.set, minutes: x.minutes, title: 'Extra', sub: x.sub }); }
     return steps;
   },
+  // "Unit 1: Powerchords, met uitleg" of "Niveau 2, Grote en kleine terts: herkennen"
+  stepSub(r) {
+    if (r.unit.track === 'hals' || r.unit.track === 'gehoor') return `Niveau ${r.unitNo}, ${r.unit.title}: ${r.node.title.toLowerCase()}`;
+    return `Unit ${r.unitNo}: ${r.node.title}${r.node.cards && r.node.cards.length ? ', met uitleg' : ''}`;
+  },
+  nextFor(track) { return track === 'hals' ? nextHals() : track === 'gehoor' ? nextGehoor() : nextNode(); },
   showPlan() {
     if (this.active) return this.run();
     const steps = this.plan(), total = steps.reduce((a, s) => a + s.minutes, 0);
@@ -42,6 +50,7 @@ const Daily = {
     document.body.append(sheet);
   },
   start(steps) {
+    try { Engine.ensureCtx(); } catch (e) {}   // geluid aan binnen de tik, ook op een iPhone
     this.steps = steps; this.idx = 0; this.active = true;
     this.startXP = Store.stats.xp || 0; this.startSecs = Progress.day().secs;
     // alles wat je in deze sessie verdient, komt aan het eind in één overzicht
@@ -54,9 +63,10 @@ const Daily = {
     if (!st) return this.finish();
     clearInterval(this.timer);
     if (st.kind === 'node') {
-      const hals = st.ref.unit.track === 'hals', units = PathData.units(), u = units.find(x => x.lesson === st.ref.unit.lesson) || st.ref.unit;
+      const track = st.ref.unit.track, units = PathData.units(), u = units.find(x => x.lesson === st.ref.unit.lesson) || st.ref.unit;
       const nodes = unitNodes(u);
-      if (nodeState(u, nodes, st.ref.index) === 'done') { const nx = hals ? nextHals() : nextNode(); if (nx) { st.ref = nx; st.sub = hals ? `Niveau ${nx.unitNo}, ${nx.unit.title}: ${nx.node.title.toLowerCase()}` : nx.node.lesson ? `Les ${nx.unit.lesson} lezen: ${nx.unit.title}` : `Unit ${nx.unitNo}: ${nx.node.title}`; } }
+      // die stap is intussen al gedaan: dan de volgende op hetzelfde pad
+      if (nodeState(u, nodes, st.ref.index) === 'done') { const nx = this.nextFor(track); if (nx) { st.ref = nx; st.sub = this.stepSub(nx); } }
       const nodes2 = unitNodes(st.ref.unit);
       startNode(st.ref.unit, st.ref.index, nodes2, () => this.advance());
     } else if (st.kind === 'bin') {

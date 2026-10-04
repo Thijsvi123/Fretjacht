@@ -90,21 +90,24 @@ async def main():
                 await page.wait_for_timeout(150)
                 return t
             async def run_lesson(wrong_first=False, shots=None, wrong_shot=None):
-                kinds = []; n = 0
+                # wrong_first: de eerste vraag na de uitlegkaartjes fout beantwoorden
+                kinds = []; n = 0; wrong_done = False
                 while n < 40:
                     st = await ev('__fj.lesson()')
                     if not st or st.get('finished'): break
                     if shots and st.get('type') in shots and not st.get('answered'):
                         await shot('item_' + st['type']); shots.remove(st['type'])
-                    if wrong_first and n == 0 and wrong_shot and st.get('type') == 'mc':
+                    want_wrong = wrong_first and not wrong_done and st.get('type') != 'learn' and not st.get('answered')
+                    if want_wrong and wrong_shot and st.get('type') == 'mc':
                         # foute keuze vastleggen: feedback met de fret en de foutenbak-melding
                         idx = (st['answer'] + 1) % len(st['options'])
                         await page.locator('.ls-opts .opt').nth(idx).click(); await page.click('.ls-foot button.primary'); await page.wait_for_timeout(450)
                         await shot(wrong_shot)
                         R['wrong_note'] = await ev("document.querySelector('.fb-note') ? document.querySelector('.fb-note').textContent : ''")
                         await click_text('.ls-foot button', 'Verder'); await page.wait_for_timeout(150)
-                        kinds.append('mc-wrong'); n += 1; continue
-                    k = await answer(wrong=(wrong_first and n == 0))
+                        kinds.append('mc-wrong'); n += 1; wrong_done = True; continue
+                    k = await answer(wrong=want_wrong)
+                    if want_wrong: wrong_done = True
                     kinds.append(k); n += 1
                 return kinds
             async def open_next_node():
@@ -114,12 +117,12 @@ async def main():
                 await page.click('.sheet button.primary')
                 return bool(await wait_lesson())
 
-            # --- eerst de les: uitleg in kaartjes, daarna pas de oefeningen ---
+            # --- stap 1: eerst de uitleg in kaartjes, daarna oefeningen over dat onderwerp ---
             R['first_node'] = await ev("document.querySelector('.node.next').getAttribute('aria-label')")
             await open_next_node()
             R['les_first_card'] = await ev("document.querySelector('.ls-prompt').textContent")
             R['les_listen'] = await ev("document.querySelectorAll('.lsn').length")
-            R['les_kinds'] = sorted(set(await run_lesson()))
+            R['les_kinds'] = await run_lesson()
             await page.wait_for_timeout(500)
             R['les_end'] = await ev("document.querySelector('.end-title').textContent")
             await shot('les_end')
@@ -150,7 +153,7 @@ async def main():
             R['just_done'] = await ev("document.querySelectorAll('.node.just-done').length")
             await page.wait_for_timeout(1200); await shot('path_justdone')
 
-            # --- les 2 t/m 6; in les 3 een fout die in de foutenbak blijft ---
+            # --- stap 3 t/m 5 en de unittoets; in stap 4 een fout die bij Herhalen blijft ---
             done_nodes = 1
             for i in range(1, 6):
                 if not await open_next_node(): break

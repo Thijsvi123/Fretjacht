@@ -20,6 +20,9 @@ function diatonic(key, minor, d) {
 }
 const sigText = n => (n === 0 ? 'geen kruisen of mollen' : n > 0 ? `${n} ${n === 1 ? 'kruis' : 'kruisen'}` : `${-n} ${n === -1 ? 'mol' : 'mollen'}`);
 const uniq = arr => Array.from(new Set(arr));
+// geheugensteuntjes: een liedje dat met het interval begint (Gehoortraining en het pad Gehoor)
+const IV_HINT = { 1: 'het thema van Jaws', 2: 'Vader Jacob', 3: 'de riff van Smoke on the Water', 4: 'When the Saints Go Marching In', 5: 'het begin van het Wilhelmus', 6: 'de tune van The Simpsons', 7: 'de lange tonen van Star Wars, of Altijd is Kortjakje ziek', 8: 'de sprong na het loopje aan het begin van The Entertainer', 9: 'My Bonnie Lies over the Ocean', 10: 'Somewhere uit West Side Story', 11: 'het begin van het refrein van Take On Me', 12: 'Somewhere over the Rainbow' };
+const CHORD_FEEL = { maj: 'helder en open', min: 'donker en weemoedig', dom7: 'bluesy: hij wil verder', maj7: 'zacht en dromerig', m7: 'zacht en soulvol', m7b5: 'donker en gespannen', dim: 'gespannen en onrustig', sus4: 'zwevend: hij wil oplossen' };
 const intervalByName = n => INTERVALS.find(i => i.name === n);
 // alle plekken van een toonhoogte binnen een fretbereik
 function positionsOf(midi, from, to) {

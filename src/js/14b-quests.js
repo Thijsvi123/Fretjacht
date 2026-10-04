@@ -1,7 +1,7 @@
 // ---------- Dagelijkse opdrachten, reeksbevriezer en voortgang voor de cursus ----------
 const qc = (d, k) => (d.c && d.c[k]) || 0;
 const QUESTS = [
-  { id: 'node', cat: 'a', icon: 'path', target: () => 1, text: () => 'Rond een stap in je leerpad af', value: d => qc(d, 'nodes'), ok: () => !!nextNode() },
+  { id: 'node', cat: 'a', icon: 'path', target: () => 1, text: () => 'Rond een stap in je leerpad af', value: d => qc(d, 'nodes'), ok: () => !!(nextNode() || nextHals() || nextGehoor()) },
   { id: 'herhaal', cat: 'a', icon: 'retry', target: () => Math.min(4, Srs.items(4).length), text: n => (n === 1 ? 'Herhaal een vraag' : `Herhaal ${n} vragen`), value: d => qc(d, 'herhaal'), ok: () => Srs.items(1).length > 0 },
   { id: 'combo', cat: 'a', icon: 'flame', target: () => 6, text: n => `Beantwoord ${n} vragen op rij goed`, value: d => qc(d, 'combo'), ok: () => PathData.units().length > 0 },
   // van vóór Herhalen; alleen nog voor een dag waarop ze al gekozen waren

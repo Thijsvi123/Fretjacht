@@ -294,7 +294,7 @@ function renderSettings(view) {
     h('div', { class: 'set-grid' },
       field('Dagdoel', seg([10, 15, 20, 30].map(n => ({ value: n, label: `${n} min` })), s.goal, v => { s.goal = Number(v); save(); Progress.renderTop(); }), 'Je reeks telt de dagen waarop je dit aantal minuten echt geoefend hebt.'),
       field('Oefenen', guitarSwitch(), 'Met gitaar speel je de noten en luistert de app mee. Zonder gitaar wordt elke speelopdracht een vraag op je telefoon. Je wisselt ook bovenaan Leerpad en Oefenen.'),
-      h('div', { class: 'field' }, h('span', { class: 'lbl', text: 'Muziektheoriecursus' }), h('span', { class: 'help', text: 'Elke zondag komt er een les bij in je leerpad, als je de unittoets van de vorige hebt gehaald. Elke les begint met uitleg.' }))));
+      h('div', { class: 'field' }, h('span', { class: 'lbl', text: 'Muziektheoriecursus' }), h('span', { class: 'help', text: 'Elke zondag komt er een les bij in je leerpad, als je de unittoets van de vorige hebt gehaald. Elke stap begint met de uitleg die erbij hoort.' }))));
   view.append(h('section', { class: 'settings-view' }, goalCard, micCard, rangeCard, ctlCard, scoreCard));
   UI.updateLevel(-120);
 }

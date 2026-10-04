@@ -1,7 +1,8 @@
 """Met of zonder gitaar, de lessen in de app en de korte bovenkant van het leerpad.
 - het schuifje op Leerpad, Oefenen en Instellingen, en wat het met de oefeningen doet
 - Halsjacht met gitaar: spelen in plaats van tikken, en "Verder zonder gitaar" midden in een les
-- elke unit begint met de les in kaartjes (geluid, terug, "Les gelezen!"), daarna de oefeningen
+- elke stap begint met zijn eigen uitleg in kaartjes (geluid, terug), daarna alleen oefeningen over dat onderwerp;
+  nog een keer zonder uitleg (of met), Lees de les voor de hele les, Onthoud voor de unittoets
 - een nieuwe les op zondag, als de unittoets van de vorige gehaald is (met een nepklok)
 Zelfde opties als learn.py (SCHEME, SHOTS, FONTS_DIR). Eindigt met een lijst geslaagd/mislukt per controle."""
 import os, asyncio, subprocess, sys, time, json, re
@@ -166,31 +167,64 @@ async def main():
             await ev("document.querySelectorAll('.sheet-wrap').forEach(x => x.remove())")
             check('Oefen vandaag met gitaar: begint met opwarmen', 'met gitaar' in R['plan_met']['help'] and R['plan_met']['steps'][0].startswith('Opwarmen'), R['plan_met'])
 
-            # ======================= 4. de les: eerst uitleg, dan oefeningen =======================
+            # ======================= 4. per stap: eerst de uitleg, dan oefeningen over dat onderwerp =======================
             sheet = await open_node()
             R['les_sheet'] = sheet
-            check('Unit 1 begint met de les', 'Les' in sheet and '9 kaartjes' in sheet and 'zonder gitaar' in sheet, sheet)
-            st = await ev('__fj.lesson()')
+            check('Stap 1 Het octaaf: eerst 3 kaartjes uitleg, dan de oefeningen', 'Het octaaf' in sheet and 'Eerst 3 kaartjes uitleg, dan' in sheet and 'Les:' not in sheet, sheet)
             R['card1'] = await ev("({kind: document.querySelector('.ls-kind').textContent, title: document.querySelector('.ls-prompt').textContent, neck: !!document.querySelector('.ls-body figure svg'), btns: Array.from(document.querySelectorAll('.ls-foot button')).map(b => b.textContent)})")
-            check('Kaartje 1: "Les 1 · 1 van 9", titel, hals, alleen Volgende', R['card1']['kind'] == 'Les 1 · 1 van 9' and R['card1']['title'] == 'Waarom twaalf tonen?' and R['card1']['neck'] and R['card1']['btns'] == ['Volgende'], R['card1'])
+            check('Kaartje 1: "Les 1 · uitleg 1 van 3", titel, hals, alleen Volgende', R['card1']['kind'] == 'Les 1 · uitleg 1 van 3' and R['card1']['title'] == 'Waarom twaalf tonen?' and R['card1']['neck'] and R['card1']['btns'] == ['Volgende'], R['card1'])
             await page.click('.ls-foot button.primary'); await page.wait_for_timeout(200)
             R['card2'] = await ev("({title: document.querySelector('.ls-prompt').textContent, rows: document.querySelectorAll('.learn-table tbody tr').length, listen: Array.from(document.querySelectorAll('.lsn')).map(b => b.textContent), btns: Array.from(document.querySelectorAll('.ls-foot button')).map(b => b.textContent)})")
             check('Kaartje 2: tabel met boventonen en twee geluidsknoppen', R['card2']['rows'] == 6 and len(R['card2']['listen']) == 2 and R['card2']['btns'] == ['Vorige', 'Volgende'], R['card2'])
             await page.locator('.lsn').first.click(); await page.wait_for_timeout(300)
-            R['sound'] = await ev("({ctx: !!(window.AudioContext) , playing: document.querySelector('.lsn').classList.contains('on') || document.querySelector('.lsn').getAttribute('aria-pressed') === 'true' || true})")
             await shot('les_card2')
             await page.locator('.ls-foot button', has_text='Vorige').click(); await page.wait_for_timeout(200)
             R['back'] = await ev("document.querySelector('.ls-prompt').textContent")
             check('Vorige: terug naar het vorige kaartje', R['back'] == 'Waarom twaalf tonen?', R['back'])
-            kinds = await run()
-            R['les_kinds'] = kinds
-            R['les_end'] = await ev("({title: document.querySelector('.end-title').textContent, how: (document.querySelector('.end-how') || {}).textContent || '', stats: Array.from(document.querySelectorAll('.end-stats div')).map(d => d.textContent)})")
-            check('Na het laatste kaartje: "Les gelezen!"', set(kinds) == {'learn'} and R['les_end']['title'] == 'Les gelezen!' and any(s.startswith('Kaartjes') for s in R['les_end']['stats']), R['les_end'])
-            await shot('les_end')
+            for _ in range(2): await page.click('.ls-foot button.primary'); await page.wait_for_timeout(200)
+            R['card3'] = await ev("({title: document.querySelector('.ls-prompt').textContent, btns: Array.from(document.querySelectorAll('.ls-foot button')).map(b => b.textContent)})")
+            check('Laatste kaartje: Het octaaf, knop "Naar de oefeningen"', R['card3']['title'] == 'Het octaaf: 2 staat tot 1' and R['card3']['btns'] == ['Vorige', 'Naar de oefeningen'], R['card3'])
+            await shot('les_card3')
+            prompts = []
+            async def note_prompt():
+                st = await ev('__fj.lesson()')
+                if st and st.get('prompt') and st.get('type') != 'learn': prompts.append(st['prompt'])
+            kinds = []
+            for _ in range(40):
+                await note_prompt()
+                k = await answer()
+                if k == 'end': break
+                kinds.append(k)
+            await page.wait_for_timeout(500)
+            R['step1_kinds'] = kinds; R['step1_prompts'] = prompts
+            R['step1_end'] = await ev("({title: document.querySelector('.end-title').textContent, stats: Array.from(document.querySelectorAll('.end-stats div')).map(d => d.textContent)})")
+            check('Stap 1: na de uitleg (het derde kaartje) alleen oefeningen, geen nieuwe kaartjes', kinds[0] == 'learn' and 'learn' not in kinds[1:] and len(kinds) >= 7, kinds)
+            check('Stap 1: de oefeningen gaan over het octaaf (en de boventonen)', all(any(w in p for w in ('octaaf', 'Octaaf', 'boventoon', 'Hz', 'halve tonen zitten')) for p in prompts), prompts)
+            check('Stap 1: eindscherm met score, geen "Les gelezen!"', R['step1_end']['title'] != 'Les gelezen!' and any(x.startswith('Goed') for x in R['step1_end']['stats']), R['step1_end'])
             await verder(); await page.wait_for_timeout(500)
-            R['after_les'] = await ev("Array.from(document.querySelectorAll('#unit-1 .node')).map(n => n.getAttribute('aria-label'))")
-            check('Daarna: de les is gedaan, de eerste oefening open', R['after_les'][0] == 'Les: gedaan' and R['after_les'][1].endswith('beschikbaar'), R['after_les'])
-            check('De les blijft terug te lezen met "Lees de les"', await ev("!!Array.from(document.querySelectorAll('#unit-1 button')).find(b => b.textContent === 'Lees de les')"))
+            R['after_step1'] = await ev("Array.from(document.querySelectorAll('#unit-1 .node')).map(n => n.getAttribute('aria-label'))")
+            check('Daarna: Het octaaf gedaan, De kwint open; geen aparte lesstap meer', R['after_step1'][0] == 'Het octaaf: gedaan' and R['after_step1'][1] == 'De kwint: beschikbaar' and len(R['after_step1']) == 6, R['after_step1'])
+            # nog een keer: zonder uitleg, of eerst de uitleg
+            await page.locator('#unit-1 .node').first.click(); await page.wait_for_timeout(250)
+            R['again_sheet'] = {'help': await ev("document.querySelector('.sheet .help').textContent"), 'btns': await ev("Array.from(document.querySelectorAll('.sheet button')).map(b => b.textContent)")}
+            check('Stap gedaan: "Nog een keer" zonder uitleg, en "Eerst de uitleg lezen"', R['again_sheet']['btns'][0].startswith('Nog een keer') and 'Eerst de uitleg lezen' in R['again_sheet']['btns'] and not R['again_sheet']['help'].startswith('Eerst'), R['again_sheet'])
+            await shot('again_sheet')
+            await page.click('.sheet button.primary'); st = await wait_lesson()
+            check('Nog een keer: meteen de oefeningen, zonder kaartjes', st and st['type'] != 'learn', st)
+            await stop_lesson()
+            await page.locator('#unit-1 .node').first.click(); await page.wait_for_timeout(250)
+            await page.locator('.sheet button', has_text='Eerst de uitleg lezen').click(); st = await wait_lesson()
+            check('Eerst de uitleg lezen: begint weer met kaartje 1', st and st['type'] == 'learn' and st['kicker'] == 'Les 1 · uitleg 1 van 3', st)
+            await stop_lesson()
+            # de hele les blijft terug te lezen
+            await page.locator('#unit-1 button', has_text='Lees de les').click(); st = await wait_lesson()
+            R['read'] = st
+            kinds = await run()
+            R['read_end'] = await ev("({title: document.querySelector('.end-title').textContent, stats: Array.from(document.querySelectorAll('.end-stats div')).map(d => d.textContent)})")
+            check('Lees de les: alle 9 kaartjes, "Les gelezen!"', st and st['kicker'] == 'Les 1 · 1 van 9' and kinds == ['learn'] * 9 and R['read_end']['title'] == 'Les gelezen!', [st, kinds, R['read_end']])
+            await verder(); await page.wait_for_timeout(500)
+            R['after_read'] = await ev("Array.from(document.querySelectorAll('#unit-1 .node')).map(n => n.getAttribute('aria-label'))")
+            check('Lees de les verandert niets aan het pad', R['after_read'] == R['after_step1'], R['after_read'])
 
             # ======================= 5. vraagtypes per stand =======================
             await open_node()
@@ -254,10 +288,13 @@ async def main():
             check('Zaterdag, toets nog niet gehaald: les 2 wacht op de unittoets', R['sat_before']['when'] == 'Opent op de zondag nadat je de unittoets van les 1 hebt gehaald.', R['sat_before'])
             sheet = await open_node()
             check('De volgende stap is de unittoets', 'Unittoets' in sheet, sheet)
+            R['test_card'] = await ev("({kind: document.querySelector('.ls-kind').textContent, title: document.querySelector('.ls-prompt').textContent, list: document.querySelectorAll('.learn-list li').length, btns: Array.from(document.querySelectorAll('.ls-foot button')).map(b => b.textContent)})")
+            check('Unittoets begint met Onthoud: de kern van de les, knop "Naar de toets"', R['test_card']['kind'] == 'Les 1 · voor de toets' and R['test_card']['title'] == 'Onthoud' and R['test_card']['list'] >= 2 and R['test_card']['btns'] == ['Naar de toets'], R['test_card'])
+            await shot('test_onthoud')
             kinds = await run()
             R['test_kinds'] = kinds
             R['test_end'] = await ev("document.querySelector('.end-title').textContent")
-            check('Unittoets zonder gitaar: geen speelopdrachten, gehaald', 'play' not in kinds and 'learn' not in kinds and R['test_end'] == 'Unittoets gehaald!', [kinds, R['test_end']])
+            check('Unittoets zonder gitaar: geen speelopdrachten, gehaald', 'play' not in kinds and kinds[0] == 'learn' and kinds.count('learn') == 1 and R['test_end'] == 'Unittoets gehaald!', [kinds, R['test_end']])
             await verder(); await page.wait_for_timeout(700)
             R['sat_after'] = {'course': await ev('__fj.course()'), 'when': await ev("(document.querySelector('#nextLesson .uh-when') || {}).textContent || ''"), 'doneDay': await ev("JSON.parse(localStorage.getItem('fretjacht.stats')).path.nodes['L1-5'].doneDay")}
             check('Toets gehaald op zaterdag: "Opent morgen, zondag 4 oktober."', R['sat_after']['when'] == 'Opent morgen, zondag 4 oktober.' and R['sat_after']['doneDay'] == '2026-10-03', R['sat_after'])
@@ -267,7 +304,7 @@ async def main():
             await page.reload(); await page.wait_for_timeout(900)
             R['sun'] = await ev("""({course: __fj.course(), head: document.querySelector('.track-head b').textContent, units: Array.from(document.querySelectorAll('.unit:not(.locked) h2')).map(e => e.textContent),
               next: document.querySelector('.node.next') && document.querySelector('.node.next').getAttribute('aria-label'), when: (document.querySelector('#nextLesson .uh-when') || {}).textContent || ''})""")
-            check('Zondag: les 2 Intervallen staat open, met de les vooraan', R['sun']['units'] == ['Waarom 12 tonen', 'Intervallen'] and R['sun']['head'] == 'Cursus: les 2 van 8' and R['sun']['next'] == 'Les: beschikbaar', R['sun'])
+            check('Zondag: les 2 Intervallen staat open, de eerste stap is Halve tonen tellen', R['sun']['units'] == ['Waarom 12 tonen', 'Intervallen'] and R['sun']['head'] == 'Cursus: les 2 van 8' and R['sun']['next'] == 'Halve tonen tellen: beschikbaar', R['sun'])
             check('Zondag: les 3 wacht op de unittoets van les 2', R['sun']['when'] == 'Opent op de zondag nadat je de unittoets van les 2 hebt gehaald.', R['sun'])
             await shot('sunday')
             await open_node()

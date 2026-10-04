@@ -44,7 +44,7 @@ function playFromTap(it) {
   if (!r || !v) return null;
   const m0 = OPEN[r.s] + r.f, semis = OPEN[v.s] + v.f - m0;
   let target = pcName(m0 + semis, 'sharps');
-  try { const iv = INTERVALS.find(x => x.semis === semis); if (iv) target = spName(spellFrom(parseName(r.label), iv.steps, iv.semis)); } catch (e) {}
+  try { const iv = INTERVALS.find(x => x.semis === semis); if (iv) target = ivTarget(r.label, iv.steps, iv.semis); } catch (e) {}
   return carry(it, { type: 'play', skill: it.skill, prompt: `Speel ${r.label}, en daarna ${ivWord(semis)} erboven`, big: r.label, sub: `${r.label} ligt op de ${STR_NAME[r.s]}, ${r.f ? 'fret ' + r.f : 'los'}`,
     steps: [{ k: 'pc', pc: mod12(m0), name: r.label, pos: { s: r.s, f: r.f } }, { k: 'rel', semis, name: target }],
     neck: { from: Math.max(0, r.f - 3), to: Math.min(15, r.f + 6), marks: [{ s: r.s, f: r.f, kind: 'todo root', label: r.label }] },
@@ -80,7 +80,8 @@ function askFromPlay(it) {
   if (sk === 'play-octave') alt = G.tapOctave();
   else if (sk === 'play-fifth' || sk === 'play-power') alt = pick([G.tapFifth, G.fifthAbove])();
   else if (sk.startsWith('iv-play-')) alt = G.ivTap([Number(sk.slice(8)) || 7]);
-  else if (sk === 'play-degree') alt = G.majDegree();
+  else if (sk === 'play-degree') alt = G.majDegree(it.keys);
+  else if (sk === 'play-leading') alt = G.leadingNote();
   else if (m && m[1] === 'scale') alt = m[2] === 'major' ? G.majNotes() : m[2] === 'minor' ? G.minNotes('natural') : SCALES[m[2]] ? G.scaleNotesQ(m[2], it.big || 'A') : null;
   else if (m && m[1] === 'chord') alt = CHORDS[m[2]] ? G.chordNotes([m[2]]) : G.triadFormula();
   else if (sk.startsWith('play-box-')) { const sc = sk.split('-')[2]; alt = SCALES[sc] ? G.scaleNotesQ(sc, it.big || 'A') : null; }
@@ -88,7 +89,11 @@ function askFromPlay(it) {
   else if (sk === 'play-harm7') alt = G.harm7();
   else if (sk === 'play-dia-root') alt = G.romanOf();
   else if (sk === 'play-dia-chord') alt = G.diaChord();
-  else if (sk === 'play-prog') alt = pick([G.prog145, G.prog251, G.prog1564])();
+  else if (sk === 'play-dia-chord-trap') alt = G.diaChord(true);
+  else if (sk === 'play-function-root') alt = G.functionOf();
+  else if (sk === 'play-v7') alt = G.v7();
+  else if (sk === 'play-minor-root') alt = G.minorDia();
+  else if (sk.startsWith('play-prog')) alt = ({ 'play-prog-145': G.prog145, 'play-prog-251': G.prog251, 'play-prog-1564': G.prog1564, 'play-prog-1645': G.prog1564, 'play-prog-6415': G.prog6415 }[sk] || pick([G.prog145, G.prog251, G.prog1564]))();
   else if (sk === 'note-play' && it.steps && it.steps[0] && it.steps[0].string != null) alt = findItem(it.steps[0].pc, [it.steps[0].string]);
   else if (sk === 'hals-play' || sk === 'hals-play-all') alt = null;   // komt uit de Halsjacht: het origineel gebruiken
   return alt ? carry(it, alt) : null;
@@ -103,7 +108,8 @@ function fitItem(it, guitar) {
     if (it.type === 'tapall') return playFromTapAll(it);
     return it;
   }
-  if (it.type === 'play') return askFromPlay(it);
+  // naspelen op gehoor (pad Gehoor): zonder gitaar speel je het na op toetsen in de app
+  if (it.type === 'play') return it.pad ? it : askFromPlay(it);
   return it;
 }
 function fitMode(items, guitar = Guitar.on()) { return items.map(it => fitItem(it, guitar)).filter(Boolean); }

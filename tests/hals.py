@@ -131,7 +131,7 @@ async def main():
             R['course_head'] = await ev("({text: document.querySelector('.track-head b').textContent, dots: document.querySelectorAll('.track-head .tdots i').length})")
             check('Muziektheorie: les 1 van 8 met stippen', R['course_head']['text'] == 'Cursus: les 1 van 8' and R['course_head']['dots'] == 8, R['course_head'])
             R['unit_count'] = await ev("document.querySelector('.uh-count').textContent")
-            check('Unit-teller in woorden', R['unit_count'] == '0 van 7', R['unit_count'])
+            check('Unit-teller in woorden: vijf stappen en de toets', R['unit_count'] == '0 van 6', R['unit_count'])
             await page.wait_for_timeout(600); await shot('home')
             # niveau omhoog: melding met confetti
             await ev('__fj.addXP(20)')
@@ -232,11 +232,11 @@ async def main():
 
             # ---------- theorieles: pijl en "nog N" bij een fout ----------
             await page.click('.track-switch button[data-track="theory"]'); await page.wait_for_timeout(300)
-            # eerst de les: alleen kaartjes, daarna pas vragen
+            # de eerste stap: eerst zijn eigen uitleg (3 kaartjes), daarna de oefeningen
             await page.locator('.node.next').first.click(); await page.wait_for_timeout(250); await page.click('.sheet button.primary'); await wait_lesson()
             kinds = await run()
             e = await end_info(); R['les_end'] = e
-            check('Theorie: de unit begint met de les in 9 kaartjes', kinds == ['learn'] * 9 and e['title'] == 'Les gelezen!', [kinds, e])
+            check('Theorie: de eerste stap begint met 3 kaartjes uitleg, dan oefeningen', kinds[:3] == ['learn'] * 3 and len(kinds) > 3 and 'learn' not in kinds[3:] and e['title'] != 'Les gelezen!', [kinds, e])
             await verder(); await page.wait_for_timeout(500)
             await page.locator('.node.next').first.click(); await page.wait_for_timeout(250); await page.click('.sheet button.primary'); await wait_lesson()
             for i in range(8):
@@ -245,7 +245,7 @@ async def main():
                 await answer(True)
             await answer(False, snap='mc_wrong')
             fb = R['mc_fb'][-1]
-            check('Theorie: fout met kruisje en → antwoord', 'bad' in fb['mark'] and len(fb['answer']) > 2, fb)
+            check('Theorie: fout met kruisje en → antwoord', 'bad' in fb['mark'] and fb['answer'].startswith('→') and len(fb['answer']) >= 2, fb)
             await page.click('.ls-close'); await page.wait_for_timeout(200); await page.locator('.sheet button', has_text='Stoppen').click(); await page.wait_for_timeout(400)
 
             # ---------- Welke noot? ----------
@@ -281,10 +281,10 @@ async def main():
             R['pedal'] = await ev("!!document.querySelector('.pedal[data-mode=\"noteq\"]')")
             check('Pedaal Welke noot? in Oefenen', R['pedal'])
             await go('#voortgang')
-            R['progress'] = await ev("({level: document.querySelector('.level-card h2').textContent, ladder: document.querySelectorAll('.lc-ladder li').length, tiles: Array.from(document.querySelectorAll('.tile .tile-l')).map(e => e.textContent), badges: document.querySelectorAll('.badge').length, hals: document.querySelector('.hals-row .help').textContent})")
+            R['progress'] = await ev("({level: document.querySelector('.level-card h2').textContent, ladder: document.querySelectorAll('.lc-ladder li').length, tiles: Array.from(document.querySelectorAll('.tile .tile-l')).map(e => e.textContent), badges: document.querySelectorAll('.badge').length, hals: document.querySelector('.hals-row .help').textContent, gehoor: (document.querySelector('.gehoor-row .help') || {}).textContent || ''})")
             check('Voortgang: niveaukaart met ladder', R['progress']['level'] == 'Straatmuzikant' and R['progress']['ladder'] == 10, R['progress'])
             check('Voortgang: tegels noten en nauwkeurig', R['progress']['tiles'][:2] == ['Noten gevonden', 'Nauwkeurig'], R['progress']['tiles'])
-            check('Voortgang: 20 plectrums en Halsjacht-regel', R['progress']['badges'] == 20 and '1 van 8' in R['progress']['hals'], R['progress'])
+            check('Voortgang: 22 plectrums, Halsjacht- en Gehoor-regel', R['progress']['badges'] == 22 and '1 van 8' in R['progress']['hals'] and '0 van 10' in R['progress']['gehoor'], R['progress'])
             R['meter_on'] = await ev("document.querySelectorAll('.level-card .lv-meter i.on').length")
             check('Voortgang: XP-meter licht op', R['meter_on'] >= 6, R['meter_on'])
             await page.wait_for_timeout(1200); await shot('progress'); await shot('progress_full', full_page=True)

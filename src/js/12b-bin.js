@@ -39,7 +39,8 @@ const Bin = {
   },
   has(k) { return this.list().some(x => x.k === k); },
   // kan deze vraag in de huidige stand (met of zonder gitaar)? Speelopdrachten worden zonder gitaar een vraag.
-  playable(x) { return Guitar.on() || x.it.type !== 'play' || /^(play-(octave|fifth|power|degree|scale-|chord-|box-|key-root|harm7|dia-|prog)|iv-play-|note-play)/.test(x.it.skill || ''); },
+  // (naspelen op gehoor kan altijd: zonder gitaar op de toetsen in de app)
+  playable(x) { return Guitar.on() || x.it.type !== 'play' || !!x.it.pad || !!askFromPlay(x.it); },
   // verse kopie om opnieuw te stellen; meerkeuze-opties opnieuw geschud
   copy(x) {
     const it = JSON.parse(JSON.stringify(x.it));
@@ -58,6 +59,7 @@ const Bin = {
   // o.after: na afloop, o.exit: bij tussentijds stoppen. Standaard terug naar waar je vandaan kwam.
   start(o = {}) {
     if (!o.keys) return Srs.start(o);
+    try { Engine.ensureCtx(); } catch (e) {}   // geluid aan binnen de tik (luistervragen), ook op een iPhone
     const from = location.hash === '#les' ? '' : location.hash;
     const back = () => { if (location.hash === from) Router.render(); else location.hash = from; };
     const items = this.items(o.keys, 10);
@@ -140,6 +142,7 @@ const Srs = {
   },
   // herhalen: eerst wat klaarstaat; staat er niets klaar, dan vragen uit eerdere lessen (zwakke eerst)
   start(o = {}) {
+    try { Engine.ensureCtx(); } catch (e) {}
     const from = location.hash === '#les' ? '' : location.hash;
     const back = () => { if (location.hash === from) Router.render(); else location.hash = from; };
     const items = this.items(10);

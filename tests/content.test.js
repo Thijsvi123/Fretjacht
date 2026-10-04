@@ -1,23 +1,33 @@
-// Test: alle vragen die de app zelf maakt, de lessen van de cursus en het schuifje met of zonder gitaar
+// Test: alle vragen die de app zelf maakt, de lessen van de cursus (per stap), het pad Gehoor en het schuifje met of zonder gitaar
 const fs = require('fs'); const vm = require('vm');
 const ctx = { document: { addEventListener(){} }, window: {}, performance, console, Math, Float32Array,
   NoteGame: { pick: () => ({ s: 2, pc: 9, frets: [2], name: 'A', midis: [57] }) },
   Store: { settings: { names: 'sharps', guitar: true }, stats: {}, saveStats() {} },
   ICONS: new Proxy({}, { get: () => '<svg></svg>' }) };
 vm.createContext(ctx);
-const src = ['01-theory.js', '01b-theory2.js', '05d-fretquiz.js', '11-content.js', '11b-hals.js', '11c-course.js', '11d-guitar.js'].map(f => fs.readFileSync('src/js/' + f, 'utf8')).join('\n');
-vm.runInContext(src + '\nthis.C = { TOPICS, COURSE, unitNodes, unitMeta, G, OPEN, mod12, fitMode, noteMidi, HalsData, FretQuiz, NATURAL, SHARP_NAMES };', ctx);
-const { TOPICS, COURSE, unitNodes, OPEN, mod12, fitMode, noteMidi, HalsData, FretQuiz } = ctx.C;
+const src = ['01-theory.js', '01b-theory2.js', '05d-fretquiz.js', '11-content.js', '11b-hals.js', '11c-course.js', '11d-guitar.js', '11e-gehoor.js'].map(f => fs.readFileSync('src/js/' + f, 'utf8')).join('\n');
+vm.runInContext(src + '\nthis.C = { TOPICS, COURSE, unitNodes, unitMeta, G, OPEN, mod12, fitMode, noteMidi, HalsData, FretQuiz, NATURAL, SHARP_NAMES, GehoorData, GEHOOR_LEVELS, cardItem, Listen, unitSummary, authoredItems, parseName, spPc };', ctx);
+const { TOPICS, COURSE, unitNodes, OPEN, mod12, fitMode, noteMidi, HalsData, FretQuiz, GehoorData, GEHOOR_LEVELS, cardItem, Listen, unitSummary } = ctx.C;
 let fails = 0, counts = {}, samples = {};
 const bad = (msg, it) => { fails++; if (fails < 25) console.log('FAIL', msg, JSON.stringify(it).slice(0, 300)); };
 function check(it, where) {
   counts[it.type] = (counts[it.type] || 0) + 1;
+  // dubbele kruisen en mollen komen in de lessen niet voor: die mogen ook niet in een vraag, uitleg of hint staan
+  if (/𝄪|𝄫/.test(JSON.stringify([it.prompt, it.sub, it.options, it.choices, it.explain, it.hint, it.steps && it.steps.map(s => s.name)]))) bad('dubbel kruis of dubbele mol ' + where, it);
   if (!it.prompt) bad('geen prompt ' + where, it);
   if (it.type === 'mc') {
     if (it.options.length < 2 || it.options.length > 4) bad('aantal opties ' + where, it);
     if (new Set(it.options).size !== it.options.length) bad('dubbele opties ' + where, it);
     if (it.answer < 0 || it.answer >= it.options.length) bad('antwoord buiten bereik ' + where, it);
     if (it.options.some(o => o === 'undefined' || o.includes('undefined') || o.includes('NaN'))) bad('undefined in optie ' + where, it);
+    // noten als opties: nooit twee die hetzelfde klinken, zoals A♯ en B♭
+    if (it.options.every(o => /^[A-G](♯|♭|𝄪|𝄫)?$/.test(o)) && new Set(it.options.map(o => ctx.C.spPc(ctx.C.parseName(o)))).size !== it.options.length) bad('twee opties klinken hetzelfde ' + where, it);
+    if (it.hear) {
+      checkSound(it.hear, where, it);
+      if (!it.hearBy || it.options.some(o => !it.hearBy[o])) bad('luistervraag: niet elk antwoord heeft een geluid ' + where, it);
+      else for (const o of it.options) checkSound(it.hearBy[o], where, it);
+      if (JSON.stringify(it.hearBy[it.options[it.answer]]) !== JSON.stringify(it.hear)) bad('luistervraag: het goede antwoord klinkt anders dan de vraag ' + where, it);
+    }
   } else if (it.type === 'multi') {
     if (!it.correct.length || it.correct.some(c => !it.choices.includes(c))) bad('multi juist ontbreekt ' + where, it);
     if (new Set(it.choices).size !== it.choices.length) bad('multi dubbele chips ' + where, it);
@@ -33,6 +43,8 @@ function check(it, where) {
       if (st.k === 'rel' && !Number.isInteger(st.semis)) bad('play rel ongeldig ' + where, it);
       if (st.k === 'set' && (!st.pcs.length || st.pcs.some(p => !(p >= 0 && p < 12)))) bad('play set ongeldig ' + where, it);
     }
+    if (it.hear) checkSound(it.hear, where, it);
+    if (it.pad) checkPad(it, where);
   } else if (it.type === 'name') {
     if (!(it.s >= 0 && it.s < 6) || mod12(OPEN[it.s] + it.f) !== it.pc) bad('name: plek en noot kloppen niet ' + where, it);
   } else if (it.type === 'tapall') {
@@ -42,17 +54,45 @@ function check(it, where) {
   } else bad('onbekend type ' + where, it);
   if (JSON.stringify(it).includes('undefined')) bad('tekst bevat undefined ' + where, it);
 }
+// een geluid zoals een play-knop: noten na elkaar (n), samen (c) of akkoorden na elkaar (ch)
+function checkSound(sp, where, it) {
+  const groups = sp && (sp.ch || [sp.n]);
+  if (!groups || !groups.length) return bad('geluid ontbreekt ' + where, it);
+  for (const g of groups) { const toks = String(g || '').trim().split(/\s+/); if (!g || toks.some(t => noteMidi(t) == null)) bad(`onbekende noot in geluid "${g}" ` + where, it); }
+}
+// naspelen op de toetsen: met de toetsen moet elke stap te spelen zijn, en wat klonk moet kloppen met de stappen
+function checkPad(it, where) {
+  const { lo, hi } = it.pad, keys = [];
+  if (!(lo >= 28 && hi <= 88 && hi - lo >= 5 && hi - lo <= 16)) bad('toetsen: bereik ' + where, it.pad);
+  for (let m = lo; m <= hi; m++) keys.push(m);
+  let last = null;
+  for (const st of it.steps) {
+    if (st.k === 'set') { if (st.pcs.some(pc => !keys.some(m => mod12(m) === pc))) bad('toetsen: akkoordtoon ontbreekt ' + where, it); continue; }
+    if (st.k === 'rel') { const want = last + st.semis; if (last == null || !keys.includes(want)) bad('toetsen: interval valt buiten de toetsen ' + where, it); last = want; continue; }
+    const k = keys.find(m => mod12(m) === st.pc);
+    if (k == null) bad('toetsen: noot ontbreekt ' + where, it);
+    if (st.midi != null && mod12(st.midi) !== st.pc) bad('naspelen: midi en noot verschillen ' + where, st);
+    if (last != null && mod12(last) === st.pc) bad('naspelen: twee keer dezelfde noot achter elkaar (de app negeert de tweede) ' + where, it);
+    last = st.given || last == null ? (keys.find(m => m === st.midi) != null ? st.midi : k) : k;
+  }
+  if (!it.steps.length || (it.steps.length > 1 && !it.steps[0].given)) bad('naspelen: de eerste toon is niet gegeven ' + where, it);
+  // het geluid speelt dezelfde tonen als de stappen (bij intervallen en melodieën)
+  if (it.hear && it.hear.n && !it.hear.c) {
+    const heard = Listen.notes(it.hear.n), pcs = it.steps.map(st => st.k === 'rel' ? null : st.pc);
+    if (heard.length !== it.steps.length || heard.some((m, i) => pcs[i] != null && mod12(m) !== pcs[i])) bad('naspelen: geluid en stappen verschillen ' + where, it);
+  }
+}
 // zet om naar met en zonder gitaar, en weer terug
 function checkModes(items, where) {
   const met = fitMode(items, true), zonder = fitMode(items, false);
   met.forEach(it => check(it, where + ' (met gitaar)'));
   zonder.forEach(it => check(it, where + ' (zonder gitaar)'));
   if (met.some(it => ['tap', 'name', 'tapall'].includes(it.type))) bad('met gitaar nog tikken ' + where, met.map(x => x.type));
-  if (zonder.some(it => it.type === 'play')) bad('zonder gitaar nog spelen ' + where, zonder.map(x => x.type));
+  if (zonder.some(it => it.type === 'play' && !it.pad)) bad('zonder gitaar nog spelen ' + where, zonder.map(x => x.type));
   if (items.length && !met.length) bad('met gitaar leeg ' + where, items.map(x => x.type));
   if (items.length && !zonder.length) bad('zonder gitaar leeg ' + where, items.map(x => x.type));
   const terug = fitMode(met, false);
-  if (terug.some(it => it.type === 'play')) bad('terugzetten mislukt ' + where, terug.map(x => x.type));
+  if (terug.some(it => it.type === 'play' && !it.pad)) bad('terugzetten mislukt ' + where, terug.map(x => x.type));
   for (const it of met) if (it._orig && it._orig.type === 'play') bad('_orig wijst naar een speelvraag ' + where, it);
   return { met, zonder };
 }
@@ -82,6 +122,26 @@ for (const u of HalsData.units()) {
     zonder.forEach(x => { modeCounts.zonder[x.type] = (modeCounts.zonder[x.type] || 0) + 1; });
   });
 }
+// het pad Gehoor: tien niveaus, elk Leren, Herkennen en Toepassen, met en zonder gitaar
+if (GEHOOR_LEVELS.length !== 10) bad('Gehoor heeft geen 10 niveaus', GEHOOR_LEVELS.length);
+const earKinds = {};
+for (const u of GehoorData.units()) {
+  const nodes = unitNodes(u), L = GEHOOR_LEVELS[u.idx];
+  if (nodes.map(n => n.title).join() !== 'Leren,Herkennen,Toepassen') bad('Gehoor: stappen ' + u.title, nodes.map(n => n.title));
+  if (!(L.cards || []).length) bad('Gehoor: geen uitleg ' + u.title, L);
+  for (const c of L.cards || []) for (const sp of c.play || []) checkSound(sp, `gehoor ${u.title}, kaartje ${c.t}`, sp);
+  if (!unitSummary(u).length) bad('Gehoor: geen samenvatting ' + u.title, u);
+  for (let k = 0; k < 25; k++) nodes.forEach((n, i) => {
+    const items = n.gen();
+    items.forEach(it => { check(it, `gehoor ${u.title}/${n.title}`); earKinds[it.skill || it.type] = (earKinds[it.skill || it.type] || 0) + 1; });
+    if (i === 0 && (items.filter(x => x.type === 'learn').length !== L.cards.length || items.filter(x => x.type === 'mc').length !== 3)) bad('Gehoor Leren: uitleg en drie vragen ' + u.title, items.map(x => x.type));
+    if (i === 1 && (items.length !== 10 || items.some(x => x.type !== 'mc' || !x.hear))) bad('Gehoor Herkennen: tien luistervragen ' + u.title, items.map(x => x.type));
+    if (i === 2 && (items.length < 5 || items.some(x => x.type !== 'play' || !x.pad || !x.hear))) bad('Gehoor Toepassen: naspelen ' + u.title, items.map(x => x.type));
+    const { met, zonder } = checkModes(items, `gehoor ${u.title}/${n.title}`);
+    if (JSON.stringify(met.map(x => x.type)) !== JSON.stringify(items.map(x => x.type)) || JSON.stringify(zonder.map(x => x.type)) !== JSON.stringify(items.map(x => x.type))) bad('Gehoor: met en zonder gitaar dezelfde vragen ' + u.title, [met.map(x => x.type), zonder.map(x => x.type)]);
+  });
+}
+console.log('gehoor', JSON.stringify(earKinds));
 console.log('itemtypes', JSON.stringify(counts));
 console.log('met gitaar', JSON.stringify(modeCounts.met), '| zonder gitaar', JSON.stringify(modeCounts.zonder));
 
@@ -123,24 +183,42 @@ COURSE.forEach((c, k) => {
     }
     if (card.table) for (const r of card.table.r) if (r.length !== card.table.h.length) bad(w + ': tabelrij heeft niet evenveel kolommen', r);
   });
-  // de lesknoop: eerst, met evenveel kaartjes, daarna de oefeningen met hun oude nummers
-  const unit = Object.assign({}, c), nodes = unitNodes(unit);
-  if (!nodes[0].lesson || nodes[0].title !== 'Les') bad(at + ': de les staat niet vooraan', nodes[0].title);
-  const items = nodes[0].gen();
-  if (items.length !== c.cards.length || items.some(x => x.type !== 'learn' || !x.course)) bad(at + ': lesknoop geeft niet alle kaartjes', items.map(x => x.type));
-  if (items[0].kicker !== `Les ${k + 1} · 1 van ${c.cards.length}`) bad(at + ': kicker', items[0].kicker);
-  const sum = items[items.length - 1];
+  // per stap eerst de uitleg: elke stap heeft kaartjes, ze staan op volgorde, en Onthoud komt voor de unittoets
+  const unit = Object.assign({}, c), nodes = unitNodes(unit), steps = nodes.slice(0, -1), test = nodes[nodes.length - 1];
+  if (nodes.some(n => n.lesson || n.title === 'Les')) bad(at + ': nog een aparte lesstap', nodes.map(n => n.title));
+  if (steps.length !== 5) bad(at + ': aantal stappen', steps.length);
+  if (!test.test) bad(at + ': laatste knoop is geen unittoets', test.title);
+  let prev = 0;
+  for (const card of c.cards) { if (card.sum) continue; if (!(card.step >= 1 && card.step <= steps.length)) bad(at + `: kaartje ${card.t} zonder geldige stap`, card.step); if (card.step < prev) bad(at + `: kaartje ${card.t} staat niet op volgorde`, card.step); prev = card.step; }
+  steps.forEach((n, i) => {
+    if (!n.cards || !n.cards.length) bad(at + `: stap ${i + 1} (${n.title}) zonder uitleg`, n.title);
+    const items = n.cards.map((cd, k) => cardItem(cd, unit, k, n.cards.length, 'step'));
+    if (items.some(x => x.type !== 'learn' || !x.course)) bad(at + ': stapkaartjes', items.map(x => x.type));
+    if (items[0].kicker !== `Les ${k + 1} · uitleg${n.cards.length > 1 ? ` 1 van ${n.cards.length}` : ''}`) bad(at + ': kicker van stap ' + (i + 1), items[0].kicker);
+    if (items[items.length - 1].go !== 'Naar de oefeningen') bad(at + ': knop na de uitleg', items[items.length - 1].go);
+    for (let r = 0; r < 10; r++) { const g = n.gen(); if (!g.length || g.some(x => x.type === 'learn')) bad(at + `: oefeningen van stap ${i + 1}`, g.map(x => x.type)); }
+  });
+  if (steps.reduce((a, n) => a + n.cards.length, 0) + test.cards.length !== c.cards.length) bad(at + ': niet elk kaartje hoort bij een stap', c.cards.length);
+  if (test.cards.length !== 1 || !test.cards[0].sum) bad(at + ': unittoets begint niet met Onthoud', test.cards.map(x => x.t));
+  const sum = cardItem(test.cards[0], unit, 0, 1, 'test');
   if (!Array.isArray(sum.list) || sum.list.length < 2) bad(at + ': Onthoud zonder samenvatting', sum.list);
-  if (!nodes[nodes.length - 1].test) bad(at + ': laatste knoop is geen unittoets', nodes[nodes.length - 1].title);
+  if (sum.go !== 'Naar de toets' || !sum.text.join(' ').includes('unittoets')) bad(at + ': Onthoud voor de toets', [sum.go, sum.text]);
+  const read = c.cards.map((cd, i) => cardItem(cd, unit, i, c.cards.length, 'read'));
+  if (read[0].kicker !== `Les ${k + 1} · 1 van ${c.cards.length}`) bad(at + ': kicker bij Lees de les', read[0].kicker);
+  for (const q of c.quiz || []) if (q.step != null && !(q.step >= 1 && q.step <= steps.length)) bad(at + ': quizvraag met ongeldige stap', q);
   for (let r = 0; r < 20; r++) {
-    const t = nodes[nodes.length - 1].gen();
+    const t = test.gen();
     if (t.some(x => x.type === 'learn')) bad(at + ': unittoets bevat lesuitleg', t.map(x => x.type));
     if (t.length < 5) bad(at + ': unittoets te kort', t.length);
   }
-  // dezelfde unit zonder kaartjes heeft één knoop minder
-  const plain = unitNodes(Object.assign({}, c, { cards: [] }));
-  if (plain.length !== nodes.length - 1) bad(at + ': aantal knopen', [plain.length, nodes.length]);
 });
+// les 1: de eigen vragen staan bij hun stap (powerchords bij Powerchords)
+{
+  const n1 = unitNodes(Object.assign({}, COURSE[0])), has = (i, txt) => { for (let r = 0; r < 5; r++) if (n1[i].gen().some(x => x.prompt.includes(txt))) return true; return false; };
+  if (!has(2, 'Smells Like Teen Spirit') || has(4, 'Smells Like Teen Spirit')) bad('les 1: de vraag over Smells Like Teen Spirit hoort bij Powerchords', n1.map(n => n.title));
+  if (!has(1, 'Kortjakje')) bad('les 1: Kortjakje hoort bij De kwint', n1[1].title);
+  if (n1[2].cards.map(x => x.t).join() !== 'Powerchords') bad('les 1: de stap Powerchords begint met het kaartje Powerchords', n1[2].cards.map(x => x.t));
+}
 console.log(`cursus: ${COURSE.length} lessen, ${cards} kaartjes, ${listens} geluidsknoppen, ${marks} stippen op de hals`);
 
 // steekproef ter controle van de muziektheorie

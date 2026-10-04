@@ -139,6 +139,8 @@ const BADGES = [
   { id: 'halsE', icon: 'neck', pick: '#B4520E', title: 'Lage E beheerst', desc: 'Halsjacht niveau 1: leren, herkennen en toepassen', test: () => halsLevelDone(0) },
   { id: 'naturals', icon: 'star', pick: '#7146D4', title: 'Alle stamtonen', desc: 'De stamtonen op alle zes de snaren beheerst', test: () => [0, 1, 2, 3, 4, 5].every(i => halsLevelDone(i)) },
   { id: 'fullneck', icon: 'trophy', pick: 'gold', title: 'Hele hals', desc: 'Alle acht niveaus van de Halsjacht beheerst', test: () => halsLevelDone(7) && halsDoneCount() === HALS_LEVELS.length },
+  { id: 'ear1', icon: 'ear', pick: '#7146D4', title: 'Goed gehoor', desc: 'Gehoor niveau 1: kwint en octaaf beheerst', test: () => gehoorLevelDone(0) },
+  { id: 'earall', icon: 'ear', pick: 'pearl', title: 'Gouden oor', desc: 'Alle tien niveaus van Gehoor beheerst', test: () => gehoorDoneCount() === GEHOOR_LEVELS.length },
   { id: 'speed25', icon: 'bolt', pick: '#C4336F', title: 'Shredder', desc: '25 noten in 60 seconden', test: s => s.challenge.best >= 25 },
   { id: 'hours5', icon: 'clock', pick: '#566170', title: 'Repetitieruimte', desc: '5 uur geoefend in totaal', test: () => Progress.totalSecs() >= 18000 },
 ];
@@ -309,8 +311,9 @@ function renderProgress(view) {
       const nodes = unitNodes(u), done = nodes.filter((n, k) => nodeDone(u, k)).length, test = nodeDone(u, nodes.length - 1);
       return h('div', { class: `ul-row c-${UNIT_COLORS[i % UNIT_COLORS.length]}` }, h('div', { class: 'ul-t' }, h('b', { text: `Unit ${i + 1}: ${unitMeta(u).title}` }), h('span', { class: 'help', text: test ? 'unittoets gehaald' : `${done} van ${nodes.length} stappen` })), h('div', { class: 'progress' }, h('span', { style: `width:${(100 * done / nodes.length).toFixed(0)}%` })));
     })) : h('p', { class: 'help', text: 'Na les 1 verschijnt hier je eerste unit.' }),
-    // de Halsjacht als één regel: hoeveel niveaus beheerst
-    (() => { const n = halsDoneCount(), hx = nextHals(); return h('div', { class: 'ul-row hals-row' }, h('div', { class: 'ul-t' }, h('b', { text: 'Halsjacht' }), h('span', { class: 'help', text: `${n} van ${HALS_LEVELS.length} niveaus beheerst${hx ? `, nu: ${hx.unit.title}` : ''}` })), h('div', { class: 'progress' }, h('span', { style: `width:${(100 * n / HALS_LEVELS.length).toFixed(0)}%` }))); })()));
+    // de Halsjacht en Gehoor als één regel: hoeveel niveaus beheerst
+    (() => { const n = halsDoneCount(), hx = nextHals(); return h('div', { class: 'ul-row hals-row' }, h('div', { class: 'ul-t' }, h('b', { text: 'Halsjacht' }), h('span', { class: 'help', text: `${n} van ${HALS_LEVELS.length} niveaus beheerst${hx ? `, nu: ${hx.unit.title}` : ''}` })), h('div', { class: 'progress' }, h('span', { style: `width:${(100 * n / HALS_LEVELS.length).toFixed(0)}%` }))); })(),
+    (() => { const n = gehoorDoneCount(), gx = nextGehoor(); return h('div', { class: 'ul-row gehoor-row' }, h('div', { class: 'ul-t' }, h('b', { text: 'Gehoor' }), h('span', { class: 'help', text: `${n} van ${GEHOOR_LEVELS.length} niveaus beheerst${gx ? `, nu: ${gx.unit.title}` : ''}` })), h('div', { class: 'progress' }, h('span', { style: `width:${(100 * n / GEHOOR_LEVELS.length).toFixed(0)}%` }))); })()));
   view.append(badgesCard());
   const r = st.bends.recent, bendAvg = r.length ? Math.round(r.reduce((a, b) => a + Math.abs(b), 0) / r.length) : null;
   const earOk = Object.values(st.ear.ok).reduce((a, b) => a + b, 0);

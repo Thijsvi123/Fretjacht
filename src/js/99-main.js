@@ -35,9 +35,15 @@ window.__fj = {
     }
     return current && current.expected ? current.expected() : [];
   },
-  lesson: () => (current === Lesson && Lesson.cur ? { type: Lesson.cur.type, answer: Lesson.cur.answer, options: Lesson.cur.options, correct: Lesson.cur.correct, valid: Lesson.cur.valid, pc: Lesson.cur.pc, s: Lesson.cur.s, f: Lesson.cur.f, answered: Lesson.answered, done: Lesson.doneIds.size, total: Lesson.total, finished: Lesson.finished, bin: Lesson.bin, review: Lesson.review, box: Lesson.cur._box || 0 } : (current === Lesson ? { finished: Lesson.finished, bin: Lesson.bin, review: Lesson.review } : null)),
+  lesson: () => (current === Lesson && Lesson.cur ? { type: Lesson.cur.type, answer: Lesson.cur.answer, options: Lesson.cur.options, correct: Lesson.cur.correct, valid: Lesson.cur.valid, pc: Lesson.cur.pc, s: Lesson.cur.s, f: Lesson.cur.f, answered: Lesson.answered, done: Lesson.doneIds.size, total: Lesson.total, finished: Lesson.finished, bin: Lesson.bin, review: Lesson.review, box: Lesson.cur._box || 0,
+    hear: !!Lesson.cur.hear, pad: Lesson.padMode(Lesson.cur), step: Lesson.cur.type === 'play' && Lesson.ps && Lesson.cur.steps[Lesson.ps.idx] ? Lesson.cur.steps[Lesson.ps.idx].k : null, prompt: Lesson.cur.prompt, kicker: Lesson.cur.kicker || '' } : (current === Lesson ? { finished: Lesson.finished, bin: Lesson.bin, review: Lesson.review } : null)),
   level: () => Object.assign(Level.of(Store.stats.xp || 0), { notes: Score.notes(), acc: Score.accuracy(), combo: Store.stats.bestCombo || 0 }),
   hals: () => ({ done: halsDoneCount(), next: nextHals() && { level: nextHals().unitNo, step: nextHals().node.title }, levels: HALS_LEVELS.map((L, i) => halsLevelDone(i)) }),
+  gehoor: () => ({ done: gehoorDoneCount(), next: nextGehoor() && { level: nextGehoor().unitNo, step: nextGehoor().node.title }, levels: GEHOOR_LEVELS.map((L, i) => gehoorLevelDone(i)) }),
+  gehoorGen: (i, k) => gehoorNodes(GehoorData.units()[i])[k].gen(),
+  // geluid: wat de app net speelde (hear) en welke toetsen er zijn
+  padKeys: () => Array.from(document.querySelectorAll('.ear-pad .key')).map(k => Number(k.dataset.midi)),
+  heard: () => (Lesson.heard ? { n: Lesson.heard.n, sp: Lesson.heard.sp } : { n: 0, sp: null }),
   noteq: () => (current && current.id === 'noteq' && current.q ? { kind: current.q.kind, s: current.q.s, f: current.q.f, pc: current.q.pc, valid: current.q.valid, answered: current.answered } : null),
   addXP: n => Progress.addXP(n),
   // een les met zelfgekozen vragen, en de momenten die nog wachten op een overzicht
@@ -66,8 +72,10 @@ window.__fj = {
   guitar: () => Guitar.on(),
   setGuitar: v => { Guitar.set(v); Router.render(); },
   course: () => PathData.schedule().map(x => ({ lesson: x.unit.lesson, topic: x.unit.topic, date: x.date })),
-  // de les van unit k openen, ook als die nog op slot zit
-  openLes: k => { const u = PathData.unit(k); startNode(u, 0, unitNodes(u)); },
+  // de hele les van unit k lezen (Lees de les), ook als die nog op slot zit; openStep: één stap met zijn uitleg
+  openLes: k => readLesson(PathData.unit(k)),
+  openStep: (k, i, cards) => { const u = PathData.unit(k); startNode(u, i, unitNodes(u), null, { cards: cards !== false }); },
+  stepCards: k => { const u = PathData.unit(k); return unitNodes(u).map(n => (n.cards || []).map(c => c.t)); },
   lessonTypes: () => (current === Lesson ? [Lesson.cur].concat(Lesson.queue || []).filter(Boolean).map(x => x.type) : []),
   earq: () => (current && current.id === 'earq' && current.q ? current.q.key : null),
   addSecs: n => { Progress.day().secs += n; Store.saveStats(); Progress.renderTop(); },

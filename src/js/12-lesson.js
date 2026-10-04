@@ -28,7 +28,9 @@ const Lesson = {
     this.allLearn = items.length > 0 && items.every(i => i.type === 'learn');
     this.learnHist = [];
     this.queue = items;
-    this.total = items.length; this.doneIds = new Set(); this.mistakes = 0; this.skipped = 0; this.hints = 0;
+    // de score telt alleen de vragen; uitlegkaartjes tellen wel mee in de voortgangsbalk
+    this.total = items.length; this.scored = items.filter(i => i.type !== 'learn').length;
+    this.doneIds = new Set(); this.mistakes = 0; this.skipped = 0; this.hints = 0;
     this.combo = 0; this.fixed = 0; this.recalled = 0; this.mastered = 0; this.wrongKeys = new Set(); this.times = [];
     this.srsBefore = this.bin ? Srs.snapshot() : null;
     this.t0 = performance.now(); this.finished = false; this.cur = null;
@@ -47,11 +49,11 @@ const Lesson = {
     this.foot.addEventListener('click', e => { if (performance.now() < (this.guardUntil || 0)) { e.stopPropagation(); e.preventDefault(); } }, true);
     view.append(this.el);
     this.renderSnd();
-    this.keys = { enter: () => this.enter() };
+    this.keys = { enter: () => this.enter(), r: () => { if (this.cur && this.cur.hear) this.hear(this.cur); } };
     this.updateBar();
     this.next();
   },
-  unmount() { clearTimeout(this.autoT); clearTimeout(this.comboT); this.cur = null; },
+  unmount() { clearTimeout(this.autoT); clearTimeout(this.comboT); clearTimeout(this.hearT); clearTimeout(this.earOffT); this.cur = null; },
   renderSnd() {
     const on = Sfx.on();
     this.sndBtn.innerHTML = on ? ICONS.sound : ICONS.mute;
@@ -95,7 +97,10 @@ const Lesson = {
     // ging de les vanzelf door, dan even geen tikken onderaan: een late tik op Verder raakte anders
     // de knop die op die plek in de volgende vraag staat, zoals "Verder zonder gitaar" of Overslaan
     this.guardUntil = auto ? performance.now() + 700 : 0;
-    const [ico, label] = KIND[KIND[it.type] ? it.type : 'theory'];
+    let [ico, label] = KIND[KIND[it.type] ? it.type : 'theory'];
+    // luistervragen en naspelen (pad Gehoor)
+    if (it.hear && it.type === 'mc') [ico, label] = ['ear', 'Luister'];
+    else if (it.hear && it.type === 'play') [ico, label] = this.padMode(it) ? ['note', 'Speel na op de toetsen'] : ['pick', 'Speel na op je gitaar'];
     const from = it._box ? `herhaling na ${SRS_DAYS[it._box]} ${SRS_DAYS[it._box] === 1 ? 'dag' : 'dagen'}` : 'eerder fout';
     this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, ${from}` : it.kicker || label));
     this.body.append(h('h2', { class: 'ls-prompt', text: it.prompt }));
@@ -113,8 +118,41 @@ const Lesson = {
     this.checkBtn = h('button', { class: 'primary big', type: 'button', text: 'Controleer', disabled: true, onclick: () => this.check() });
     this.foot.append(this.checkBtn);
   },
+  // ---- luisteren: het geluid speelt vanzelf, met de knop hoor je het nog een keer ----
+  padMode(it) { return !!(it && it.pad) && !Guitar.on(); },
+  hear(it, sp) {
+    this.heard = { n: (this.heard ? this.heard.n : 0) + 1, sp: sp || it.hear };
+    const ms = Listen.play(sp || it.hear) || 1500;
+    const b = this.earBtn;
+    if (b && b.isConnected) { b.classList.add('on'); clearTimeout(this.earOffT); this.earOffT = setTimeout(() => b.classList.remove('on'), Math.min(ms, 6000)); }
+    Activity.ping();
+  },
+  earStage(it, compact) {
+    this.earBtn = h('button', { class: 'ear-play', type: 'button', 'aria-label': 'Luister nog een keer', onclick: () => this.hear(it) }, h('span', { class: 'ear-ico', html: ICONS.play }), h('span', { class: 'ear-lbl', text: 'Luister' }));
+    clearTimeout(this.hearT);
+    this.hearT = setTimeout(() => { if (this.cur === it && !this.answered) this.hear(it); }, 380);
+    return h('div', { class: 'ear-stage' + (compact ? ' compact' : '') }, compact ? null : h('div', { class: 'ear-fret', html: Mascot.svg('luister') }), this.earBtn);
+  },
+  // na een fout: hoor je eigen keuze en het goede antwoord na elkaar
+  addCompare(it, mine, right) {
+    const a = it.hearBy && it.hearBy[mine], b = it.hearBy && it.hearBy[right], body = $('.fb-body', this.foot);
+    if (!a || !b || !body) return;
+    body.append(h('div', { class: 'ls-cmp' },
+      h('button', { type: 'button', class: 'cmp-mine' }, h('span', { html: ICONS.sound }), h('span', { text: `Hoor ${mine}` })),
+      h('button', { type: 'button', class: 'cmp-right' }, h('span', { html: ICONS.sound }), h('span', { text: `Hoor ${right}` }))));
+    const [x, y] = $$('.ls-cmp button', body);
+    x.addEventListener('click', () => this.hear(it, a));
+    y.addEventListener('click', () => this.hear(it, b));
+  },
+  // de luistervragen tellen mee voor Gehoortraining (en de opdracht "herken … op gehoor")
+  earStat(it, ok) {
+    if (!it.eq && !/^ear-/.test(it.skill || '')) return;
+    if (it.eq) { const st = Store.stats.earq; st.n[it.eq] = (st.n[it.eq] || 0) + 1; if (ok) st.ok[it.eq] = (st.ok[it.eq] || 0) + 1; Store.saveStats(); }
+    if (ok) Quests.bump('earq');
+  },
   renderMC(it) {
     this.sel = null;
+    if (it.hear) this.body.append(this.earStage(it));
     const opts = h('div', { class: 'ls-opts' + (it.options.every(o => o.length <= 6) ? ' grid' : '') });
     it.options.forEach((o, i) => opts.append(h('button', { type: 'button', class: 'opt', text: o, onclick: e => {
       if (this.answered) return;
@@ -195,6 +233,7 @@ const Lesson = {
       if (!it._again) this.queue.push(Object.assign({}, it, { _again: true }));
       else this.doneIds.add(it._id);
       this.wrong(it, null, it.explain || '', answer);
+      if (it.type === 'mc' && it.hearBy) this.addCompare(it, it.options[this.sel], answer);
     }
     this.updateBar();
   },
@@ -229,7 +268,7 @@ const Lesson = {
       this.queue.unshift(it); this.queue.unshift(prev);
       this.updateBar(); this.next();
     } }) : null;
-    const go = h('button', { class: 'primary big', type: 'button', text: last ? (it.course ? 'Naar de oefeningen' : 'Begrepen') : 'Volgende', onclick: () => {
+    const go = h('button', { class: 'primary big', type: 'button', text: last ? (it.go || (it.course ? 'Naar de oefeningen' : 'Begrepen')) : 'Volgende', onclick: () => {
       this.learnHist.push(it);
       this.doneIds.add(it._id); this.updateBar(); Sfx.play('tap'); this.next();
     } });
@@ -328,6 +367,7 @@ const Lesson = {
       if (r) { Quests.bump('herhaal'); Fx.pop($('.ls-bin', this.el)); }
     }
     if (it._again && (pool === 'right' || pool === 'play')) pool = 'again';
+    this.earStat(it, true);
     this.combo++;
     const milestone = [3, 5, 8, 12].includes(this.combo) || (this.combo > 12 && this.combo % 5 === 0);
     if (milestone) this.showCombo(this.combo);
@@ -342,6 +382,7 @@ const Lesson = {
   wrong(it, title, text, answer) {
     const lost = this.combo;
     this.combo = 0;
+    this.earStat(it, false);
     Track.answer(it, false, this.spec && this.spec.topic);
     const again = !it._again && this.queue.some(q => q._id === it._id);
     let note;
@@ -354,7 +395,7 @@ const Lesson = {
       note = again ? 'Je krijgt hem straks nog een keer, en hij komt terug bij Herhalen.' : 'Hij komt terug bij Herhalen.';
     }
     Feedback.wrong({ el: this.fxEl, via: this.via });
-    const lift = lost >= 3 ? `Jammer van je ${lost} op rij. Je pakt de draad zo weer op.` : this.mistakes <= 1 || Math.random() < 0.35 ? Feedback.word('lift') : '';
+    const lift = lost >= 3 ? `Jammer van je ${lost} op rij. Je pakt de draad zo weer op.` : this.mistakes <= 1 || Math.random() < 0.35 ? Feedback.word(it.hear ? 'liftEar' : 'lift') : '';
     this.feedback(false, title || Feedback.word(it._again ? 'wrongAgain' : 'wrong'), text, 0, note, lift, ICONS.retry, answer);
   },
   showCombo(n) {
@@ -385,21 +426,26 @@ const Lesson = {
   },
 
   // --- speelopdrachten ---
+  // Naspelen op gehoor (hear): zonder gitaar (pad) speel je het na op toetsen in de app; elke toets klinkt.
   renderPlay(it) {
-    this.ps = { idx: 0, last: null, found: new Set() };
+    this.ps = { idx: 0, last: null, found: new Set(), miss: 0 };
+    // de gegeven toon vooraan (de eerste toon bij naspelen op gehoor) heb je al: je zoekt vanaf de toon daarna
+    while (it.steps[this.ps.idx + 1] && it.steps[this.ps.idx].given) { this.ps.last = it.steps[this.ps.idx].midi; this.ps.idx++; }
     this.t1 = performance.now();
-    const big = h('div', { class: 'note ls-big', html: /^[A-G][♯♭]?$/.test(it.big || '') ? bigNoteHTML(it.big) : `<span class="deg">${it.big || ''}</span>` });
-    this.body.append(big);
+    const pad = this.padMode(it);
+    if (!it.hear) this.body.append(h('div', { class: 'note ls-big', html: /^[A-G][♯♭]?$/.test(it.big || '') ? bigNoteHTML(it.big) : `<span class="deg">${it.big || ''}</span>` }));
     if (it.sub) this.body.append(h('p', { class: 'ls-sub', text: it.sub }));
     this.stepsEl = h('div', { class: 'slots' });
-    this.body.append(this.stepsEl);
-    if (it.neck || it.highlight) {
+    this.body.append(it.hear ? h('div', { class: 'ear-row' }, this.earStage(it, true), this.stepsEl) : this.stepsEl);
+    if (pad) { this.padEl = this.keyboard(it); this.body.append(this.padEl); } else this.padEl = null;
+    if (!pad && (it.neck || it.highlight)) {
       this.playSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       this.playSvg.setAttribute('role', 'img'); this.playSvg.setAttribute('aria-label', 'Gitaarhals');
       this.body.append(h('figure', { class: 'card neck' }, this.playSvg));
     } else this.playSvg = null;
     this.hintEl = h('div', { class: 'ls-hint' });
-    this.body.append(this.hintEl, h('div', { class: 'toast pr-toast ls-toast' }), h('div', { class: 'heard-line' }));
+    this.body.append(this.hintEl, h('div', { class: 'toast pr-toast ls-toast' }));
+    if (!pad) this.body.append(h('div', { class: 'heard-line' }));
     this.renderSteps();
     this.playFoot();
     UI.lastHeard = ''; UI.updateHeard(null);
@@ -407,19 +453,54 @@ const Lesson = {
   playFoot() {
     this.foot.innerHTML = '';
     this.foot.className = 'ls-foot';
-    const row = h('div', { class: 'ls-row' });
-    if (!Engine.mic) row.append(h('button', { class: 'primary big', type: 'button', text: Engine.starting ? 'Toegang vragen…' : 'Start microfoon', onclick: async () => { await Engine.startMic(); if (this.cur && this.cur.type === 'play' && !this.answered) this.playFoot(); } }));
-    row.append(h('button', { class: 'big', type: 'button', text: 'Hint', onclick: () => this.hint() }), h('button', { class: 'big', type: 'button', text: 'Overslaan', onclick: () => this.skip() }));
-    this.foot.append(row, h('button', { class: 'linkish', type: 'button', text: 'Geen gitaar bij de hand? Verder zonder gitaar', onclick: () => this.noGuitarNow() }));
+    const row = h('div', { class: 'ls-row' }), pad = this.padMode(this.cur);
+    if (!pad && !Engine.mic) row.append(h('button', { class: 'primary big', type: 'button', text: Engine.starting ? 'Toegang vragen…' : 'Start microfoon', onclick: async () => { await Engine.startMic(); if (this.cur && this.cur.type === 'play' && !this.answered) this.playFoot(); } }));
+    row.append(h('button', { class: 'big', type: 'button', text: 'Hint', onclick: () => this.hint() }), h('button', { class: 'big', type: 'button', text: pad ? 'Laat zien' : 'Overslaan', onclick: () => this.skip() }));
+    this.foot.append(row);
+    if (!pad) this.foot.append(h('button', { class: 'linkish', type: 'button', text: 'Geen gitaar bij de hand? Verder zonder gitaar', onclick: () => this.noGuitarNow() }));
   },
-  onMic() { if (this.cur && this.cur.type === 'play' && !this.answered) this.playFoot(); },
+  onMic() { if (this.cur && this.cur.type === 'play' && !this.answered && !this.padMode(this.cur)) this.playFoot(); },
+  // toetsen als een stukje piano, van pad.lo tot pad.hi; stamtonen onder, kruisen en mollen erboven
+  keyboard(it) {
+    let a = it.pad.lo, b = it.pad.hi;
+    while (!NATURAL.has(mod12(a))) a--;
+    while (!NATURAL.has(mod12(b))) b++;
+    const whites = [];
+    for (let m = a; m <= b; m++) if (NATURAL.has(mod12(m))) whites.push(m);
+    const el = h('div', { class: 'keypad ear-pad', role: 'group', 'aria-label': 'Toetsen: tik de noten die je hoort', style: `--cols:${whites.length * 2}` });
+    const key = (m, acc, col) => {
+      const pc = mod12(m), b2 = h('button', { type: 'button', class: 'key ' + (acc ? 'acc' : 'nat'), style: `--c:${col}`, 'data-midi': String(m), 'data-pc': String(pc), 'aria-label': acc ? `${SHARP_NAMES[pc]} of ${FLAT_NAMES[pc]}` : SHARP_NAMES[pc] },
+        h('b', { text: SHARP_NAMES[pc] }), acc ? h('small', { text: FLAT_NAMES[pc] }) : null);
+      b2.addEventListener('click', () => this.padTap(m, b2));
+      return b2;
+    };
+    whites.forEach((m, i) => el.append(key(m, false, 2 * i + 1)));
+    for (let m = a; m <= b; m++) if (!NATURAL.has(mod12(m))) el.append(key(m, true, 2 * whites.findIndex(w => w > m)));
+    return el;
+  },
+  padTap(m, btn) {
+    const it = this.cur;
+    if (!it || it.type !== 'play' || this.answered || !this.padMode(it)) return;
+    try { Engine.pluck(m, Engine.ensureCtx().currentTime + 0.01, 1.2, 0.7); } catch (e) {}
+    this.onNote({ midi: m, pad: true, btn });
+  },
+  flashKey(btn, cls) {
+    if (!btn) return;
+    btn.classList.remove('hit', 'miss'); void btn.offsetWidth; btn.classList.add(cls);
+    clearTimeout(btn._t); btn._t = setTimeout(() => btn.classList.remove(cls), 650);
+  },
   renderSteps() {
     const it = this.cur, ps = this.ps;
-    if (it.steps.length === 1 && it.steps[0].k === 'set') {
+    if (it.steps.length === 1 && it.steps[0].k === 'set' && it.hear) {
+      // op gehoor: hoeveel tonen het zijn, hoor je zelf; je ziet alleen wat je al gevonden hebt
+      const st = it.steps[0], done = ps.found.size === st.pcs.length;
+      this.stepsEl.innerHTML = st.pcs.map((pc, i) => (ps.found.has(pc) ? `<span class="slot on"><small></small><b>${st.names[i]}</b></span>` : '')).join('') + (done ? '' : '<span class="slot more"><small></small><b>…</b></span>');
+    } else if (it.steps.length === 1 && it.steps[0].k === 'set') {
       const st = it.steps[0];
       this.stepsEl.innerHTML = st.pcs.map((pc, i) => `<span class="slot${ps.found.has(pc) ? ' on' : ''}"><small>${st.labels ? st.labels[i] : ''}</small><b>${ps.found.has(pc) ? st.names[i] : '?'}</b></span>`).join('');
     } else if (it.steps.length > 1) {
-      this.stepsEl.innerHTML = it.steps.map((st, i) => `<span class="slot${i < ps.idx ? ' on' : ''}${i === ps.idx && !this.answered ? ' now' : ''}"><small>${st.label || i + 1}</small><b>${i < ps.idx ? st.name : '?'}</b></span>`).join('');
+      // given: die toon krijg je (de eerste noot bij naspelen op gehoor)
+      this.stepsEl.innerHTML = it.steps.map((st, i) => `<span class="slot${i < ps.idx ? ' on' : ''}${i === ps.idx && !this.answered ? ' now' : ''}"><small>${st.label || i + 1}</small><b>${i < ps.idx || st.given ? st.name : '?'}</b></span>`).join('');
     } else this.stepsEl.innerHTML = '';
     if (this.playSvg) {
       if (it.neck) {
@@ -460,8 +541,8 @@ const Lesson = {
     this.mistakes++; this.skipped++;
     this.doneIds.add(it._id); this.updateBar();
     const ans = it.steps.map(st => st.k === 'set' ? st.names.join(' ') : st.name).join(' → ');
-    this.fxEl = $('.ls-big', this.body); this.via = 'tap';
-    this.wrong(it, 'Overgeslagen', it.hint || '', ans);
+    this.fxEl = $('.ls-big', this.body) || this.stepsEl; this.via = 'tap';
+    this.wrong(it, this.padMode(it) ? 'Dit was het' : 'Overgeslagen', it.hear ? it.explain || '' : it.hint || '', ans);
   },
   // geen gitaar bij de hand: schuifje op Zonder gitaar, en de rest van de les wordt tikken
   noGuitarNow() {
@@ -482,42 +563,79 @@ const Lesson = {
   onNote(n) {
     const it = this.cur;
     if (!it || it.type !== 'play' || this.answered) return;
+    const pad = this.padMode(it);
+    if (pad && !n.pad) return;   // op de toetsen telt de microfoon niet mee
     const ps = this.ps, st = it.steps[ps.idx], toast = $('.ls-toast', this.body);
     const heard = pcName(n.midi, Store.settings.names === 'flats' ? 'flats' : 'sharps');
     Activity.ping();
-    const miss = text => { toast.textContent = text; Fx.shake($('.ls-big', this.body)); Fx.edge('bad'); };
+    const miss = text => { ps.miss++; toast.textContent = text; Fx.shake($('.ls-big', this.body) || this.stepsEl); Fx.edge('bad'); if (pad) { this.flashKey(n.btn, 'miss'); Haptics.play('tap'); } };
     if (st.k === 'set') {
       const pc = mod12(n.midi);
       if (st.pcs.includes(pc)) {
+        if (pad) this.flashKey(n.btn, 'hit');
         if (!ps.found.has(pc)) { ps.found.add(pc); toast.textContent = ''; this.renderSteps(); Fx.pop($$('.slots .slot.on', this.body).pop()); if (ps.found.size === st.pcs.length) this.playDone(); }
-      } else miss(`${heard} hoort er niet bij`);
+      } else miss(`${heard} hoort er niet bij.`);
       return;
     }
-    let ok, wantPc = st.pc;
+    let ok, wantPc = st.pc, want = null;
     if (st.k === 'rel') {
       if (ps.last == null) return;
-      const want = ps.last + st.semis;
+      want = ps.last + st.semis;
       wantPc = mod12(want);
       ok = Store.settings.strict || Math.abs(st.semis) === 12 ? n.midi === want : mod12(n.midi) === mod12(want);
     } else ok = mod12(n.midi) === st.pc;
     if (ok) {
-      ps.last = n.midi; ps.idx++;
-      toast.textContent = ps.idx < it.steps.length ? 'Goed, verder' : '';
+      if (pad) this.flashKey(n.btn, 'hit');
+      // op de toetsen telt de toon die je hoorde: tik je de eerste toon een octaaf hoger, dan blijft de volgende toon op de toetsen
+      ps.last = pad && st.midi != null ? st.midi : n.midi; ps.idx++;
+      toast.textContent = ps.idx < it.steps.length ? (it.hear ? `Goed! Nu toon ${ps.idx + 1}` : 'Goed, verder') : '';
       this.renderSteps();
       if (ps.idx < it.steps.length) Fx.pop($$('.slots .slot.on', this.body).pop());
       if (ps.idx >= it.steps.length) this.playDone();
       return;
     }
-    // vorige noot klinkt nog: negeren. Bij een octaafstap is dezelfde toonklasse juist het doel, dan alleen precies dezelfde noot
+    // vorige noot klinkt nog: negeren. Bij een octaafstap is dezelfde toonklasse juist het doel, dan alleen precies dezelfde noot.
+    // Op de toetsen tik je hem bewust: dan alleen een seintje, geen misser
     const octStep = st.k === 'rel' && st.semis !== 0 && st.semis % 12 === 0;
-    if (ps.last != null && (octStep ? n.midi === ps.last : mod12(n.midi) === mod12(ps.last))) return;
-    miss(`Je speelde ${heard}.${mod12(n.midi) === wantPc ? ' Goede noot, ander octaaf.' : DrillFx.near(n.midi, wantPc)}`);
+    if (ps.last != null && (octStep ? n.midi === ps.last : mod12(n.midi) === mod12(ps.last))) {
+      if (pad) { toast.textContent = ps.idx === 1 && it.steps[0].given ? 'Die toon krijg je al. Zoek de toon erna.' : 'Die heb je al. Zoek de volgende toon.'; }
+      return;
+    }
+    const did = pad ? 'tikte' : 'speelde';
+    if (mod12(n.midi) === wantPc) return miss(`Je ${did} ${heard}. Goede noot, ander octaaf.`);
+    // op gehoor: zeg of je hoger of lager moet zoeken
+    if (it.hear) return miss(`Je ${did} ${heard}. Zoek ${this.earDir(n.midi, st, want) > 0 ? 'hoger ↑' : 'lager ↓'}`);
+    miss(`Je speelde ${heard}.${DrillFx.near(n.midi, wantPc)}`);
+  },
+  // richting naar de goede toon: op de toetsen naar de toets zelf, op de gitaar naar de dichtstbijzijnde
+  earDir(midi, st, want) {
+    if (want != null) return want - midi;
+    if (this.padMode(this.cur)) {
+      const keys = $$('.ear-pad .key', this.body).map(k => Number(k.dataset.midi)).filter(m => mod12(m) === st.pc);
+      const target = keys.includes(st.midi) ? st.midi : keys.sort((a, b) => Math.abs(a - midi) - Math.abs(b - midi))[0];
+      if (target != null) return target - midi;
+    }
+    return mod12(st.pc - mod12(midi) + 6) - 6 || 1;
   },
   playDone() {
-    const it = this.cur;
+    const it = this.cur, pad = this.padMode(it), miss = this.ps.miss, ans = it.steps.map(st => st.k === 'set' ? st.names.join(' ') : st.name).join(' → ');
     if (it._spot) { const secs = (performance.now() - this.t1) / 1000; FretQuiz.record(it._spot.s, it._spot.f, true, secs); this.times.push(secs); }
+    this.fxEl = $('.ls-big', this.body) || this.stepsEl; this.via = pad ? 'tap' : 'mic';
+    if (pad) {
+      // op de toetsen tellen missers mee: tot de helft van de tonen die je zocht is het goed (met een kwart fout)
+      const find = it.steps.reduce((a, st) => a + (st.given ? 0 : st.k === 'set' ? st.pcs.length : 1), 0);
+      if (miss > Math.ceil(find / 2)) {
+        this.requeue(it);
+        this.wrong(it, `Gevonden, na ${miss} missers`, it.explain || '', ans);
+        this.updateBar();
+        return;
+      }
+      if (miss) this.mistakes += 0.25;
+      this.doneIds.add(it._id); this.updateBar();
+      return this.right(it, miss ? `Gevonden, op ${miss === 1 ? 'één misser' : miss + ' missers'} na` : null, miss ? 0 : 1800, ans);
+    }
     this.doneIds.add(it._id); this.updateBar();
-    this.fxEl = $('.ls-big', this.body); this.via = 'mic';
+    if (it.hear) return this.right(it, miss ? `Gevonden, na ${miss} keer zoeken` : null, 2200, ans);
     this.right(it, null, 1500);
   },
 
@@ -526,7 +644,8 @@ const Lesson = {
     this.finished = true; this.cur = null;
     clearTimeout(this.comboT); this.comboEl.classList.remove('show');
     const sp = this.spec, secs = (performance.now() - this.t0) / 1000;
-    const accuracy = this.total ? Math.max(0, (this.total - this.mistakes) / this.total) : 1;
+    const n = this.scored != null ? this.scored : this.total;
+    const accuracy = n ? Math.max(0, (n - this.mistakes) / n) : 1;
     const perfect = this.mistakes === 0 && this.skipped === 0;
     const need = sp.pass || (sp.test ? 0.8 : 0), passed = accuracy >= need;
     const speed = this.times.length ? this.times.reduce((a, b) => a + b, 0) / this.times.length : null;
@@ -553,7 +672,7 @@ const Lesson = {
       Progress.addXP(xp);
       if (sp.onFinish) sp.onFinish({ passed: true, accuracy: 1, perfect: false, secs, xp });
       title = 'Les gelezen!'; mood = 'boek'; sub = sp.title || '';
-      how = 'De oefeningen bij deze les staan nu open. Je kunt de les altijd teruglezen met Lees de les.';
+      how = sp.how != null ? sp.how : '';
     } else {
       xp = passed ? (sp.xp || 10) + (perfect ? 5 : 0) : 5;
       Progress.addXP(xp);
