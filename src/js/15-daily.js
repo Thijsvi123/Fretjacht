@@ -10,7 +10,7 @@ const Daily = {
     const g = Guitar.on();
     if (g) add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
     const nx = nextNode();
-    if (nx) add({ kind: 'node', ref: nx, minutes: 4, title: 'Leerpad', sub: `Unit ${nx.unitNo}: ${nx.node.title}` });
+    if (nx) add({ kind: 'node', ref: nx, minutes: nx.node.lesson ? 8 : 4, title: 'Leerpad', sub: nx.node.lesson ? `Les ${nx.unit.lesson} lezen: ${nx.unit.title}` : `Unit ${nx.unitNo}: ${nx.node.title}` });
     // de volgende stap in de Halsjacht: zonder gitaar, dus altijd mogelijk
     const hx = nextHals();
     if (hx) add({ kind: 'node', ref: hx, minutes: 3, title: 'Halsjacht', sub: `Niveau ${hx.unitNo}, ${hx.unit.title}: ${hx.node.title.toLowerCase()}` });
@@ -56,7 +56,7 @@ const Daily = {
     if (st.kind === 'node') {
       const hals = st.ref.unit.track === 'hals', units = PathData.units(), u = units.find(x => x.lesson === st.ref.unit.lesson) || st.ref.unit;
       const nodes = unitNodes(u);
-      if (nodeState(u, nodes, st.ref.index) === 'done') { const nx = hals ? nextHals() : nextNode(); if (nx) { st.ref = nx; st.sub = hals ? `Niveau ${nx.unitNo}, ${nx.unit.title}: ${nx.node.title.toLowerCase()}` : `Unit ${nx.unitNo}: ${nx.node.title}`; } }
+      if (nodeState(u, nodes, st.ref.index) === 'done') { const nx = hals ? nextHals() : nextNode(); if (nx) { st.ref = nx; st.sub = hals ? `Niveau ${nx.unitNo}, ${nx.unit.title}: ${nx.node.title.toLowerCase()}` : nx.node.lesson ? `Les ${nx.unit.lesson} lezen: ${nx.unit.title}` : `Unit ${nx.unitNo}: ${nx.node.title}`; } }
       const nodes2 = unitNodes(st.ref.unit);
       startNode(st.ref.unit, st.ref.index, nodes2, () => this.advance());
     } else if (st.kind === 'bin') {
@@ -76,8 +76,8 @@ const Daily = {
   tick() {
     const st = this.steps[this.idx];
     if (!this.active || !st || st.kind !== 'drill') return;
-    const onIt = current && current.id === st.mode;
-    if ((Engine.mic || current.noMic) && onIt && document.visibilityState === 'visible') {
+    const onIt = !!current && current.id === st.mode;
+    if (onIt && (Engine.mic || current.noMic) && document.visibilityState === 'visible') {
       this.left--;
       if (this.left <= 0) { if (Engine.ctx && Sfx.on()) Engine.chime(); return this.advance(); }
     }
@@ -125,7 +125,7 @@ const Daily = {
     bar.hidden = false;
     if (bar._k === k) return;
     bar._k = k;
-    bar.innerHTML = `<span class="sb-dots">${dots}</span><span class="sb-txt"><b>${onIt ? st.sub : 'Oefen vandaag'}</b>${onIt ? (Engine.mic || current.noMic ? '' : ', druk op Start') : `, stap ${this.idx + 1} van ${this.steps.length}`}</span>${onIt ? `<span class="sb-time">${mm}</span>` : ''}`;
+    bar.innerHTML = `<span class="sb-dots">${dots}</span><span class="sb-txt"><b>${onIt ? (MODES[st.mode] || {}).title || st.sub : 'Oefen vandaag'}</b>${onIt ? (Engine.mic || current.noMic ? '' : ', druk op Start') : `, stap ${this.idx + 1} van ${this.steps.length}`}</span>${onIt ? `<span class="sb-time">${mm}</span>` : ''}`;
     bar.append(onIt ? h('button', { type: 'button', text: 'Volgende', onclick: () => this.advance() }) : h('button', { type: 'button', class: 'primary', text: 'Ga verder', onclick: () => this.run() }), h('button', { type: 'button', text: 'Stop', onclick: () => this.stop() }));
   },
 };

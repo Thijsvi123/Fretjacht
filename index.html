@@ -672,7 +672,7 @@ body { font-variant-numeric: tabular-nums; }
 .pd-eyebrow { font: 700 13px/1.25 var(--body); opacity: .85; }
 .pd-name { font: 800 semi-condensed 22px/1.02 var(--display); letter-spacing: -.01em; overflow-wrap: anywhere; }
 .pd-sub { font: 500 13.5px/1.3 var(--body); opacity: .92; }
-.pd-stat { font: 600 12px/1.3 var(--body); opacity: .75; }
+.pd-stat { font: 600 12px/1.3 var(--body); opacity: .92; }
 .pd-switch { justify-self: center; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: #2B1A14; background: radial-gradient(circle at 40% 32%, #FFFFFF 0 12%, #DADEE3 40%, #8D949D 100%); box-shadow: 0 0 0 5px rgba(0, 0, 0, .17), 0 4px 0 5px rgba(0, 0, 0, .14); transition: transform .1s; }
 .pd-switch .ico { width: 16px; height: 16px; margin-left: 2px; }
 .pedal:active, .pedal.stomp { transform: translateY(3px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), inset 0 -2px 0 rgba(0, 0, 0, .16), 0 2px 0 var(--c-deep); }
@@ -1199,7 +1199,7 @@ button.uh-link { border: 0; cursor: pointer; }
   <main id="view">
     <section class="boot">
       <h2>Fretjacht</h2>
-      <p>Leer de hals van je gitaar kennen. Een leerpad dat meeloopt met je muziektheorielessen, de Halsjacht om alle noten te leren zonder gitaar, en oefeningen die via je microfoon meeluisteren.</p>
+      <p>Leer de hals van je gitaar kennen. Een muziektheoriecursus met elke week een nieuwe les, de Halsjacht om alle noten te leren, en oefeningen die via je microfoon meeluisteren. Met of zonder gitaar.</p>
       <p>Je verzamelt XP, stijgt in niveau, houdt een reeks vast en verdient plectrums. Fouten komen terug na 1, 3 en 7 dagen, tot je ze kent.</p>
       <p class="boot-load">Even laden…</p>
     </section>
@@ -2230,7 +2230,7 @@ function renderSettings(view) {
   const micCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Microfoon' }),
     h('div', { class: 'set-grid' },
       h('div', { class: 'field' }, h('label', { class: 'lbl', for: 'gate' }, 'Drempel ', gateText), gate, lvl,
-        h('span', { class: 'help', text: 'Links reageert de app op zachte tonen, rechts negeert hij meer achtergrondgeluid. De zwarte streep is de drempel.' })),
+        h('span', { class: 'help', text: 'Links reageert de app op zachte tonen, rechts negeert hij meer achtergrondgeluid. De streep is de drempel.' })),
       h('div', { class: 'field' }, h('span', { class: 'lbl', text: 'Test' }), h('div', { class: 'heard-line big' }), h('button', { class: 'primary mic-btn', type: 'button', text: 'Start', onclick: () => (Engine.mic ? Engine.stopMic() : Engine.startMic()) }))));
   const strSeg = chips([0, 1, 2, 3, 4, 5].map(i => ({ value: i, label: `${STR_LETTER[i]}<small>${i + 1}</small>` })), s.strings.map(String), v => { s.strings = v.map(Number).sort(); save(); }, 1);
   const minSel = selectEl('minFret', Array.from({ length: MAX_FRET }, (_, i) => ({ value: i, label: String(i) })), s.minFret, v => { s.minFret = Number(v); if (s.maxFret <= s.minFret) { s.maxFret = s.minFret + 1; maxSel.value = String(s.maxFret); } save(); });
@@ -5895,6 +5895,7 @@ const Lesson = {
       this.comboEl = h('div', { class: 'combo', 'aria-live': 'polite' }),
       this.body = h('div', { class: 'ls-body' }),
       this.foot = h('div', { class: 'ls-foot' }));
+    this.foot.addEventListener('click', e => { if (performance.now() < (this.guardUntil || 0)) { e.stopPropagation(); e.preventDefault(); } }, true);
     view.append(this.el);
     this.renderSnd();
     this.keys = { enter: () => this.enter() };
@@ -5932,7 +5933,7 @@ const Lesson = {
     const b = $('.ls-foot button.primary', this.el);
     if (b && !b.disabled) b.click();
   },
-  next() {
+  next(auto) {
     clearTimeout(this.autoT);
     this.answered = false;
     if (!this.queue.length) return this.finish();
@@ -5942,6 +5943,9 @@ const Lesson = {
     this.body.classList.remove('enter'); void this.body.offsetWidth; this.body.classList.add('enter');
     this.foot.className = 'ls-foot';
     this.foot.innerHTML = '';
+    // ging de les vanzelf door, dan even geen tikken onderaan: een late tik op Verder raakte anders
+    // de knop die op die plek in de volgende vraag staat, zoals "Verder zonder gitaar" of Overslaan
+    this.guardUntil = auto ? performance.now() + 700 : 0;
     const [ico, label] = KIND[KIND[it.type] ? it.type : 'theory'];
     const from = it._box ? `herhaling na ${SRS_DAYS[it._box]} ${SRS_DAYS[it._box] === 1 ? 'dag' : 'dagen'}` : 'eerder fout';
     this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, ${from}` : it.kicker || label));
@@ -6227,7 +6231,7 @@ const Lesson = {
           note ? h('p', { class: 'fb-note' }, h('span', { html: icon || ICONS.retry }), note) : null,
           lift ? h('p', { class: 'fb-lift', text: lift }) : null)),
       h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => this.next() }));
-    if (auto) this.autoT = setTimeout(() => { if (this.answered) this.next(); }, auto);
+    if (auto) this.autoT = setTimeout(() => { if (this.answered) this.next(true); }, auto);
     Activity.ping();
   },
 
@@ -6355,7 +6359,9 @@ const Lesson = {
       if (ps.idx >= it.steps.length) this.playDone();
       return;
     }
-    if (ps.last != null && mod12(n.midi) === mod12(ps.last)) return;   // vorige noot klinkt nog
+    // vorige noot klinkt nog: negeren. Bij een octaafstap is dezelfde toonklasse juist het doel, dan alleen precies dezelfde noot
+    const octStep = st.k === 'rel' && st.semis !== 0 && st.semis % 12 === 0;
+    if (ps.last != null && (octStep ? n.midi === ps.last : mod12(n.midi) === mod12(ps.last))) return;
     miss(`Je speelde ${heard}.${mod12(n.midi) === wantPc ? ' Goede noot, ander octaaf.' : DrillFx.near(n.midi, wantPc)}`);
   },
   playDone() {
@@ -6909,7 +6915,7 @@ const Review = {
   candidates() {
     const out = [];
     for (const u of PathData.units()) unitNodes(u).forEach((node, i) => {
-      if (node.test) return;
+      if (node.test || node.lesson) return;
       const st = nodeStat(u, i);
       if (!st || !st.done) return;
       const days = (Date.now() - (st.last || 0)) / 86400000;
@@ -7572,7 +7578,7 @@ const Daily = {
     const g = Guitar.on();
     if (g) add({ kind: 'drill', mode: 'notes', minutes: 2, title: 'Opwarmen', sub: 'Noten zoeken' });
     const nx = nextNode();
-    if (nx) add({ kind: 'node', ref: nx, minutes: 4, title: 'Leerpad', sub: `Unit ${nx.unitNo}: ${nx.node.title}` });
+    if (nx) add({ kind: 'node', ref: nx, minutes: nx.node.lesson ? 8 : 4, title: 'Leerpad', sub: nx.node.lesson ? `Les ${nx.unit.lesson} lezen: ${nx.unit.title}` : `Unit ${nx.unitNo}: ${nx.node.title}` });
     // de volgende stap in de Halsjacht: zonder gitaar, dus altijd mogelijk
     const hx = nextHals();
     if (hx) add({ kind: 'node', ref: hx, minutes: 3, title: 'Halsjacht', sub: `Niveau ${hx.unitNo}, ${hx.unit.title}: ${hx.node.title.toLowerCase()}` });
@@ -7618,7 +7624,7 @@ const Daily = {
     if (st.kind === 'node') {
       const hals = st.ref.unit.track === 'hals', units = PathData.units(), u = units.find(x => x.lesson === st.ref.unit.lesson) || st.ref.unit;
       const nodes = unitNodes(u);
-      if (nodeState(u, nodes, st.ref.index) === 'done') { const nx = hals ? nextHals() : nextNode(); if (nx) { st.ref = nx; st.sub = hals ? `Niveau ${nx.unitNo}, ${nx.unit.title}: ${nx.node.title.toLowerCase()}` : `Unit ${nx.unitNo}: ${nx.node.title}`; } }
+      if (nodeState(u, nodes, st.ref.index) === 'done') { const nx = hals ? nextHals() : nextNode(); if (nx) { st.ref = nx; st.sub = hals ? `Niveau ${nx.unitNo}, ${nx.unit.title}: ${nx.node.title.toLowerCase()}` : nx.node.lesson ? `Les ${nx.unit.lesson} lezen: ${nx.unit.title}` : `Unit ${nx.unitNo}: ${nx.node.title}`; } }
       const nodes2 = unitNodes(st.ref.unit);
       startNode(st.ref.unit, st.ref.index, nodes2, () => this.advance());
     } else if (st.kind === 'bin') {
@@ -7638,8 +7644,8 @@ const Daily = {
   tick() {
     const st = this.steps[this.idx];
     if (!this.active || !st || st.kind !== 'drill') return;
-    const onIt = current && current.id === st.mode;
-    if ((Engine.mic || current.noMic) && onIt && document.visibilityState === 'visible') {
+    const onIt = !!current && current.id === st.mode;
+    if (onIt && (Engine.mic || current.noMic) && document.visibilityState === 'visible') {
       this.left--;
       if (this.left <= 0) { if (Engine.ctx && Sfx.on()) Engine.chime(); return this.advance(); }
     }
@@ -7687,7 +7693,7 @@ const Daily = {
     bar.hidden = false;
     if (bar._k === k) return;
     bar._k = k;
-    bar.innerHTML = `<span class="sb-dots">${dots}</span><span class="sb-txt"><b>${onIt ? st.sub : 'Oefen vandaag'}</b>${onIt ? (Engine.mic || current.noMic ? '' : ', druk op Start') : `, stap ${this.idx + 1} van ${this.steps.length}`}</span>${onIt ? `<span class="sb-time">${mm}</span>` : ''}`;
+    bar.innerHTML = `<span class="sb-dots">${dots}</span><span class="sb-txt"><b>${onIt ? (MODES[st.mode] || {}).title || st.sub : 'Oefen vandaag'}</b>${onIt ? (Engine.mic || current.noMic ? '' : ', druk op Start') : `, stap ${this.idx + 1} van ${this.steps.length}`}</span>${onIt ? `<span class="sb-time">${mm}</span>` : ''}`;
     bar.append(onIt ? h('button', { type: 'button', text: 'Volgende', onclick: () => this.advance() }) : h('button', { type: 'button', class: 'primary', text: 'Ga verder', onclick: () => this.run() }), h('button', { type: 'button', text: 'Stop', onclick: () => this.stop() }));
   },
 };

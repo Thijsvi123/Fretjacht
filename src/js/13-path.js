@@ -254,7 +254,7 @@ const Review = {
   candidates() {
     const out = [];
     for (const u of PathData.units()) unitNodes(u).forEach((node, i) => {
-      if (node.test) return;
+      if (node.test || node.lesson) return;
       const st = nodeStat(u, i);
       if (!st || !st.done) return;
       const days = (Date.now() - (st.last || 0)) / 86400000;

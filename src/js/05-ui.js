@@ -258,7 +258,7 @@ function renderSettings(view) {
   const micCard = h('div', { class: 'card' }, h('p', { class: 'eyebrow', text: 'Microfoon' }),
     h('div', { class: 'set-grid' },
       h('div', { class: 'field' }, h('label', { class: 'lbl', for: 'gate' }, 'Drempel ', gateText), gate, lvl,
-        h('span', { class: 'help', text: 'Links reageert de app op zachte tonen, rechts negeert hij meer achtergrondgeluid. De zwarte streep is de drempel.' })),
+        h('span', { class: 'help', text: 'Links reageert de app op zachte tonen, rechts negeert hij meer achtergrondgeluid. De streep is de drempel.' })),
       h('div', { class: 'field' }, h('span', { class: 'lbl', text: 'Test' }), h('div', { class: 'heard-line big' }), h('button', { class: 'primary mic-btn', type: 'button', text: 'Start', onclick: () => (Engine.mic ? Engine.stopMic() : Engine.startMic()) }))));
   const strSeg = chips([0, 1, 2, 3, 4, 5].map(i => ({ value: i, label: `${STR_LETTER[i]}<small>${i + 1}</small>` })), s.strings.map(String), v => { s.strings = v.map(Number).sort(); save(); }, 1);
   const minSel = selectEl('minFret', Array.from({ length: MAX_FRET }, (_, i) => ({ value: i, label: String(i) })), s.minFret, v => { s.minFret = Number(v); if (s.maxFret <= s.minFret) { s.maxFret = s.minFret + 1; maxSel.value = String(s.maxFret); } save(); });

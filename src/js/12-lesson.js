@@ -44,6 +44,7 @@ const Lesson = {
       this.comboEl = h('div', { class: 'combo', 'aria-live': 'polite' }),
       this.body = h('div', { class: 'ls-body' }),
       this.foot = h('div', { class: 'ls-foot' }));
+    this.foot.addEventListener('click', e => { if (performance.now() < (this.guardUntil || 0)) { e.stopPropagation(); e.preventDefault(); } }, true);
     view.append(this.el);
     this.renderSnd();
     this.keys = { enter: () => this.enter() };
@@ -81,7 +82,7 @@ const Lesson = {
     const b = $('.ls-foot button.primary', this.el);
     if (b && !b.disabled) b.click();
   },
-  next() {
+  next(auto) {
     clearTimeout(this.autoT);
     this.answered = false;
     if (!this.queue.length) return this.finish();
@@ -91,6 +92,9 @@ const Lesson = {
     this.body.classList.remove('enter'); void this.body.offsetWidth; this.body.classList.add('enter');
     this.foot.className = 'ls-foot';
     this.foot.innerHTML = '';
+    // ging de les vanzelf door, dan even geen tikken onderaan: een late tik op Verder raakte anders
+    // de knop die op die plek in de volgende vraag staat, zoals "Verder zonder gitaar" of Overslaan
+    this.guardUntil = auto ? performance.now() + 700 : 0;
     const [ico, label] = KIND[KIND[it.type] ? it.type : 'theory'];
     const from = it._box ? `herhaling na ${SRS_DAYS[it._box]} ${SRS_DAYS[it._box] === 1 ? 'dag' : 'dagen'}` : 'eerder fout';
     this.body.append(h('p', { class: 'ls-kind' }, h('span', { html: ICONS[ico] }), it._again ? 'Nog een keer' : this.bin ? `${label}, ${from}` : it.kicker || label));
@@ -376,7 +380,7 @@ const Lesson = {
           note ? h('p', { class: 'fb-note' }, h('span', { html: icon || ICONS.retry }), note) : null,
           lift ? h('p', { class: 'fb-lift', text: lift }) : null)),
       h('button', { class: 'primary big', type: 'button', text: 'Verder', onclick: () => this.next() }));
-    if (auto) this.autoT = setTimeout(() => { if (this.answered) this.next(); }, auto);
+    if (auto) this.autoT = setTimeout(() => { if (this.answered) this.next(true); }, auto);
     Activity.ping();
   },
 
@@ -504,7 +508,9 @@ const Lesson = {
       if (ps.idx >= it.steps.length) this.playDone();
       return;
     }
-    if (ps.last != null && mod12(n.midi) === mod12(ps.last)) return;   // vorige noot klinkt nog
+    // vorige noot klinkt nog: negeren. Bij een octaafstap is dezelfde toonklasse juist het doel, dan alleen precies dezelfde noot
+    const octStep = st.k === 'rel' && st.semis !== 0 && st.semis % 12 === 0;
+    if (ps.last != null && (octStep ? n.midi === ps.last : mod12(n.midi) === mod12(ps.last))) return;
     miss(`Je speelde ${heard}.${mod12(n.midi) === wantPc ? ' Goede noot, ander octaaf.' : DrillFx.near(n.midi, wantPc)}`);
   },
   playDone() {
